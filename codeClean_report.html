@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>codeClean Report — 2026-05-14 23:50</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F8F8F8; color: #1A1A1A; font-size: 14px; line-height: 1.6; }
+  .header { background: #1A1A1A; color: #fff; padding: 2rem; }
+  .header h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+  .header p { color: #888; font-size: 13px; }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; padding: 1.5rem 2rem; }
+  .metric { background: #fff; border: 0.5px solid #e5e5e5; border-radius: 8px; padding: 1rem; }
+  .metric-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .metric-val { font-size: 28px; font-weight: 600; }
+  .metric-val.err { color: #E24B4A; }
+  .metric-val.warn { color: #EF9F27; }
+  .metric-val.info { color: #378ADD; }
+  .metric-val.ok { color: #3B6D11; }
+  .metric-val.neutral { color: #1A1A1A; }
+  section { margin: 0 2rem 2rem; background: #fff; border: 0.5px solid #e5e5e5; border-radius: 8px; overflow: hidden; }
+  .section-title { padding: 0.85rem 1.25rem; font-weight: 600; font-size: 13px; border-bottom: 0.5px solid #e5e5e5; background: #FAFAFA; display: flex; align-items: center; gap: 8px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 8px 16px; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 0.5px solid #e5e5e5; }
+  td { padding: 8px 16px; border-bottom: 0.5px solid #f0f0f0; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #FAFAFA; }
+  .empty-state { padding: 2rem; text-align: center; color: #3B6D11; font-size: 13px; }
+  .footer { text-align: center; padding: 2rem; color: #888; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🧹 codeClean — Raport Analiză Cod</h1>
+  <p>Generat la 14 May 2026, 23:50 · Durată: 4.08s · Rădăcină: D:\MAILMIND\mailmind</p>
+</div>
+
+<div class="metrics">
+  <div class="metric"><div class="metric-label">Erori critice</div><div class="metric-val err">12</div></div>
+  <div class="metric"><div class="metric-label">Avertismente</div><div class="metric-val warn">104</div></div>
+  <div class="metric"><div class="metric-label">Informații</div><div class="metric-val info">35</div></div>
+  <div class="metric"><div class="metric-label">Cod duplicat</div><div class="metric-val neutral">15</div></div>
+  <div class="metric"><div class="metric-label">Cod mort</div><div class="metric-val neutral">20</div></div>
+  <div class="metric"><div class="metric-label">Fix-uri aplicate</div><div class="metric-val ok">12</div></div>
+</div>
+
+<section>
+  <div class="section-title">⚠ Issues detectate (151)</div>
+  <table><thead><tr><th>Severitate</th><th>Locație</th><th>Mesaj</th><th>Tip</th></tr></thead><tbody>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:99</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#E24B4A;font-weight:600;">✗ ERR</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:101</td>
+          <td>Bare except — prinde o excepție specifică</td>
+          <td><span style="background:#FCEBEB;color:#E24B4A;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:102</td>
+          <td>except Exception prea broad — fii mai specific</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:103</td>
+          <td>TODO/FIXME nerezolvat</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:105</td>
+          <td>Variabilă global — evită state global</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#E24B4A;font-weight:600;">✗ ERR</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:106</td>
+          <td>eval() — periculos, nu folosi</td>
+          <td><span style="background:#FCEBEB;color:#E24B4A;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#E24B4A;font-weight:600;">✗ ERR</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:107</td>
+          <td>exec() — periculos, verifică</td>
+          <td><span style="background:#FCEBEB;color:#E24B4A;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#E24B4A;font-weight:600;">✗ ERR</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:108</td>
+          <td>__import__ dinamic — posibil risc de securitate</td>
+          <td><span style="background:#FCEBEB;color:#E24B4A;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:109</td>
+          <td>time.sleep() — blochează thread-ul</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:110</td>
+          <td>assert — nu folosi pentru validare în producție</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:137</td>
+          <td>except Exception prea broad — fii mai specific</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:144</td>
+          <td>except Exception prea broad — fii mai specific</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:169</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:170</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:171</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:172</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:175</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:176</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:182</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:185</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:188</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:275</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:316</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:318</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:322</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:381</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:703</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:707</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:708</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:709</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:714</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:737</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:738</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:739</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:740</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:741</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:742</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:743</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:744</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:746</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:747</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:750</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:752</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:754</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:760</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:764</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py:768</td>
+          <td>print() rămas în cod — folosește logging</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#E24B4A;font-weight:600;">✗ ERR</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\(auth)\callback\route.ts:7</td>
+          <td>Next.js 15: searchParams e Promise — folosește await</td>
+          <td><span style="background:#FCEBEB;color:#E24B4A;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#E24B4A;font-weight:600;">✗ ERR</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\(auth)\callback\route.ts:8</td>
+          <td>Next.js 15: searchParams e Promise — folosește await</td>
+          <td><span style="background:#FCEBEB;color:#E24B4A;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\(auth)\sign-up\page.tsx:27</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\(auth)\sign-up\page.tsx:35</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\(auth)\sign-up\page.tsx:44</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\dashboard\page.tsx:82</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\dashboard\swarm\actions.ts:55</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#E24B4A;font-weight:600;">✗ ERR</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\dashboard\war-room\[id]\page.tsx:24</td>
+          <td>Next.js 15: params e Promise — folosește await</td>
+          <td><span style="background:#FCEBEB;color:#E24B4A;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\dashboard\war-room\[id]\page.tsx:87</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\page.tsx:24</td>
+          <td>window access — verifică dacă ești în client component</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\page.tsx:61</td>
+          <td>window access — verifică dacă ești în client component</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\actions\onboarding.ts:41</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\actions\swarm.ts:23</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#E24B4A;font-weight:600;">✗ ERR</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\api\export\route.ts:9</td>
+          <td>Next.js 15: searchParams e Promise — folosește await</td>
+          <td><span style="background:#FCEBEB;color:#E24B4A;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#E24B4A;font-weight:600;">✗ ERR</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\api\export\route.ts:10</td>
+          <td>Next.js 15: searchParams e Promise — folosește await</td>
+          <td><span style="background:#FCEBEB;color:#E24B4A;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\api\export\route.ts:53</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\api\export\route.ts:57</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\api\klaviyo\sync\route.ts:60</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\api\klaviyo\sync\route.ts:72</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\api\rag\ingest\route.ts:35</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\api\stripe\checkout\route.ts:62</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\api\stripe\webhook\route.ts:27</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\api\stripe\webhook\route.ts:48</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\api\swarm\approve\route.ts:16</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\api\swarm\launch\route.ts:83</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\globals.css:8</td>
+          <td>@import url() — încetinește loading, folosește <link></td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\PostHogPageView.tsx:9</td>
+          <td>useSearchParams() — asigură-te că e în <Suspense></td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\PostHogPageView.tsx:14</td>
+          <td>window access — verifică dacă ești în client component</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#E24B4A;font-weight:600;">✗ ERR</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\PostHogPageView.tsx:15</td>
+          <td>Next.js 15: searchParams e Promise — folosește await</td>
+          <td><span style="background:#FCEBEB;color:#E24B4A;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\swarm\SwarmCanvas.tsx:55</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\swarm\SwarmCanvas.tsx:62</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\ui\carousel.tsx:101</td>
+          <td>setTimeout(fn, 0) — posibil anti-pattern</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\ui\sidebar.tsx:86</td>
+          <td>document access — verifică dacă ești în client component</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\ui\sidebar.tsx:105</td>
+          <td>window access — verifică dacă ești în client component</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\ui\sidebar.tsx:106</td>
+          <td>window access — verifică dacă ești în client component</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\vault\UploadZone.tsx:77</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\external\routes\dashboard.tsx:18</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\hooks\use-mobile.tsx:9</td>
+          <td>window access — verifică dacă ești în client component</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\hooks\use-mobile.tsx:11</td>
+          <td>window access — verifică dacă ești în client component</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\hooks\use-mobile.tsx:16</td>
+          <td>setTimeout(fn, 0) — posibil anti-pattern</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\auth\gatekeeper.ts:58</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\i18n.ts:19</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\rag\query.ts:24</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\spam-guard.ts:28</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\spider.ts:31</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\agents\copywriter.ts:7</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\agents\copywriter.ts:70</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\agents\psychologist.ts:8</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\agents\psychologist.ts:98</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\agents\researcher.ts:9</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\agents\researcher.ts:28</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\agents\researcher.ts:95</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\agents\strategist.ts:7</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\agents\strategist.ts:71</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\approval-gate.ts:6</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\approval-gate.ts:19</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\consensus.ts:5</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\graph.ts:84</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\sandbox.ts:9</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\sandbox.ts:47</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\utils.ts:28</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\utils.ts:43</td>
+          <td>document access — verifică dacă ești în client component</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\utils.ts:45</td>
+          <td>document access — verifică dacă ești în client component</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\utils.ts:47</td>
+          <td>document access — verifică dacă ești în client component</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\utils.ts:48</td>
+          <td>document access — verifică dacă ești în client component</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\utils.ts:51</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\utils.ts:60</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\vault\auto-save.ts:5</td>
+          <td>console.log rămas în cod — șterge sau folosește un logger</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\vault\auto-save.ts:6</td>
+          <td>'var' detectat — folosește const sau let</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\vault\signed-url.ts:20</td>
+          <td>console.error — ok în catch, verifică dacă e intenționat</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">smell</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\dashboard\admin\page.tsx:3</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\dashboard\chat\page.tsx:3</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\editor\EmailEditor.tsx:3</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\editor\SpamGuard.tsx:3</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\external\CopperStreak.tsx:3</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\external\Iris.tsx:3</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\external\NewProjectDialog.tsx:3</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\external\TopNav.tsx:1</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\layout\Header.tsx:3</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\layout\Sidebar.tsx:3</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\swarm\ConfidenceScore.tsx:3</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\swarm\ConsensusOverlay.tsx:3</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\swarm\SwarmFeed.tsx:3</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\twin\ReactionPanel.tsx:3</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\twin\TwinProfile.tsx:3</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\ui\alert.tsx:2</td>
+          <td>Import 'type VariantProps' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\ui\badge.tsx:2</td>
+          <td>Import 'type VariantProps' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\ui\button.tsx:2</td>
+          <td>Import 'type VariantProps' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\ui\command.tsx:4</td>
+          <td>Import 'type DialogProps' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\ui\sheet.tsx:5</td>
+          <td>Import 'type VariantProps' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\ui\sidebar.tsx:3</td>
+          <td>Import 'type VariantProps' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\ui\toggle-group.tsx:5</td>
+          <td>Import 'type VariantProps' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\ui\toggle.tsx:3</td>
+          <td>Import 'type VariantProps' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\external\routes\index.tsx:1</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\external\routes\login.tsx:1</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\external\routes\projects.tsx:1</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\external\routes\settings.tsx:1</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\external\routes\signup.tsx:1</td>
+          <td>Import 'React' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\utils.ts:1</td>
+          <td>Import 'type ClassValue' nefolosit</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">unused_import</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#E24B4A;font-weight:600;">✗ ERR</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">codeClean.py</td>
+          <td>775 linii — prea mare, împarte în module</td>
+          <td><span style="background:#FCEBEB;color:#E24B4A;padding:2px 8px;border-radius:4px;font-size:11px;">large_file</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#EF9F27;font-weight:600;">⚠ WARN</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\page.tsx</td>
+          <td>321 linii — consideră să împarți</td>
+          <td><span style="background:#FAEEDA;color:#EF9F27;padding:2px 8px;border-radius:4px;font-size:11px;">large_file</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#E24B4A;font-weight:600;">✗ ERR</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\ui\sidebar.tsx</td>
+          <td>748 linii — prea mare, împarte în module</td>
+          <td><span style="background:#FCEBEB;color:#E24B4A;padding:2px 8px;border-radius:4px;font-size:11px;">large_file</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\external\AureliusHelper.tsx</td>
+          <td>Fișier cu doar 1 linii de cod</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">empty_file</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#378ADD;font-weight:600;">· INFO</span></td>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\external\BlueprintBg.tsx</td>
+          <td>Fișier cu doar 1 linii de cod</td>
+          <td><span style="background:#E6F1FB;color:#378ADD;padding:2px 8px;border-radius:4px;font-size:11px;">empty_file</span></td>
+        </tr></tbody></table>
+</section>
+
+<section>
+  <div class="section-title">≡ Cod duplicat (15)</div>
+  <table><thead><tr><th>Hash</th><th>Apariții</th><th>Fișiere</th></tr></thead><tbody>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[5fb4ecc8]</td>
+          <td>2 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">codeClean.py<br>codeClean.py</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[adc951d1]</td>
+          <td>3 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">codeClean.py<br>codeClean.py<br>codeClean.py</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[e122ae3d]</td>
+          <td>2 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">codeClean.py<br>codeClean.py</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[22aa9dcd]</td>
+          <td>2 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">src\app\[locale]\(auth)\login\page.tsx<br>src\app\[locale]\(auth)\sign-up\page.tsx</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[5e1668e6]</td>
+          <td>2 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">src\app\[locale]\(auth)\login\page.tsx<br>src\app\[locale]\(auth)\sign-up\page.tsx</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[519c356e]</td>
+          <td>2 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">src\app\[locale]\(auth)\login\page.tsx<br>src\app\[locale]\(auth)\sign-up\page.tsx</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[71e90580]</td>
+          <td>2 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">src\app\[locale]\(auth)\login\page.tsx<br>src\app\[locale]\(auth)\sign-up\page.tsx</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[3284446b]</td>
+          <td>2 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">src\app\[locale]\(auth)\login\page.tsx<br>src\app\[locale]\(auth)\sign-up\page.tsx</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[1334080e]</td>
+          <td>2 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">src\app\[locale]\(auth)\login\page.tsx<br>src\app\[locale]\(auth)\sign-up\page.tsx</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[59315bb2]</td>
+          <td>2 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">src\app\[locale]\(auth)\login\page.tsx<br>src\app\[locale]\(auth)\sign-up\page.tsx</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[a6d17ac1]</td>
+          <td>2 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">src\app\[locale]\(auth)\login\page.tsx<br>src\app\[locale]\(auth)\sign-up\page.tsx</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[42fa25ff]</td>
+          <td>2 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">src\app\[locale]\(auth)\login\page.tsx<br>src\app\[locale]\(auth)\sign-up\page.tsx</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[281a9e6c]</td>
+          <td>2 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">src\app\[locale]\(auth)\login\page.tsx<br>src\app\[locale]\(auth)\sign-up\page.tsx</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[b0f48fb3]</td>
+          <td>2 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">src\app\[locale]\(auth)\login\page.tsx<br>src\app\[locale]\(auth)\sign-up\page.tsx</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;color:#854F0B;">[673d31fe]</td>
+          <td>2 fișiere</td>
+          <td style="font-family:monospace;font-size:12px;">src\app\[locale]\(auth)\login\page.tsx<br>src\app\[locale]\(auth)\sign-up\page.tsx</td>
+        </tr></tbody></table>
+</section>
+
+<section>
+  <div class="section-title">○ Cod mort — exporturi nefolosite (20)</div>
+  <table><thead><tr><th>Fișier</th><th>Symbol</th><th>Tip</th></tr></thead><tbody>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\(auth)\login\page.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">LoginPage</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\(auth)\sign-up\page.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">SignUpPage</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\dashboard\admin\page.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">AdminPage</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\dashboard\chat\page.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">ChatPage</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\dashboard\ideas\page.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">IdeasPage</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\dashboard\layout.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">DashboardLayout</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\dashboard\page.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">DashboardPage</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\dashboard\war-room\[id]\page.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">WarRoomPage</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\onboarding\page.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">OnboardingPage</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\page.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">HomePage</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\aurelius\context-builder.ts</td>
+          <td style="font-family:monospace;color:#3B6D11;">contextBuilder</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\editor\SpamGuard.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">SpamGuard</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\external\TopNav.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">TopNav</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\landing\AboutSection.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">AboutSection</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\landing\HeroSection.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">HeroSection</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\landing\PricingSection.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">PricingSection</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\landing\TwinDemoSection.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">TwinDemoSection</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\ui\badge.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">BadgeProps</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\vault\VaultBrowser.tsx</td>
+          <td style="font-family:monospace;color:#3B6D11;">VaultBrowser</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\db\schema.ts</td>
+          <td style="font-family:monospace;color:#3B6D11;">planEnum</td>
+          <td style="font-size:12px;color:#888;">unused_export</td>
+        </tr></tbody></table>
+</section>
+
+<section><div class='section-title'>✓ Fix-uri aplicate (12)</div><table><thead><tr><th>Fișier</th><th>Acțiune</th></tr></thead><tbody>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\app\[locale]\(auth)\sign-up\page.tsx</td>
+          <td style="color:#3B6D11;">✓ Șters 2 console.log</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\components\swarm\SwarmCanvas.tsx</td>
+          <td style="color:#3B6D11;">✓ Șters 2 console.log</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\external\routes\dashboard.tsx</td>
+          <td style="color:#3B6D11;">✓ Șters 1 console.log</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\agents\copywriter.ts</td>
+          <td style="color:#3B6D11;">✓ Șters 1 console.log</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\agents\psychologist.ts</td>
+          <td style="color:#3B6D11;">✓ Șters 1 console.log</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\agents\researcher.ts</td>
+          <td style="color:#3B6D11;">✓ Șters 2 console.log</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\agents\strategist.ts</td>
+          <td style="color:#3B6D11;">✓ Șters 1 console.log</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\approval-gate.ts</td>
+          <td style="color:#3B6D11;">✓ Șters 1 console.log</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\consensus.ts</td>
+          <td style="color:#3B6D11;">✓ Șters 1 console.log</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\graph.ts</td>
+          <td style="color:#3B6D11;">✓ Șters 1 console.log</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\swarm\sandbox.ts</td>
+          <td style="color:#3B6D11;">✓ Șters 1 console.log</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px;color:#888;">src\lib\vault\auto-save.ts</td>
+          <td style="color:#3B6D11;">✓ Șters 1 console.log</td>
+        </tr></tbody></table></section>
+
+<div class="footer">codeClean · 2026</div>
+</body>
+</html>

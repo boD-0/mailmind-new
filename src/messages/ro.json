@@ -1,0 +1,68 @@
+{
+  "nav": {
+    "how_it_works": "Cum Funcționează",
+    "pricing": "Prețuri",
+    "about": "Despre",
+    "login": "Autentificare",
+    "start_free": "Începe Gratuit"
+  },
+  "hero": {
+    "badge": "AGENȚI AI · INTELIGENȚĂ PARALELĂ",
+    "headline": "Agenția de Outreach pe care nu a trebuit să o angajezi niciodată.",
+    "subheadline": "Patru agenți AI specializați — Cercetător, Psiholog, Strateg, Copywriter — lucrează în paralel pentru a înțelege prospectul la nivel uman, apoi creează un email care chiar are impact. Fără tab-uri. Fără template-uri. Fără presupuneri.",
+    "cta": "Scrie Primul Meu Email",
+    "see_how": "Vezi Cum Funcționează",
+    "trusted": "Folosit de fondatori care au încheiat tranzacții pe care le credeau imposibile."
+  },
+  "onboarding": {
+    "steps": {
+      "business": "Afacerea Ta",
+      "audience": "Audiența Ta",
+      "values": "Valori Brand",
+      "style": "Memorie Stil"
+    },
+    "values": {
+      "authority": "Autoritate",
+      "empathy": "Empatie",
+      "innovation": "Inovație",
+      "clarity": "Claritate",
+      "exclusivity": "Exclusivitate",
+      "speed": "Viteză",
+      "trust": "Încredere",
+      "bold": "Îndrăzneț",
+      "data_driven": "Bazat pe Date",
+      "visionary": "Vizionar",
+      "direct": "Direct",
+      "premium": "Premium"
+    },
+    "tone": {
+      "formal": "Formal · Executiv",
+      "balanced": "Echilibrat · Profesional",
+      "warm": "Cald · Abordabil",
+      "casual": "Relaxat · Fondator-către-Fondator"
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "ideas": "Idei",
+      "settings": "Setări",
+      "founder": "Fondator"
+    }
+  },
+  "footer": {
+    "about_description": "Sunt Bogdan — fondator, constructor, obsedat să fac outreach-ul să se simtă din nou uman. MailMind este instrumentul de care aveam nevoie și pe care nu l-am putut găsi."
+  },
+  "pricing": {
+    "toggle_monthly": "Lunar",
+    "toggle_yearly": "Anual (save 30%)",
+    "plan_fast": "Fast Scan",
+    "plan_deep": "Deep Simulation"
+  },
+  "common": {
+    "loading": "Se încarcă...",
+    "error": "A apărut o eroare",
+    "save": "Salvează",
+    "cancel": "Anulează"
+  }
+}

@@ -1,0 +1,22 @@
+name: Translate i18n
+
+on:
+  push:
+    paths:
+      - 'src/messages/ro.json'
+  workflow_dispatch:
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Translate
+        uses: taahamahdi/i18n-ai-translate@master
+        with:
+          json-file-path: src/messages/ro.json
+          api-key: ${{ secrets.OPENAI_API_KEY }}
+          # target-languages is inferred from the other files in the directory or can be explicit
+          # Since we have en, fr, de, we can specify them or let it auto-detect.
+          # The action docs say it can translate to multiple locales.

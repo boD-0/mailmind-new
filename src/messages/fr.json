@@ -1,0 +1,34 @@
+{
+  "hero": {
+    "headline": "Swarm Intelligence. Empire Outreach.",
+    "subheadline": "The first AI system that understands your prospect before you send a single word.",
+    "cta_launch": "Launch the Swarm",
+    "cta_warroom": "Access War Room"
+  },
+  "pricing": {
+    "title": "Choose Your Strategic Plan",
+    "toggle_monthly": "Monthly",
+    "toggle_yearly": "Yearly (save 30%)",
+    "plan_fast": "Fast Scan",
+    "plan_deep": "Deep Simulation",
+    "fast_price": "29",
+    "deep_price": "79",
+    "features": {
+      "agents_2": "2 active agents (Researcher + Copywriter)",
+      "research_shallow": "Shallow Research (Tavily)",
+      "no_twin": "No Digital Twin Sandbox",
+      "campaigns_10": "10 campaigns / month",
+      "export_txt": "Export .txt",
+      "vault_1gb": "Cloud Vault 1GB",
+      "full_swarm": "Full Swarm (4 parallel agents)",
+      "digital_twin": "Digital Twin + OCEAN Profiling",
+      "reaction_sim": "Reaction Simulation Panel",
+      "hitl": "Human-in-the-Loop Approval",
+      "unlimited": "Unlimited campaigns",
+      "export_full": "Export .docx + .txt",
+      "klaviyo": "Klaviyo Integration",
+      "vault_20gb": "Cloud Vault 20GB + RAG",
+      "founder_mode": "Founder Mode (Enterprise plan)"
+    }
+  }
+}
