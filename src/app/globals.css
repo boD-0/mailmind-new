@@ -5,7 +5,7 @@
   v4 support enabled. You can also add "css.customData": [".vscode/tailwind.json"] 
   or suppress warnings in .vscode/settings.json.
 */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -20,6 +20,8 @@
   --text-primary:     var(--text-primary);
   --text-muted:       rgba(245, 245, 240, 0.55);
   --border-subtle:    rgba(193, 123, 63, 0.2);
+  --consensus-green:  #4CAF50;
+  --conflict-red:     #E53935;
 
   /* Legacy & Semantic mappings */
   --cream:            var(--text-primary);
@@ -72,9 +74,21 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-display: 'Playfair Display', serif;
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-serif: 'Instrument Serif', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Inter', 'DM Sans', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --color-mailmind-bg: #FAFAF8;
+  --color-mailmind-text: #1A1A1A;
+  --color-mailmind-muted: #888880;
+  --color-mailmind-border: #E0DDD5;
+  --color-mailmind-card: #FFFFFF;
+  --color-coral: #E84B3A;
+  --color-coral-dark: #D43A2A;
+  --color-highlight: #F5C842;
+  --color-highlight-blue: #4B7BE8;
+  --color-highlight-green: #4CAF82;
+  --color-highlight-purple: #9B6FE8;
 }
 
 body {
@@ -189,3 +203,205 @@ body {
 }
 
 .animate-iris { animation: iris-rotate 4s ease-in-out infinite; transform-origin: center; }
+
+/* ── Liquid-Glass Design System ── */
+
+.liquid-glass {
+  background: rgba(255,255,255,0.01);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(180deg,
+    rgba(193, 123, 63, 0.45) 0%,   /* copper tint */
+    rgba(255,255,255,0.15) 20%,
+    rgba(255,255,255,0) 40%,
+    rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0.15) 80%,
+    rgba(193, 123, 63, 0.45) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.liquid-glass-strong {
+  background: rgba(255,255,255,0.02);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-glass-strong::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(180deg,
+    rgba(193, 123, 63, 0.5) 0%,
+    rgba(255,255,255,0.2) 20%,
+    rgba(255,255,255,0) 40%,
+    rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0.2) 80%,
+    rgba(193, 123, 63, 0.5) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.font-heading-cinematic {
+  font-family: 'Instrument Serif', serif;
+}
+
+.font-body-cinematic {
+  font-family: 'Barlow', sans-serif;
+}
+
+@keyframes shimmer-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-shimmer {
+  animation: shimmer-slide 2s ease-in-out infinite;
+}
+
+/* ── Line-art stroke utility ── */
+
+.line-art {
+  stroke: #1A1A1A;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+/* ── Conveyor belt animation ── */
+
+@keyframes conveyor {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50px); }
+}
+
+.animate-conveyor {
+  animation: conveyor 3s linear infinite;
+}
+
+/* ── Progress fill animation ── */
+
+@keyframes progress-fill {
+  0% { width: 0%; }
+  100% { width: var(--progress-target, 100%); }
+}
+
+.animate-progress {
+  animation: progress-fill 2.5s ease-out forwards;
+}
+
+/* ── Subtle pulse for badges ── */
+
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 75, 58, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(232, 75, 58, 0); }
+}
+
+.animate-badge-pulse {
+  animation: badge-pulse 2s infinite;
+}
+
+/* ── Dashed divider ── */
+
+.dashed-divider {
+  border-top: 1px dashed #E0DDD5;
+}
+
+/* ── Testimonial scroll gradient ── */
+
+.testimonial-fade {
+  position: relative;
+}
+
+.testimonial-fade::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 60px;
+  background: linear-gradient(to right, transparent, #FAFAF8);
+  pointer-events: none;
+}
+
+/* ── FAQ content expand animation ── */
+
+.faq-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.faq-content.open {
+  max-height: 300px;
+}
+
+/* ── Card hover lift ── */
+
+.card-lift {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-lift:hover {
+  transform: translateY(-2px);
+  border-color: #C0BDB5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Underline animation for links ── */
+
+.underline-hover {
+  position: relative;
+  text-decoration: none;
+}
+
+.underline-hover::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.25s ease;
+}
+
+.underline-hover:hover::after {
+  width: 100%;
+}
+
+/* ── Respect motion preferences ── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

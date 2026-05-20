@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       customer?: { id: string }; 
       product?: { id: string };
     } 
-  }>(body, null);
+  } | null>(body, null);
   if (!event) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (type === "subscription.created" || type === "subscription.updated") {
-    const plan = getPlanFromProductId(productId);
+    const plan = getPlanFromProductId(productId ?? '');
     await db
       .update(users)
       .set({
