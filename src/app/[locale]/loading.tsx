@@ -1,5 +1,9 @@
+'use client'
+
 import { LoadingScreen } from '@/components/ui/loading-screen'
+import { useTranslation } from '@/components/I18nProvider'
 
 export default function RootLoading() {
-  return <LoadingScreen message="Loading MailMind..." />
+  const { t } = useTranslation()
+  return <LoadingScreen message={t('common.loading')} />
 }

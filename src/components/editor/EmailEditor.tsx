@@ -65,7 +65,7 @@ export function EmailEditor({ content }: EmailEditorProps) {
           disabled={!editorContent.trim()}
           className="flex items-center gap-2 px-6 py-2 bg-[#ff5f5f] text-white text-xs font-bold uppercase tracking-widest rounded-full hover:bg-red-500 transition-all disabled:opacity-30 disabled:cursor-not-allowed group shadow-md"
         >
-          <span>Send Outreach</span>
+          <span>Send Email</span>
           <Send size={14} className="group-hover:translate-x-1 transition-transform" />
         </button>
       </div>

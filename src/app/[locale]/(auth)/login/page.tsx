@@ -5,12 +5,14 @@ import { authClient } from '@/lib/auth/auth-client'
 import { toast } from 'sonner'
 import { useRouter, useParams } from 'next/navigation'
 import { useState } from 'react'
+import { useTranslation } from '@/components/I18nProvider'
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const params = useParams()
   const locale = (params?.locale as string) || 'en'
+  const { t } = useTranslation()
 
   const handleSignIn = async ({ email, password }: { email: string; password: string }) => {
     setLoading(true)
@@ -22,13 +24,13 @@ export default function LoginPage() {
       })
 
       if (error) {
-        toast.error(error.message || 'Authentication failed')
+        toast.error(error.message || t('auth.toast_signin_error'))
       } else {
-        toast.success('Signed in successfully!')
+        toast.success(t('auth.toast_signin_success'))
         router.push(`/${locale}/dashboard`)
       }
     } catch {
-      toast.error('An unexpected error occurred')
+      toast.error(t('auth.toast_unexpected'))
     } finally {
       setLoading(false)
     }
@@ -41,7 +43,7 @@ export default function LoginPage() {
         callbackURL: `/${locale}/dashboard`,
       })
     } catch {
-      toast.error('Google sign in failed')
+      toast.error(t('auth.toast_google_error'))
     }
   }
 
@@ -53,10 +55,10 @@ export default function LoginPage() {
           onGoogleSignIn={handleGoogleSignIn}
           loading={loading}
           signInContent={{
-            quote: { text: 'Welcome Back! The journey continues.', author: 'MailMind' },
+            quote: { text: t('auth.quote_sign_in'), author: t('auth.author') },
           }}
           signUpContent={{
-            quote: { text: 'Create an account. A new chapter awaits.', author: 'MailMind' },
+            quote: { text: t('auth.quote_sign_up'), author: t('auth.author') },
           }}
         />
       </main>

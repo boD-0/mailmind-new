@@ -5,8 +5,10 @@ import { useState, useId, useEffect } from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import * as LabelPrimitive from '@radix-ui/react-label'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Loader2, Search, Brain, Target, PenTool, Sparkles } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { useTranslation } from '@/components/I18nProvider'
 
 /* ── Typewriter Effect ── */
 
@@ -203,6 +205,7 @@ interface SignInFormProps {
 }
 
 function SignInForm({ onSignIn, loading }: SignInFormProps) {
+  const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -214,17 +217,17 @@ function SignInForm({ onSignIn, loading }: SignInFormProps) {
   return (
     <form onSubmit={handleSubmit} autoComplete="on" className="flex flex-col gap-8">
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold text-foreground">Sign in to your account</h1>
-        <p className="text-balance text-sm text-muted-foreground">Enter your email below to sign in</p>
+        <h1 className="text-2xl font-bold text-foreground">{t('auth.sign_in_title')}</h1>
+        <p className="text-balance text-sm text-muted-foreground">{t('auth.sign_in_desc')}</p>
       </div>
       <div className="grid gap-4">
         <div className="grid gap-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t('auth.email_label')}</Label>
           <Input
             id="email"
             name="email"
             type="email"
-            placeholder="m@example.com"
+            placeholder={t('auth.email_placeholder')}
             required
             autoComplete="email"
             value={email}
@@ -233,15 +236,15 @@ function SignInForm({ onSignIn, loading }: SignInFormProps) {
         </div>
         <PasswordInput
           name="password"
-          label="Password"
+          label={t('auth.password_label')}
           required
           autoComplete="current-password"
-          placeholder="Password"
+          placeholder={t('auth.password_placeholder')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         <Button type="submit" className="mt-2 w-full" loading={loading}>
-          Sign In
+          {t('auth.sign_in_button')}
         </Button>
       </div>
     </form>
@@ -256,6 +259,7 @@ interface SignUpFormProps {
 }
 
 function SignUpForm({ onSignUp, loading }: SignUpFormProps) {
+  const { t } = useTranslation()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -268,17 +272,17 @@ function SignUpForm({ onSignUp, loading }: SignUpFormProps) {
   return (
     <form onSubmit={handleSubmit} autoComplete="on" className="flex flex-col gap-8">
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold text-foreground">Create an account</h1>
-        <p className="text-balance text-sm text-muted-foreground">Enter your details below to sign up</p>
+        <h1 className="text-2xl font-bold text-foreground">{t('auth.sign_up_title')}</h1>
+        <p className="text-balance text-sm text-muted-foreground">{t('auth.sign_up_desc')}</p>
       </div>
       <div className="grid gap-4">
         <div className="grid gap-1">
-          <Label htmlFor="name">Full Name</Label>
+          <Label htmlFor="name">{t('auth.name_label')}</Label>
           <Input
             id="name"
             name="name"
             type="text"
-            placeholder="John Doe"
+            placeholder={t('auth.name_placeholder')}
             required
             autoComplete="name"
             value={name}
@@ -286,12 +290,12 @@ function SignUpForm({ onSignUp, loading }: SignUpFormProps) {
           />
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="email-signup">Email</Label>
+          <Label htmlFor="email-signup">{t('auth.email_label')}</Label>
           <Input
             id="email-signup"
             name="email"
             type="email"
-            placeholder="m@example.com"
+            placeholder={t('auth.email_placeholder')}
             required
             autoComplete="email"
             value={email}
@@ -300,15 +304,15 @@ function SignUpForm({ onSignUp, loading }: SignUpFormProps) {
         </div>
         <PasswordInput
           name="password"
-          label="Password"
+          label={t('auth.password_label')}
           required
           autoComplete="new-password"
-          placeholder="Password"
+          placeholder={t('auth.password_placeholder')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         <Button type="submit" className="mt-2 w-full" loading={loading}>
-          Sign Up
+          {t('auth.sign_up_button')}
         </Button>
       </div>
     </form>
@@ -332,21 +336,41 @@ function AuthFormContainer({
   loading?: boolean
   onGoogleSignIn?: () => void
 }) {
+  const { t } = useTranslation()
+  const [direction, setDirection] = useState(0) // -1 = left (signin→signup), 1 = right (signup→signin)
+
+  const handleToggle = () => {
+    setDirection(isSignIn ? -1 : 1)
+    onToggle()
+  }
+
   return (
     <div className="mx-auto grid w-[350px] gap-2">
-      {isSignIn ? (
-        <SignInForm onSignIn={onSignIn} loading={loading} />
-      ) : (
-        <SignUpForm onSignUp={onSignUp} loading={loading} />
-      )}
+      <div className="relative overflow-hidden" style={{ minHeight: 340 }}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={isSignIn ? 'signin' : 'signup'}
+            initial={{ opacity: 0, x: direction * 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: direction * -40 }}
+            transition={{ duration: 0.25, ease: [0.43, 0.13, 0.23, 0.96] }}
+          >
+            {isSignIn ? (
+              <SignInForm onSignIn={onSignIn} loading={loading} />
+            ) : (
+              <SignUpForm onSignUp={onSignUp} loading={loading} />
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
       <div className="text-center text-sm text-muted-foreground">
-        {isSignIn ? "Don't have an account? " : 'Already have an account? '}
-        <Button variant="link" className="pl-1 text-foreground" onClick={onToggle}>
-          {isSignIn ? 'Sign up' : 'Sign in'}
+        {isSignIn ? t('auth.no_account') + ' ' : t('auth.has_account') + ' '}
+        <Button variant="link" className="pl-1 text-foreground" onClick={handleToggle}>
+          {isSignIn ? t('auth.sign_up_link') : t('auth.sign_in_link')}
         </Button>
       </div>
       <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-        <span className="relative z-10 bg-background px-2 text-muted-foreground">Or continue with</span>
+        <span className="relative z-10 bg-background px-2 text-muted-foreground">{t('auth.or_continue')}</span>
       </div>
       <Button variant="outline" type="button" onClick={onGoogleSignIn} className="w-full">
         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none">
@@ -355,8 +379,149 @@ function AuthFormContainer({
           <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
         </svg>
-        Continue with Google
+        {t('auth.google_button')}
       </Button>
+    </div>
+  )
+}
+
+/* ── MailMind Brand Panel ── */
+
+const specialistIcons = [
+  { icon: Search, label: 'Researcher', color: 'bg-emerald-500', bg: 'bg-emerald-500/15' },
+  { icon: Brain, label: 'Psychologist', color: 'bg-amber-500', bg: 'bg-amber-500/15' },
+  { icon: Target, label: 'Strategist', color: 'bg-indigo-500', bg: 'bg-indigo-500/15' },
+  { icon: PenTool, label: 'Copywriter', color: 'bg-rose-500', bg: 'bg-rose-500/15' },
+]
+
+function MailMindBrandPanel() {
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center p-12">
+      {/* Animated orbs */}
+      <motion.div
+        className="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-gradient-to-br from-[#ff5f5f]/10 to-purple-500/10 blur-3xl"
+        animate={{
+          x: [0, 30, -20, 10, 0],
+          y: [0, -20, 15, -10, 0],
+          scale: [1, 1.05, 0.95, 1.02, 1],
+        }}
+        transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      <motion.div
+        className="absolute -bottom-20 -right-20 w-80 h-80 rounded-full bg-gradient-to-br from-amber-200/10 to-[#ff5f5f]/10 blur-3xl"
+        animate={{
+          x: [0, -20, 30, -10, 0],
+          y: [0, 15, -20, 10, 0],
+          scale: [1, 0.95, 1.05, 0.98, 1],
+        }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+      />
+
+      {/* Logo */}
+      <motion.div
+        className="flex items-center gap-3 mb-6"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.div
+          className="w-12 h-12 bg-[#ff5f5f] rounded-xl flex items-center justify-center shadow-lg shadow-red-200/30"
+          whileHover={{ rotate: -10, scale: 1.05 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+        >
+          <span className="text-white text-lg font-extrabold tracking-tight">M</span>
+        </motion.div>
+        <span className="text-white text-2xl font-bold tracking-tight">MailMind</span>
+      </motion.div>
+
+      {/* Tagline */}
+      <motion.p
+        className="text-white/60 text-sm font-medium mb-10 text-center max-w-xs"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        Cold email, but it actually knows them.
+      </motion.p>
+
+      {/* Specialist cards */}
+      <motion.div
+        className="grid grid-cols-2 gap-3 w-full max-w-sm"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.08, delayChildren: 0.3 },
+          },
+        }}
+      >
+        {specialistIcons.map((s, i) => (
+          <motion.div
+            key={s.label}
+            variants={{
+              hidden: { opacity: 0, y: 15, scale: 0.9 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                transition: { duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] as const },
+              },
+            }}
+            className={`${s.bg} backdrop-blur-sm border border-white/10 rounded-xl p-3 flex items-center gap-2.5`}
+          >
+            <motion.div
+              className={`w-8 h-8 rounded-lg ${s.color} flex items-center justify-center shadow-sm`}
+              whileHover={{ rotate: [0, -10, 10, -5, 0], scale: 1.1 }}
+              transition={{ duration: 0.4 }}
+            >
+              <s.icon size={14} className="text-white" />
+            </motion.div>
+            <span className="text-white/80 text-xs font-semibold">{s.label}</span>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Bottom decorative line */}
+      <motion.div
+        className="absolute bottom-24 left-1/2 -translate-x-1/2 flex items-center gap-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+      >
+        <motion.div
+          className="w-1.5 h-1.5 rounded-full bg-[#ff5f5f]/60"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        />
+        <motion.div
+          className="w-1.5 h-1.5 rounded-full bg-white/30"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
+        />
+        <motion.div
+          className="w-1.5 h-1.5 rounded-full bg-white/30"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity, delay: 0.6 }}
+        />
+        <Sparkles size={12} className="text-white/40" />
+        <motion.div
+          className="w-1.5 h-1.5 rounded-full bg-white/30"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity, delay: 0.9 }}
+        />
+        <motion.div
+          className="w-1.5 h-1.5 rounded-full bg-white/30"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity, delay: 1.2 }}
+        />
+        <motion.div
+          className="w-1.5 h-1.5 rounded-full bg-[#ff5f5f]/60"
+          animate={{ opacity: [0.3, 1, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
+        />
+      </motion.div>
     </div>
   )
 }
@@ -364,7 +529,6 @@ function AuthFormContainer({
 /* ── Content Props ── */
 
 interface AuthContentProps {
-  image?: { src: string; alt: string }
   quote?: { text: string; author: string }
 }
 
@@ -380,26 +544,14 @@ interface AuthUIProps {
   loading?: boolean
 }
 
-const defaultSignInContent = {
-  image: {
-    src: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop',
-    alt: 'Abstract geometric shapes for sign-in',
-  },
-  quote: {
-    text: 'Welcome Back! The journey continues.',
-    author: 'MailMind',
-  },
+const defaultSignInQuote = {
+  text: 'Welcome Back! The journey continues.',
+  author: 'MailMind',
 }
 
-const defaultSignUpContent = {
-  image: {
-    src: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&auto=format&fit=crop',
-    alt: 'Modern abstract design for new beginnings',
-  },
-  quote: {
-    text: 'Create an account. A new chapter awaits.',
-    author: 'MailMind',
-  },
+const defaultSignUpQuote = {
+  text: 'Create an account. A new chapter awaits.',
+  author: 'MailMind',
 }
 
 export function AuthUI({
@@ -414,16 +566,9 @@ export function AuthUI({
   const [isSignIn, setIsSignIn] = useState(initialIsSignIn !== undefined ? initialIsSignIn : true)
   const toggleForm = () => setIsSignIn((prev) => !prev)
 
-  const finalSignInContent = {
-    image: { ...defaultSignInContent.image, ...signInContent.image },
-    quote: { ...defaultSignInContent.quote, ...signInContent.quote },
-  }
-  const finalSignUpContent = {
-    image: { ...defaultSignUpContent.image, ...signUpContent.image },
-    quote: { ...defaultSignUpContent.quote, ...signUpContent.quote },
-  }
-
-  const currentContent = isSignIn ? finalSignInContent : finalSignUpContent
+  const finalQuote = isSignIn
+    ? { ...defaultSignInQuote, ...signInContent?.quote }
+    : { ...defaultSignUpQuote, ...signUpContent?.quote }
 
   return (
     <div className="w-full min-h-screen md:grid md:grid-cols-2">
@@ -445,26 +590,27 @@ export function AuthUI({
       </div>
 
       <div
-        className="hidden md:block relative bg-cover bg-center transition-all duration-500 ease-in-out"
-        style={{ backgroundImage: `url(${currentContent.image.src})` }}
-        key={currentContent.image.src}
+        className="hidden md:block relative overflow-hidden bg-gradient-to-br from-[#1a1a1a] via-[#222] to-[#111] transition-all duration-500 ease-in-out"
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-[120px] bg-gradient-to-t from-background to-transparent" />
+        {/* Brand panel with specialists */}
+        <MailMindBrandPanel />
+
+        {/* Gradient overlay at bottom for quote */}
+        <div className="absolute inset-x-0 bottom-0 h-[200px] bg-gradient-to-t from-[#1a1a1a] via-[#1a1a1a]/60 to-transparent" />
 
         <div className="relative z-10 flex h-full flex-col items-center justify-end p-2 pb-8">
           <blockquote className="space-y-2 text-center text-foreground max-w-md">
             <p className="text-lg font-medium text-white drop-shadow-lg">
               &ldquo;
               <Typewriter
-                key={currentContent.quote.text}
-                text={currentContent.quote.text}
+                key={finalQuote.text}
+                text={finalQuote.text}
                 speed={50}
               />
               &rdquo;
             </p>
             <cite className="block text-sm font-light text-white/70 not-italic drop-shadow">
-              — {currentContent.quote.author}
+              — {finalQuote.author}
             </cite>
           </blockquote>
         </div>

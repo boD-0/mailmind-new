@@ -5,12 +5,14 @@ import { authClient } from '@/lib/auth/auth-client'
 import { toast } from 'sonner'
 import { useRouter, useParams } from 'next/navigation'
 import { useState } from 'react'
+import { useTranslation } from '@/components/I18nProvider'
 
 export default function SignUpPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const params = useParams()
   const locale = (params?.locale as string) || 'en'
+  const { t } = useTranslation()
 
   const handleSignUp = async ({ name, email, password }: { name: string; email: string; password: string }) => {
     setLoading(true)
@@ -23,14 +25,14 @@ export default function SignUpPage() {
       })
 
       if (res.error) {
-        toast.error(res.error.message || 'Registration failed')
+        toast.error(res.error.message || t('auth.toast_signup_error'))
       } else {
-        toast.success('Account created successfully!')
+        toast.success(t('auth.toast_signup_success'))
         router.push(`/${locale}/onboarding`)
       }
     } catch (err) {
       console.error('Sign up unexpected error:', err)
-      toast.error('An unexpected error occurred')
+      toast.error(t('auth.toast_unexpected'))
     } finally {
       setLoading(false)
     }
@@ -43,7 +45,7 @@ export default function SignUpPage() {
         callbackURL: `/${locale}/onboarding`,
       })
     } catch {
-      toast.error('Google sign in failed')
+      toast.error(t('auth.toast_google_error'))
     }
   }
 
@@ -56,10 +58,10 @@ export default function SignUpPage() {
           onGoogleSignIn={handleGoogleSignIn}
           loading={loading}
           signInContent={{
-            quote: { text: 'Welcome Back! The journey continues.', author: 'MailMind' },
+            quote: { text: t('auth.quote_sign_in'), author: t('auth.author') },
           }}
           signUpContent={{
-            quote: { text: 'Create an account. A new chapter awaits.', author: 'MailMind' },
+            quote: { text: t('auth.quote_sign_up'), author: t('auth.author') },
           }}
         />
       </main>

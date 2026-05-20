@@ -8,6 +8,8 @@ import {
   Menu, X, ArrowRight, Check, Mail, Sparkles, Globe, Heart, Shield,
   ChevronDown, Crown,
 } from "lucide-react"
+import { LanguageSwitcher } from "@/components/ui/language-switcher"
+import { useTranslation } from '@/components/I18nProvider'
 
 /* ════════════════════════════════════════════════════════════
    ANIMATION VARIANTS
@@ -37,22 +39,6 @@ const stagger: Variants = {
   },
 }
 
-const slideInLeft: Variants = {
-  hidden: { opacity: 0, x: -40 },
-  visible: {
-    opacity: 1, x: 0,
-    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-}
-
-const slideInRight: Variants = {
-  hidden: { opacity: 0, x: 40 },
-  visible: {
-    opacity: 1, x: 0,
-    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-}
-
 /* ════════════════════════════════════════════════════════════
    PLAN DATA — matches gatekeeper PLAN_LIMITS
    ════════════════════════════════════════════════════════════ */
@@ -60,89 +46,56 @@ const slideInRight: Variants = {
 const TIERS = [
   {
     id: "FREE" as const,
-    name: "Free",
+    tierKey: "free" as const,
     price: "$0",
-    period: "/month",
     badge: null,
-    description: "Perfect for testing the waters — one prospect at a time.",
     features: [
-      { label: "AI Agents", value: "1 agent" },
-      { label: "AI Model", value: "GPT-4o-mini" },
-      { label: "Vault (File Storage)", included: false },
-      { label: "War Room", included: false },
-      { label: "Digital Twin", included: false },
-      { label: "Idea Capture", included: true },
-      { label: "Aurelius AI Assistant", included: true },
-      { label: "Basic Research", included: true },
+      { key: "vault", included: false },
+      { key: "warroom", included: false },
+      { key: "twin", included: false },
+      { key: "ideas", included: true },
+      { key: "aurelius", included: true },
+      { key: "basicResearch", included: true },
     ],
-    cta: "Try Free",
     ctaHref: "sign-up",
     highlight: false,
-    color: "gray",
   },
   {
     id: "STARTER" as const,
-    name: "Starter",
+    tierKey: "starter" as const,
     price: "$49",
-    period: "/month",
     badge: "POPULAR",
-    description: "For growing teams that need better research and storage.",
     features: [
-      { label: "AI Agents", value: "2 agents" },
-      { label: "AI Model", value: "GPT-4o" },
-      { label: "Vault (File Storage)", included: true },
-      { label: "War Room", included: false },
-      { label: "Digital Twin", included: false },
-      { label: "Idea Capture", included: true },
-      { label: "Aurelius AI Assistant", included: true },
-      { label: "Advanced Research", included: true },
+      { key: "vault", included: true },
+      { key: "warroom", included: false },
+      { key: "twin", included: false },
+      { key: "ideas", included: true },
+      { key: "aurelius", included: true },
+      { key: "advResearch", included: true },
     ],
-    cta: "Get Started",
     ctaHref: "sign-up",
     highlight: true,
-    color: "red",
   },
   {
     id: "PROFESSIONAL" as const,
-    name: "Professional",
+    tierKey: "professional" as const,
     price: "$149",
-    period: "/month",
     badge: null,
-    description: "Full power — unlock the complete MailMind swarm.",
     features: [
-      { label: "AI Agents", value: "4 agents" },
-      { label: "AI Model", value: "GPT-4o" },
-      { label: "Vault (File Storage)", included: true },
-      { label: "War Room", included: true },
-      { label: "Digital Twin", included: true },
-      { label: "Idea Capture", included: true },
-      { label: "Aurelius AI Assistant", included: true },
-      { label: "Full Research Suite", included: true },
+      { key: "vault", included: true },
+      { key: "warroom", included: true },
+      { key: "twin", included: true },
+      { key: "ideas", included: true },
+      { key: "aurelius", included: true },
+      { key: "fullResearch", included: true },
     ],
-    cta: "Go Pro",
     ctaHref: "sign-up",
     highlight: false,
-    color: "purple",
   },
-]
-
-const ALL_FEATURES = [
-  { label: "AI Agents", key: "agents" as const },
-  { label: "AI Model", key: "model" as const },
-  { label: "Vault (File Storage)", key: "vault" as const },
-  { label: "War Room", key: "warroom" as const },
-  { label: "Digital Twin", key: "twin" as const },
-  { label: "Idea Capture", key: "ideas" as const },
-  { label: "Aurelius AI Assistant", key: "aurelius" as const },
-  { label: "Basic Research", key: "basicResearch" as const },
-  { label: "Advanced Research", key: "advResearch" as const },
-  { label: "Full Research Suite", key: "fullResearch" as const },
 ]
 
 const PLAN_DETAILS: Record<string, Record<string, string | boolean>> = {
   FREE: {
-    agents: "1 agent",
-    model: "GPT-4o-mini",
     vault: false,
     warroom: false,
     twin: false,
@@ -153,8 +106,6 @@ const PLAN_DETAILS: Record<string, Record<string, string | boolean>> = {
     fullResearch: false,
   },
   STARTER: {
-    agents: "2 agents",
-    model: "GPT-4o",
     vault: true,
     warroom: false,
     twin: false,
@@ -165,8 +116,6 @@ const PLAN_DETAILS: Record<string, Record<string, string | boolean>> = {
     fullResearch: false,
   },
   PROFESSIONAL: {
-    agents: "4 agents",
-    model: "GPT-4o",
     vault: true,
     warroom: true,
     twin: true,
@@ -178,31 +127,17 @@ const PLAN_DETAILS: Record<string, Record<string, string | boolean>> = {
   },
 }
 
-const pricingFAQs = [
-  {
-    q: "Can I switch plans at any time?",
-    a: "Yes. You can upgrade or downgrade at any time. When upgrading, you get immediate access to your new features. When downgrading, changes apply at the end of your billing cycle.",
-  },
-  {
-    q: "Is there a free trial?",
-    a: "The Free plan is available forever with no credit card required. Upgrade to Starter or Professional when you're ready for more power.",
-  },
-  {
-    q: "What payment methods do you accept?",
-    a: "We accept all major credit cards, debit cards, and PayPal. All payments are processed securely through Stripe or Polar.sh.",
-  },
-  {
-    q: "Can I cancel my subscription?",
-    a: "Absolutely. You can cancel anytime from your account settings. Your access continues until the end of the current billing period — no questions asked.",
-  },
-  {
-    q: "What happens to my data if I cancel?",
-    a: "Your data is preserved for 30 days after cancellation. If you reactivate within that period, everything is restored. After 30 days, data is permanently deleted.",
-  },
-  {
-    q: "Do you offer custom plans for teams?",
-    a: "Yes — we offer custom enterprise plans with dedicated support, custom onboarding, and volume discounts. Contact us for details.",
-  },
+const COMPARISON_ROWS = [
+  { labelKey: "agents", valueKey: "agents" },
+  { labelKey: "model", valueKey: "model" },
+  { labelKey: "vault", valueKey: "vault" },
+  { labelKey: "warroom", valueKey: "warroom" },
+  { labelKey: "twin", valueKey: "twin" },
+  { labelKey: "ideas", valueKey: "ideas" },
+  { labelKey: "aurelius", valueKey: "aurelius" },
+  { labelKey: "basic_research", valueKey: "basicResearch" },
+  { labelKey: "advanced_research", valueKey: "advResearch" },
+  { labelKey: "full_research", valueKey: "fullResearch" },
 ]
 
 /* ════════════════════════════════════════════════════════════
@@ -236,6 +171,7 @@ function FloatingOrbs() {
    ════════════════════════════════════════════════════════════ */
 
 function Header({ locale }: { locale: string }) {
+  const { t } = useTranslation()
   const [mobileOpen, setMobileOpen] = useState(false)
   const { scrollY } = useScroll()
   const headerBg = useTransform(
@@ -262,32 +198,28 @@ function Header({ locale }: { locale: string }) {
 
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-500">
           <Link href={`/${locale}/#features`} className="relative hover:text-[#1a1a1a] transition-colors group">
-            Features
+            {t('nav.features')}
             <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#ff5f5f] transition-all duration-300 group-hover:w-full" />
           </Link>
           <Link href={`/${locale}/#how-it-works`} className="relative hover:text-[#1a1a1a] transition-colors group">
-            How it works
+            {t('nav.how_it_works')}
             <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#ff5f5f] transition-all duration-300 group-hover:w-full" />
           </Link>
-          <span className="text-[#1a1a1a] font-semibold">Pricing</span>
+          <span className="text-[#1a1a1a] font-semibold">{t('nav.pricing')}</span>
           <Link href={`/${locale}/#faq`} className="relative hover:text-[#1a1a1a] transition-colors group">
-            FAQ
+            {t('nav.faq')}
             <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#ff5f5f] transition-all duration-300 group-hover:w-full" />
           </Link>
         </nav>
 
-        <div className="hidden md:flex items-center gap-4">
-          <Link
-            href={`/${locale}/login`}
-            className="text-sm font-medium text-gray-500 hover:text-[#1a1a1a] transition-colors"
-          >
-            Log in
+        <div className="hidden md:flex items-center gap-3">
+          <LanguageSwitcher />
+          <div className="w-px h-5 bg-gray-200" />
+          <Link href={`/${locale}/login`} className="text-sm font-medium text-gray-500 hover:text-[#1a1a1a] transition-colors">
+            {t('nav.log_in')}
           </Link>
-          <Link
-            href={`/${locale}/sign-up`}
-            className="bg-[#ff5f5f] text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-200/50"
-          >
-            Get Started
+          <Link href={`/${locale}/sign-up`} className="bg-[#ff5f5f] text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-200/50">
+            {t('nav.get_started')}
           </Link>
         </div>
 
@@ -312,13 +244,17 @@ function Header({ locale }: { locale: string }) {
             className="md:hidden overflow-hidden"
           >
             <motion.div variants={stagger} initial="hidden" animate="visible" className="mt-4 pt-4 border-t border-gray-200/50 flex flex-col gap-2">
-              <Link href={`/${locale}/#features`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">Features</Link>
-              <Link href={`/${locale}/#how-it-works`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">How it works</Link>
-              <span className="text-sm text-[#1a1a1a] font-semibold px-3 py-2">Pricing</span>
-              <Link href={`/${locale}/#faq`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">FAQ</Link>
+              <Link href={`/${locale}/#features`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">{t('nav.features')}</Link>
+              <Link href={`/${locale}/#how-it-works`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">{t('nav.how_it_works')}</Link>
+              <span className="text-sm text-[#1a1a1a] font-semibold px-3 py-2">{t('nav.pricing')}</span>
+              <Link href={`/${locale}/#faq`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors">{t('nav.faq')}</Link>
+              <motion.div variants={fadeUp} className="flex items-center justify-between pb-2 border-b border-gray-100">
+                <span className="text-xs font-semibold text-gray-400 tracking-wider uppercase">{t('nav.language')}</span>
+                <LanguageSwitcher />
+              </motion.div>
               <div className="flex gap-3 pt-2 mt-2 border-t border-gray-100">
-                <Link href={`/${locale}/login`} className="flex-1 text-center text-sm font-medium text-gray-600 px-4 py-2.5 border border-gray-300 rounded-full hover:border-gray-400 transition-colors">Log in</Link>
-                <Link href={`/${locale}/sign-up`} className="flex-1 text-center bg-[#ff5f5f] text-white text-sm font-semibold px-4 py-2.5 rounded-full hover:bg-red-500 transition-colors">Get Started</Link>
+                <Link href={`/${locale}/login`} className="flex-1 text-center text-sm font-medium text-gray-600 px-4 py-2.5 border border-gray-300 rounded-full hover:border-gray-400 transition-colors">{t('nav.log_in')}</Link>
+                <Link href={`/${locale}/sign-up`} className="flex-1 text-center bg-[#ff5f5f] text-white text-sm font-semibold px-4 py-2.5 rounded-full hover:bg-red-500 transition-colors">{t('nav.get_started')}</Link>
               </div>
             </motion.div>
           </motion.div>
@@ -333,6 +269,7 @@ function Header({ locale }: { locale: string }) {
    ════════════════════════════════════════════════════════════ */
 
 function PricingHero() {
+  const { t } = useTranslation()
   return (
     <section className="relative pt-28 pb-16 px-6 text-center bg-[#fdfbf7] overflow-hidden">
       <FloatingOrbs />
@@ -347,7 +284,7 @@ function PricingHero() {
             whileHover={{ scale: 1.05 }}
           >
             <Sparkles size={12} />
-            Simple, Transparent Pricing
+            {t('pricing.hero.badge')}
           </motion.span>
         </motion.div>
 
@@ -357,9 +294,9 @@ function PricingHero() {
           transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="text-5xl md:text-6xl font-extrabold tracking-tighter leading-[1.1] mb-6 text-[#1a1a1a]"
         >
-          Choose your{" "}
+          {t('pricing.hero.title_1')}{" "}
           <span className="bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent">
-            power level.
+            {t('pricing.hero.title_highlight')}
           </span>
         </motion.h1>
 
@@ -369,8 +306,7 @@ function PricingHero() {
           transition={{ duration: 0.6, delay: 0.35 }}
           className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed"
         >
-          Start for free, upgrade when you need more agents, storage, or the full War Room experience.
-          Cancel anytime. No hidden fees.
+          {t('pricing.hero.subtitle')}
         </motion.p>
       </div>
     </section>
@@ -382,6 +318,7 @@ function PricingHero() {
    ════════════════════════════════════════════════════════════ */
 
 function PricingCards({ locale }: { locale: string }) {
+  const { t } = useTranslation()
   const [billing, setBilling] = useState<"monthly" | "annual">("monthly")
 
   const getPrice = (base: string, plan: string) => {
@@ -398,10 +335,25 @@ function PricingCards({ locale }: { locale: string }) {
     return billing === "annual" ? "/year" : "/month"
   }
 
+  const getTierName = (tierKey: string) => {
+    return t(`pricing.tier_${tierKey}.name`)
+  }
+
+  const getTierDesc = (tierKey: string) => {
+    return t(`pricing.tier_${tierKey}.description`)
+  }
+
+  const getTierCta = (tierKey: string) => {
+    return t(`pricing.tier_${tierKey}.cta`)
+  }
+
+  const getFeatureLabel = (key: string) => {
+    return t(`pricing.features.${key}`)
+  }
+
   return (
     <section className="relative pb-16 px-6 bg-[#fdfbf7]">
       <div className="max-w-6xl mx-auto relative z-10">
-        {/* Billing toggle */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -410,17 +362,13 @@ function PricingCards({ locale }: { locale: string }) {
         >
           <button
             onClick={() => setBilling("monthly")}
-            className={`text-sm font-medium transition-colors ${
-              billing === "monthly" ? "text-[#1a1a1a]" : "text-gray-400"
-            }`}
+            className={`text-sm font-medium transition-colors ${billing === "monthly" ? "text-[#1a1a1a]" : "text-gray-400"}`}
           >
-            Monthly
+            {t('pricing.toggle_monthly')}
           </button>
           <button
             onClick={() => setBilling("annual")}
-            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
-              billing === "annual" ? "bg-[#ff5f5f]" : "bg-gray-200"
-            }`}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${billing === "annual" ? "bg-[#ff5f5f]" : "bg-gray-200"}`}
           >
             <motion.span
               className="inline-block h-5 w-5 rounded-full bg-white shadow-sm"
@@ -430,18 +378,15 @@ function PricingCards({ locale }: { locale: string }) {
           </button>
           <button
             onClick={() => setBilling("annual")}
-            className={`text-sm font-medium transition-colors ${
-              billing === "annual" ? "text-[#1a1a1a]" : "text-gray-400"
-            }`}
+            className={`text-sm font-medium transition-colors ${billing === "annual" ? "text-[#1a1a1a]" : "text-gray-400"}`}
           >
-            Annual
+            {t('pricing.toggle_yearly')}
             <span className="ml-1.5 text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">
-              Save 17%
+              {t('pricing.yearly_save')}
             </span>
           </button>
         </motion.div>
 
-        {/* Cards */}
         <motion.div
           variants={stagger}
           initial="hidden"
@@ -478,13 +423,11 @@ function PricingCards({ locale }: { locale: string }) {
                 </motion.span>
               )}
 
-              {/* Plan name */}
               <div className={`${tier.highlight ? "mt-2" : ""}`}>
-                <h3 className="font-bold text-lg text-[#1a1a1a]">{tier.name}</h3>
-                <p className="text-sm text-gray-500 mt-1 leading-relaxed">{tier.description}</p>
+                <h3 className="font-bold text-lg text-[#1a1a1a]">{getTierName(tier.tierKey)}</h3>
+                <p className="text-sm text-gray-500 mt-1 leading-relaxed">{getTierDesc(tier.tierKey)}</p>
               </div>
 
-              {/* Price */}
               <div className="flex items-baseline gap-1 my-6">
                 <motion.span
                   className="text-5xl font-extrabold tracking-tighter text-[#1a1a1a]"
@@ -498,39 +441,54 @@ function PricingCards({ locale }: { locale: string }) {
                 <span className="text-gray-400 text-sm">{getPeriod(tier.id)}</span>
               </div>
 
-              {/* Features */}
+              {/* Agent & Model */}
               <ul className="space-y-3 mb-8 flex-1">
+                <motion.li
+                  className="flex items-center gap-2.5 text-sm"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 + i * 0.08 }}
+                >
+                  <div className="w-5 h-5 rounded-full bg-[#ff5f5f]/10 flex items-center justify-center shrink-0">
+                    <Check size={11} className="text-[#ff5f5f]" />
+                  </div>
+                  <span className="text-gray-600">{t('pricing.features.agents')}: {tier.id === "FREE" ? t('pricing.features.agent_1') : tier.id === "STARTER" ? t('pricing.features.agent_2') : t('pricing.features.agent_4')}</span>
+                </motion.li>
+                <motion.li
+                  className="flex items-center gap-2.5 text-sm"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.55 + i * 0.08 }}
+                >
+                  <div className="w-5 h-5 rounded-full bg-[#ff5f5f]/10 flex items-center justify-center shrink-0">
+                    <Check size={11} className="text-[#ff5f5f]" />
+                  </div>
+                  <span className="text-gray-600">{t('pricing.features.model')}: {tier.id === "FREE" ? t('pricing.features.model_mini') : t('pricing.features.model_full')}</span>
+                </motion.li>
                 {tier.features.map((f) => (
                   <motion.li
-                    key={f.label}
+                    key={f.key}
                     className="flex items-center gap-2.5 text-sm"
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5 + i * 0.08 }}
+                    transition={{ delay: 0.6 + i * 0.08 }}
                   >
-                    {'included' in f ? (
-                      f.included ? (
-                        <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-                          <Check size={11} className="text-emerald-600" />
-                        </div>
-                      ) : (
-                        <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-                          <X size={11} className="text-gray-300" />
-                        </div>
-                      )
+                    {f.included ? (
+                      <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                        <Check size={11} className="text-emerald-600" />
+                      </div>
                     ) : (
-                      <div className="w-5 h-5 rounded-full bg-[#ff5f5f]/10 flex items-center justify-center shrink-0">
-                        <Check size={11} className="text-[#ff5f5f]" />
+                      <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+                        <X size={11} className="text-gray-300" />
                       </div>
                     )}
-                    <span className={('included' in f && !f.included) ? "text-gray-400" : "text-gray-600"}>
-                      {f.value || f.label}
+                    <span className={f.included ? "text-gray-600" : "text-gray-400"}>
+                      {getFeatureLabel(f.key)}
                     </span>
                   </motion.li>
                 ))}
               </ul>
 
-              {/* CTA */}
               <Link
                 href={`/${locale}/${tier.ctaHref}`}
                 className={`w-full py-3.5 rounded-full font-semibold text-sm text-center transition-all inline-flex items-center justify-center gap-2 group ${
@@ -541,7 +499,7 @@ function PricingCards({ locale }: { locale: string }) {
                     : "border border-gray-300 text-gray-600 hover:border-gray-400 hover:text-[#1a1a1a]"
                 }`}
               >
-                {tier.cta}
+                {getTierCta(tier.tierKey)}
                 <ArrowRight size={14} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
               </Link>
             </motion.div>
@@ -557,6 +515,8 @@ function PricingCards({ locale }: { locale: string }) {
    ════════════════════════════════════════════════════════════ */
 
 function ComparisonTable({ locale }: { locale: string }) {
+  const { t } = useTranslation()
+
   return (
     <section className="relative py-24 px-6 bg-white overflow-hidden">
       <div className="max-w-6xl mx-auto relative z-10">
@@ -568,20 +528,19 @@ function ComparisonTable({ locale }: { locale: string }) {
           className="text-center mb-16"
         >
           <span className="inline-block text-xs font-semibold tracking-widest uppercase text-gray-400 mb-4 px-4 py-1.5 rounded-full bg-gray-100/50 border border-gray-200/50">
-            Full Comparison
+            {t('pricing.comparison.label')}
           </span>
           <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter text-[#1a1a1a] mb-4">
-            Every feature,{" "}
+            {t('pricing.comparison.title_1')}{" "}
             <span className="bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent">
-              side by side.
+              {t('pricing.comparison.title_highlight')}
             </span>
           </h2>
           <p className="text-gray-600 text-lg max-w-xl mx-auto leading-relaxed">
-            See exactly what you get at each tier.
+            {t('pricing.comparison.subtitle')}
           </p>
         </motion.div>
 
-        {/* Desktop table */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -593,19 +552,14 @@ function ComparisonTable({ locale }: { locale: string }) {
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
                 <th className="text-left px-6 py-4 text-xs font-semibold tracking-wider uppercase text-gray-500 w-1/3">
-                  Feature
+                  {t('pricing.features.agents')}
                 </th>
                 {TIERS.map((tier) => (
-                  <th
-                    key={tier.id}
-                    className={`text-center px-6 py-4 text-sm font-bold ${
-                      tier.highlight ? "text-[#ff5f5f]" : "text-[#1a1a1a]"
-                    }`}
-                  >
-                    {tier.name}
+                  <th key={tier.id} className={`text-center px-6 py-4 text-sm font-bold ${tier.highlight ? "text-[#ff5f5f]" : "text-[#1a1a1a]"}`}>
+                    {t(`pricing.tier_${tier.tierKey}.name`)}
                     {tier.highlight && (
                       <span className="ml-2 text-[10px] bg-[#ff5f5f]/10 text-[#ff5f5f] px-2 py-0.5 rounded-full">
-                        POPULAR
+                        {tier.badge}
                       </span>
                     )}
                   </th>
@@ -613,31 +567,18 @@ function ComparisonTable({ locale }: { locale: string }) {
               </tr>
             </thead>
             <tbody>
-              {[
-                { label: "AI Agents", key: "agents" },
-                { label: "AI Model", key: "model" },
-                { label: "Vault (File Storage)", key: "vault" },
-                { label: "War Room", key: "warroom" },
-                { label: "Digital Twin", key: "twin" },
-                { label: "Idea Capture", key: "ideas" },
-                { label: "Aurelius AI Assistant", key: "aurelius" },
-                { label: "Basic Research", key: "basicResearch" },
-                { label: "Advanced Research", key: "advResearch" },
-                { label: "Full Research Suite", key: "fullResearch" },
-              ].map((row, i) => (
+              {COMPARISON_ROWS.map((row, i) => (
                 <motion.tr
-                  key={row.key}
+                  key={row.labelKey}
                   initial={{ opacity: 0, x: -10 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.05 * i, duration: 0.3 }}
-                  className={`border-b border-gray-100 ${
-                    i % 2 === 0 ? "bg-white" : "bg-gray-50/50"
-                  } hover:bg-gray-50 transition-colors`}
+                  className={`border-b border-gray-100 ${i % 2 === 0 ? "bg-white" : "bg-gray-50/50"} hover:bg-gray-50 transition-colors`}
                 >
-                  <td className="px-6 py-4 text-sm font-medium text-[#1a1a1a]">{row.label}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-[#1a1a1a]">{t(`pricing.features.${row.labelKey}`)}</td>
                   {TIERS.map((tier) => {
-                    const val = PLAN_DETAILS[tier.id]![row.key]
+                    const val = PLAN_DETAILS[tier.id]![row.valueKey]
                     return (
                       <td key={tier.id} className="px-6 py-4 text-center">
                         {val === true ? (
@@ -656,27 +597,49 @@ function ComparisonTable({ locale }: { locale: string }) {
                   })}
                 </motion.tr>
               ))}
+              {/* Agent count & model rows */}
+              {["agents", "model"].map((key, i) => (
+                <motion.tr
+                  key={key}
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.05 * (COMPARISON_ROWS.length + i), duration: 0.3 }}
+                  className={`border-b border-gray-100 ${(COMPARISON_ROWS.length + i) % 2 === 0 ? "bg-white" : "bg-gray-50/50"} hover:bg-gray-50 transition-colors`}
+                >
+                  <td className="px-6 py-4 text-sm font-medium text-[#1a1a1a]">{t(`pricing.features.${key}`)}</td>
+                  {TIERS.map((tier) => {
+                    const val = key === "agents"
+                      ? tier.id === "FREE" ? t('pricing.features.agent_1') : tier.id === "STARTER" ? t('pricing.features.agent_2') : t('pricing.features.agent_4')
+                      : tier.id === "FREE" ? t('pricing.features.model_mini') : t('pricing.features.model_full')
+                    return (
+                      <td key={tier.id} className="px-6 py-4 text-center">
+                        <span className="text-sm text-gray-700 font-medium">{val}</span>
+                      </td>
+                    )
+                  })}
+                </motion.tr>
+              ))}
             </tbody>
           </table>
         </motion.div>
 
-        {/* Mobile comparison cards */}
         <div className="md:hidden space-y-4">
-          {ALL_FEATURES.map((feat) => (
+          {COMPARISON_ROWS.map((feat) => (
             <motion.div
-              key={feat.key}
+              key={feat.labelKey}
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="border border-gray-200 rounded-xl p-4 bg-white shadow-sm"
             >
-              <p className="text-sm font-semibold text-[#1a1a1a] mb-3">{feat.label}</p>
+              <p className="text-sm font-semibold text-[#1a1a1a] mb-3">{t(`pricing.features.${feat.labelKey}`)}</p>
               <div className="grid grid-cols-3 gap-2">
                 {TIERS.map((tier) => {
-                  const val = PLAN_DETAILS[tier.id]![feat.key]
+                  const val = PLAN_DETAILS[tier.id]![feat.valueKey]
                   return (
                     <div key={tier.id} className="text-center">
-                      <span className="text-[10px] font-semibold uppercase text-gray-400 block mb-1">{tier.name}</span>
+                      <span className="text-[10px] font-semibold uppercase text-gray-400 block mb-1">{t(`pricing.tier_${tier.tierKey}.name`)}</span>
                       {val === true ? (
                         <Check size={14} className="text-emerald-500 mx-auto" />
                       ) : val === false ? (
@@ -690,9 +653,33 @@ function ComparisonTable({ locale }: { locale: string }) {
               </div>
             </motion.div>
           ))}
+          {/* Agent count & model for mobile */}
+          {["agents", "model"].map((key) => (
+            <motion.div
+              key={key}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="border border-gray-200 rounded-xl p-4 bg-white shadow-sm"
+            >
+              <p className="text-sm font-semibold text-[#1a1a1a] mb-3">{t(`pricing.features.${key}`)}</p>
+              <div className="grid grid-cols-3 gap-2">
+                {TIERS.map((tier) => {
+                  const val = key === "agents"
+                    ? tier.id === "FREE" ? t('pricing.features.agent_1') : tier.id === "STARTER" ? t('pricing.features.agent_2') : t('pricing.features.agent_4')
+                    : tier.id === "FREE" ? t('pricing.features.model_mini') : t('pricing.features.model_full')
+                  return (
+                    <div key={tier.id} className="text-center">
+                      <span className="text-[10px] font-semibold uppercase text-gray-400 block mb-1">{t(`pricing.tier_${tier.tierKey}.name`)}</span>
+                      <span className="text-xs text-gray-700 font-medium">{val}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Table CTA */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -704,7 +691,7 @@ function ComparisonTable({ locale }: { locale: string }) {
             href={`/${locale}/sign-up`}
             className="inline-flex items-center gap-2 bg-[#ff5f5f] text-white px-8 py-3.5 rounded-full font-semibold hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-200/50 group"
           >
-            Start Free — No Credit Card Required
+            {t('pricing.features.cta_start')}
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
@@ -717,7 +704,17 @@ function ComparisonTable({ locale }: { locale: string }) {
    FAQ
    ════════════════════════════════════════════════════════════ */
 
+const FAQ_ITEMS = [
+  { qKey: "q1", aKey: "a1" },
+  { qKey: "q2", aKey: "a2" },
+  { qKey: "q3", aKey: "a3" },
+  { qKey: "q4", aKey: "a4" },
+  { qKey: "q5", aKey: "a5" },
+  { qKey: "q6", aKey: "a6" },
+]
+
 function PricingFAQ() {
+  const { t } = useTranslation()
   const [openId, setOpenId] = useState<number | null>(null)
 
   return (
@@ -731,13 +728,13 @@ function PricingFAQ() {
           className="text-center mb-14"
         >
           <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter text-[#1a1a1a] mb-4">
-            Pricing{" "}
+            {t('pricing.faq.title_1')}{" "}
             <span className="bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent">
-              FAQ.
+              {t('pricing.faq.title_highlight')}
             </span>
           </h2>
           <p className="text-gray-600 text-lg">
-            Everything you need to know about plans and billing.
+            {t('pricing.faq.subtitle')}
           </p>
         </motion.div>
 
@@ -748,7 +745,7 @@ function PricingFAQ() {
           viewport={{ once: true, margin: "-60px" }}
           className="space-y-3"
         >
-          {pricingFAQs.map((item, i) => (
+          {FAQ_ITEMS.map((item, i) => (
             <motion.div
               key={i}
               variants={fadeUp}
@@ -759,7 +756,7 @@ function PricingFAQ() {
                 onClick={() => setOpenId(openId === i ? null : i)}
                 className="w-full flex items-center justify-between px-6 py-4 text-left"
               >
-                <span className="text-sm font-medium text-[#1a1a1a] pr-4">{item.q}</span>
+                <span className="text-sm font-medium text-[#1a1a1a] pr-4">{t(`pricing.faq.${item.qKey}`)}</span>
                 <motion.div
                   animate={{ rotate: openId === i ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
@@ -778,7 +775,7 @@ function PricingFAQ() {
                     className="overflow-hidden"
                   >
                     <p className="px-6 pb-4 text-sm text-gray-600 leading-relaxed">
-                      {item.a}
+                      {t(`pricing.faq.${item.aKey}`)}
                     </p>
                   </motion.div>
                 )}
@@ -795,7 +792,14 @@ function PricingFAQ() {
    CTA
    ════════════════════════════════════════════════════════════ */
 
+const TRUST_ITEMS = [
+  { icon: Shield, textKey: "cta.trust_soc2" },
+  { icon: Globe, textKey: "cta.trust_uptime" },
+  { icon: Heart, textKey: "cta.trust_nocc" },
+]
+
 function PricingCTA({ locale }: { locale: string }) {
+  const { t } = useTranslation()
   const [email, setEmail] = useState("")
   const [subscribed, setSubscribed] = useState(false)
 
@@ -846,7 +850,7 @@ function PricingCTA({ locale }: { locale: string }) {
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="text-4xl md:text-5xl font-extrabold tracking-tighter text-white mb-4 leading-[1.1]"
         >
-          Ready to scale your outreach?
+          {t('pricing.cta.title')}
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 12 }}
@@ -855,7 +859,7 @@ function PricingCTA({ locale }: { locale: string }) {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="text-white/80 text-lg mb-10 leading-relaxed max-w-lg mx-auto"
         >
-          Join thousands of teams already using MailMind. Start free, upgrade when you grow.
+          {t('pricing.cta.subtitle')}
         </motion.p>
 
         {subscribed ? (
@@ -864,7 +868,7 @@ function PricingCTA({ locale }: { locale: string }) {
             animate={{ scale: 1, opacity: 1 }}
             className="max-w-md mx-auto px-6 py-4 rounded-full bg-white/15 text-white text-sm font-medium"
           >
-            ✓ You&apos;re in! Check your inbox for next steps.
+            {t('pricing.cta.success')}
           </motion.div>
         ) : (
           <motion.form
@@ -881,7 +885,7 @@ function PricingCTA({ locale }: { locale: string }) {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
+                placeholder={t('pricing.cta.placeholder')}
                 required
                 className="w-full pl-11 pr-5 py-3.5 rounded-full text-sm outline-none text-[#1a1a1a] placeholder:text-gray-400 bg-white border-0 focus:ring-2 focus:ring-white/30 transition-shadow"
               />
@@ -892,7 +896,7 @@ function PricingCTA({ locale }: { locale: string }) {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
             >
-              Get Started
+              {t('pricing.cta.button')}
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </motion.button>
           </motion.form>
@@ -905,15 +909,11 @@ function PricingCTA({ locale }: { locale: string }) {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="mt-10 pt-10 border-t border-white/15 flex flex-wrap justify-center gap-6 text-xs text-white/60"
         >
-          {[
-            { icon: Shield, text: "SOC 2 Compliant" },
-            { icon: Globe, text: "99.9% Uptime" },
-            { icon: Heart, text: "No credit card required" },
-          ].map((item, i) => {
+          {TRUST_ITEMS.map((item, i) => {
             const Icon = item.icon
             return (
               <motion.span
-                key={item.text}
+                key={item.textKey}
                 className="flex items-center gap-1.5"
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -921,7 +921,7 @@ function PricingCTA({ locale }: { locale: string }) {
                 transition={{ delay: 0.5 + i * 0.1 }}
               >
                 <Icon size={12} />
-                {item.text}
+                {t(`home.${item.textKey}`)}
               </motion.span>
             )
           })}
@@ -935,7 +935,37 @@ function PricingCTA({ locale }: { locale: string }) {
    FOOTER
    ════════════════════════════════════════════════════════════ */
 
+const FOOTER_COLUMNS = [
+  {
+    titleKey: "footer.product",
+    links: [
+      { href: (locale: string) => `/${locale}/#features`, labelKey: "footer.product_features" },
+      { href: (locale: string) => `/${locale}/#how-it-works`, labelKey: "footer.product_how" },
+      { href: (locale: string) => `/${locale}/pricing`, labelKey: "footer.product_pricing" },
+    ],
+  },
+  {
+    titleKey: "footer.company",
+    links: [
+      { href: () => "#", labelKey: "footer.company_about" },
+      { href: () => "#", labelKey: "footer.company_blog" },
+      { href: () => "#", labelKey: "footer.company_careers" },
+    ],
+  },
+  {
+    titleKey: "footer.legal",
+    links: [
+      { href: () => "#", labelKey: "footer.legal_privacy" },
+      { href: () => "#", labelKey: "footer.legal_terms" },
+    ],
+  },
+]
+
+const SOCIAL_LINKS = ["footer.social_twitter", "footer.social_linkedin", "footer.social_github"]
+
 function Footer({ locale }: { locale: string }) {
+  const { t } = useTranslation()
+
   return (
     <footer className="bg-[#fdfbf7] border-t border-gray-200 py-16 px-6">
       <div className="max-w-6xl mx-auto">
@@ -952,32 +982,17 @@ function Footer({ locale }: { locale: string }) {
               <span className="font-bold text-lg text-[#1a1a1a] tracking-tight">MailMind</span>
             </Link>
             <p className="mt-4 text-sm text-gray-500 leading-relaxed max-w-[200px]">
-              AI-powered outreach that actually knows people.
+              {t('footer.tagline')}
             </p>
           </div>
-          {[
-            { title: "Product", links: [
-              { href: `/${locale}/#features`, label: "Features" },
-              { href: `/${locale}/#how-it-works`, label: "How it Works" },
-              { href: `/${locale}/pricing`, label: "Pricing" },
-            ]},
-            { title: "Company", links: [
-              { href: "#", label: "About" },
-              { href: "#", label: "Blog" },
-              { href: "#", label: "Careers" },
-            ]},
-            { title: "Legal", links: [
-              { href: "#", label: "Privacy Policy" },
-              { href: "#", label: "Terms of Service" },
-            ]},
-          ].map((col) => (
-            <div key={col.title}>
-              <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-4">{col.title}</p>
+          {FOOTER_COLUMNS.map((col) => (
+            <div key={col.titleKey}>
+              <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-4">{t(col.titleKey)}</p>
               <ul className="space-y-2 text-sm text-gray-500">
                 {col.links.map((link) => (
-                  <li key={link.label}>
-                    <Link href={link.href} className="hover:text-[#1a1a1a] transition-colors relative inline-block group/link">
-                      {link.label}
+                  <li key={link.labelKey}>
+                    <Link href={link.href(locale)} className="hover:text-[#1a1a1a] transition-colors relative inline-block group/link">
+                      {t(link.labelKey)}
                       <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-[#ff5f5f] transition-all duration-300 group-hover/link:w-full" />
                     </Link>
                   </li>
@@ -993,11 +1008,11 @@ function Footer({ locale }: { locale: string }) {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <span>&copy; 2025 MailMind. All rights reserved.</span>
+          <span>{t('footer.copyright')}</span>
           <div className="flex gap-6">
-            {["Twitter/X", "LinkedIn", "GitHub"].map((social) => (
+            {SOCIAL_LINKS.map((social) => (
               <a key={social} href="#" className="hover:text-gray-600 transition-colors relative group/social">
-                {social}
+                {t(social)}
                 <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-gray-400 transition-all duration-300 group-hover/social:w-full" />
               </a>
             ))}

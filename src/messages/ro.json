@@ -1,68 +1,441 @@
 {
   "nav": {
+    "features": "Features",
     "how_it_works": "Cum Funcționează",
     "pricing": "Prețuri",
-    "about": "Despre",
-    "login": "Autentificare",
-    "start_free": "Începe Gratuit"
+    "faq": "FAQ",
+    "log_in": "Autentificare",
+    "get_started": "Începe Gratuit",
+    "language": "Limba",
+    "try_free": "Încearcă Gratuit"
   },
-  "hero": {
-    "badge": "AGENȚI AI · INTELIGENȚĂ PARALELĂ",
-    "headline": "Agenția de Outreach pe care nu a trebuit să o angajezi niciodată.",
-    "subheadline": "Patru agenți AI specializați — Cercetător, Psiholog, Strateg, Copywriter — lucrează în paralel pentru a înțelege prospectul la nivel uman, apoi creează un email care chiar are impact. Fără tab-uri. Fără template-uri. Fără presupuneri.",
-    "cta": "Scrie Primul Meu Email",
-    "see_how": "Vezi Cum Funcționează",
-    "trusted": "Folosit de fondatori care au încheiat tranzacții pe care le credeau imposibile."
-  },
-  "onboarding": {
-    "steps": {
-      "business": "Afacerea Ta",
-      "audience": "Audiența Ta",
-      "values": "Valori Brand",
-      "style": "Memorie Stil"
+  "home": {
+    "hero": {
+      "headline_1": "Cold email, dar",
+      "headline_knows": "chiar îi cunoaște",
+      "headline_2": ".",
+      "subheadline": "Patru agenți AI specializați — Cercetător, Psiholog, Strateg, Copywriter — lucrează în paralel pentru a crea emailuri calibrate psihologic care nu sună a template.",
+      "cta_get_started": "Începe Acum",
+      "cta_live_demo": "Demonstrație Live",
+      "app_url": "app.mailmind.app"
     },
-    "values": {
-      "authority": "Autoritate",
-      "empathy": "Empatie",
-      "innovation": "Inovație",
-      "clarity": "Claritate",
-      "exclusivity": "Exclusivitate",
-      "speed": "Viteză",
-      "trust": "Încredere",
-      "bold": "Îndrăzneț",
-      "data_driven": "Bazat pe Date",
-      "visionary": "Vizionar",
-      "direct": "Direct",
-      "premium": "Premium"
+    "features": {
+      "label": "Specialiștii",
+      "title": "Nu un singur model.",
+      "highlight": "Patru specialiști.",
+      "description": "Fiecare agent este excelent la exact un lucru. Împreună înlocuiesc echipa ta — și mai mult.",
+      "researcher": {
+        "name": "Cercetătorul",
+        "description": "Scanează LinkedIn, știri, podcasturi și presă pentru a scoate la suprafață informațiile precise de care ai nevoie — contextul potrivit care face emailul tău să lovească ținta."
+      },
+      "psychologist": {
+        "name": "Psihologul",
+        "description": "Construiește un profil Big Five OCEAN — Geamănul tău Digital. Semnalele publice devin o hartă a modului în care gândesc, simt și decid."
+      },
+      "strategist": {
+        "name": "Strategul",
+        "description": "Planifică unghiul de abordare, cârligul, tonul și secvența emailului. Știe ce să spună, în ce ordine și de ce va funcționa."
+      },
+      "copywriter": {
+        "name": "Copywriter-ul",
+        "description": "Scrie emailul propriu-zis — personalizat, calibrat și uman. Nu un template. Un mesaj creat pentru o singură persoană."
+      }
     },
-    "tone": {
-      "formal": "Formal · Executiv",
-      "balanced": "Echilibrat · Profesional",
-      "warm": "Cald · Abordabil",
-      "casual": "Relaxat · Fondator-către-Fondator"
-    }
-  },
-  "dashboard": {
-    "nav": {
-      "dashboard": "Dashboard",
-      "ideas": "Idei",
-      "settings": "Setări",
-      "founder": "Fondator"
+    "demo": {
+      "label": "Cum Funcționează",
+      "title": "O comandă.",
+      "highlight": "Zero copy-paste.",
+      "description": "De la numele prospectului la email calibrat în sub 90 de secunde.",
+      "step_research": "Research",
+      "step_profile": "Profil",
+      "step_strategy": "Strategie",
+      "step_copy": "Copy",
+      "step_send": "Trimite",
+      "mobile_flow": "Research → Profil → Strategie → Copy → Trimite",
+      "desc_research": "Scanare profundă date prospect",
+      "desc_profile": "Construire profil psihologic",
+      "desc_strategy": "Planificare unghi abordare email",
+      "desc_write": "Creare email personalizat",
+      "desc_send": "Gata de trimitere"
+    },
+    "differentiation": {
+      "label": "Diferența",
+      "title_1": "Nu scriem către un",
+      "title_strikethrough": "titlu de job.",
+      "title_2": "Scriem către o",
+      "title_highlight": "persoană.",
+      "description": "Majoritatea tool-urilor de email trimit același template la sute de persoane. MailMind construiește un profil psihologic al fiecărui prospect — motivațiile, stilul de comunicare și pattern-urile de decizie — apoi creează un email calibrat special pentru ei.",
+      "items": [
+        "Profil Big Five OCEAN construit din semnale publice",
+        "Ton, cârlig și unghi potrivite personalității pentru fiecare email",
+        "Simulare Sandbox prezice reacția prospectului înainte să trimiți",
+        "Învățare continuă din pattern-uri de engagement"
+      ],
+      "ocean_profile": "Profil OCEAN",
+      "digital_twin": "Geamăn Digital"
+    },
+    "pricing": {
+      "label": "Prețuri",
+      "title": "Simplu, transparent",
+      "highlight": "ca preț.",
+      "description": "Începe gratuit, actualizează când ai nevoie de mai mult. Anulează oricând.",
+      "free": {
+        "name": "Gratuit",
+        "price": "$0",
+        "period": "/lună",
+        "features": [
+          "1 scanare AI pe zi",
+          "1 swarm pe zi",
+          "Doar research de bază",
+          "1 agent activ"
+        ],
+        "cta": "Începe Gratuit"
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "$49",
+        "period": "/lună",
+        "badge": "POPULAR",
+        "features": [
+          "Lansări săptămânale nelimitate",
+          "1000 memory seeds",
+          "Acces complet swarm",
+          "Vault inclus",
+          "Suport prioritar"
+        ],
+        "cta": "Începe Acum"
+      },
+      "team": {
+        "name": "Echipă",
+        "price": "$199",
+        "period": "/lună",
+        "features": [
+          "Totul nelimitat",
+          "Locuri pentru echipă",
+          "Integrare CRM",
+          "Onboarding personalizat",
+        "Suport dedicat"
+        ],
+        "cta": "Contactează-ne"
+      }
+    },
+    "faq": {
+      "title": "Întrebări frecvente",
+      "title_highlight": "întrebări.",
+      "subtitle": "Tot ce trebuie să știi despre MailMind.",
+      "q1": "Cum este diferit de ChatGPT sau un template?",
+      "a1": "MailMind folosește 4 agenți specializați care cercetează prospectul în timp real, construiesc un profil psihologic și scriu un email personalizat — nu un template umplut cu variabile.",
+      "q2": "Despre ce este profilul OCEAN?",
+      "a2": "OCEAN (Big Five) este modelul standard de personalitate folosit în cercetarea psihologică. Agentul nostru Psiholog construiește un Geamăn Digital din semnale publice pentru a prezice cum gândește, simte și decide prospectul tău.",
+      "q3": "Sunt trimise efectiv emailurile?",
+      "a3": "Nu — MailMind scrie și optimizează emailul tău. Tu îl trimiți prin clientul tău de email existent sau îți conectezi CRM-ul.",
+      "q4": "Cum rămâne cu livrabilitatea emailurilor?",
+      "a4": "Includem o simulare Sandbox care prezice reacția prospectului și o verificare SpamGuard înainte să trimiți ceva.",
+      "q5": "Datele mele sunt protejate?",
+      "a5": "Da. Toate datele prospectului sunt procesate efemer și niciodată stocate sau folosite pentru antrenarea modelelor. Suntem conformi SOC 2.",
+      "q6": "Cât de repede voi vedea rezultate?",
+      "a6": "Majoritatea utilizatorilor văd un email complet, gata de trimis, în sub 90 de secunde de la introducerea numelui prospectului."
+    },
+    "cta": {
+      "title": "Gata să trimiți emailuri",
+      "title_highlight": "care primesc răspunsuri?",
+      "subtitle": "Alătură-te miilor de fondatori și SDR-i care deja livrează cu MailMind.",
+      "placeholder": "emailul@tău.com",
+      "button": "Începe Acum",
+      "success": "✓ Ești înscris! Verifică inbox-ul pentru următorii pași.",
+      "trust_soc2": "Conform SOC 2",
+      "trust_uptime": "Uptime 99.9%",
+      "trust_nocc": "Fără card de credit"
     }
   },
   "footer": {
-    "about_description": "Sunt Bogdan — fondator, constructor, obsedat să fac outreach-ul să se simtă din nou uman. MailMind este instrumentul de care aveam nevoie și pe care nu l-am putut găsi."
+    "tagline": "Email AI care chiar cunoaște oamenii.",
+    "product": "Produs",
+    "product_features": "Funcționalități",
+    "product_how": "Cum Funcționează",
+    "product_pricing": "Prețuri",
+    "company": "Companie",
+    "company_about": "Despre",
+    "company_blog": "Blog",
+    "company_careers": "Cariere",
+    "legal": "Legal",
+    "legal_privacy": "Politica de Confidențialitate",
+    "legal_terms": "Termeni și Condiții",
+    "copyright": "© 2025 MailMind. Toate drepturile rezervate.",
+    "social_twitter": "Twitter/X",
+    "social_linkedin": "LinkedIn",
+    "social_github": "GitHub"
   },
   "pricing": {
+    "hero": {
+      "badge": "Prețuri Simple, Transparente",
+      "title_1": "Alege-ți",
+      "title_highlight": "nivelul de putere.",
+      "subtitle": "Începe gratuit, actualizează când ai nevoie de mai mulți agenți, stocare sau experiența War Room completă. Anulează oricând. Fără taxe ascunse."
+    },
     "toggle_monthly": "Lunar",
-    "toggle_yearly": "Anual (save 30%)",
-    "plan_fast": "Fast Scan",
-    "plan_deep": "Deep Simulation"
+    "toggle_yearly": "Anual",
+    "yearly_save": "Economisești 17%",
+    "tier_free": {
+      "name": "Gratuit",
+      "price": "$0",
+      "period": "/lună",
+      "description": "Perfect pentru testarea apelor — un prospect odată.",
+      "cta": "Încearcă Gratuit"
+    },
+    "tier_starter": {
+      "name": "Starter",
+      "price": "$49",
+      "period": "/lună",
+      "badge": "POPULAR",
+      "description": "Pentru echipe în creștere care au nevoie de research și stocare mai bune.",
+      "cta": "Începe Acum"
+    },
+    "tier_professional": {
+      "name": "Profesional",
+      "price": "$149",
+      "period": "/lună",
+      "description": "Putere maximă — deblochează swarm-ul complet MailMind.",
+      "cta": "Devino Pro"
+    },
+    "features": {
+      "agents": "Agenți AI",
+      "model": "Model AI",
+      "vault": "Seif (Stocare Fișiere)",
+      "warroom": "War Room",
+      "twin": "Geamăn Digital",
+      "ideas": "Captură Idei",
+      "aurelius": "Asistent AI Aurelius",
+      "basic_research": "Research de Bază",
+      "advanced_research": "Research Avansat",
+      "full_research": "Suită Research Completă",
+      "agent_1": "1 agent",
+      "agent_2": "2 agenți",
+      "agent_4": "4 agenți",
+      "model_mini": "GPT-4o-mini",
+      "model_full": "GPT-4o",
+      "cta_start": "Începe Gratuit — Fără Card de Credit"
+    },
+    "comparison": {
+      "label": "Comparație Completă",
+      "title_1": "Fiecare funcționalitate,",
+      "title_highlight": "față în față.",
+      "subtitle": "Vezi exact ce primești la fiecare nivel."
+    },
+    "faq": {
+      "title_1": "Prețuri",
+      "title_highlight": "Întrebări.",
+      "subtitle": "Tot ce trebuie să știi despre planuri și facturare.",
+      "q1": "Pot schimba planul oricând?",
+      "a1": "Da. Poți face upgrade sau downgrade oricând. La upgrade, primești acces imediat la noile funcționalități. La downgrade, schimbările se aplică la sfârșitul ciclului de facturare.",
+      "q2": "Există o perioadă de încercare gratuită?",
+      "a2": "Planul Gratuit este disponibil pentru totdeauna, fără card de credit. Fă upgrade la Starter sau Profesional când ești pregătit pentru mai multă putere.",
+      "q3": "Ce metode de plată acceptați?",
+      "a3": "Acceptăm toate cardurile de credit majore, carduri de debit și PayPal. Toate plățile sunt procesate în siguranță prin Stripe sau Polar.sh.",
+      "q4": "Pot anula abonamentul?",
+      "a4": "Absolut. Poți anula oricând din setările contului. Accesul tău continuă până la sfârșitul perioadei curente de facturare — fără întrebări.",
+      "q5": "Ce se întâmplă cu datele mele dacă anulez?",
+      "a5": "Datele tale sunt păstrate pentru 30 de zile după anulare. Dacă reactivezi în această perioadă, totul este restaurat. După 30 de zile, datele sunt șterse permanent.",
+      "q6": "Oferiți planuri personalizate pentru echipe?",
+      "a6": "Da — oferim planuri enterprise personalizate cu suport dedicat, onboarding personalizat și discounturi de volum. Contactează-ne pentru detalii."
+    },
+    "cta": {
+      "title": "Gata să scalezi email-urile?",
+      "subtitle": "Alătură-te miilor de echipe care deja folosesc MailMind. Începe gratuit, fă upgrade când crești.",
+      "placeholder": "emailul@tău.com",
+      "button": "Începe Acum",
+      "success": "✓ Ești înscris! Verifică inbox-ul pentru următorii pași."
+    }
+  },
+  "demo": {
+    "header": "Demo Live",
+    "step_enter": "Introdu prospect",
+    "step_process": "Agenții lucrează",
+    "step_ready": "Email gata",
+    "title_1": "Vezi MailMind în",
+    "title_highlight": "acțiune.",
+    "subtitle": "Alege un prospect sau tastează un nume — urmărește 4 agenți AI cum cercetează, profilează, strategizează și scriu un email personalizat în timp real.",
+    "sample_prospects": "Încearcă un prospect demonstrativ",
+    "or_custom": "sau personalizat",
+    "placeholder_name": "Nume prospect",
+    "placeholder_company": "Companie (opțional)",
+    "launch": "Lansează Demo",
+    "demo_for": "Demo pentru:",
+    "agent_researcher": "Cercetător",
+    "agent_psychologist": "Psiholog",
+    "agent_strategist": "Strateg",
+    "agent_copywriter": "Copywriter",
+    "action_research": "Scanez LinkedIn, știri & presă...",
+    "action_profile": "Construiesc profil psihologic OCEAN...",
+    "action_strategy": "Creez unghiul de abordare & tonul emailului...",
+    "action_write": "Scriu emailul personalizat...",
+    "done_research": "Research prospect complet ✓",
+    "done_profile": "Profil Geamăn Digital gata ✓",
+    "done_strategy": "Strategie stabilită ✓",
+    "done_write": "Email creat ✓",
+    "waiting": "Aștept...",
+    "collaborating": "Agenții colaborează în paralel...",
+    "finalizing": "Aproape gata! Asamblez emailul final...",
+    "working_on": "{{agent}} lucrează...",
+    "finalizing_text": "Finalizez...",
+    "email_ready": "Email gata",
+    "result_title_1": "Email-ul tău este",
+    "result_title_highlight": "gata de trimis.",
+    "result_desc": "Toți 4 agenții au colaborat să creeze un email personalizat pentru {{name}}.",
+    "to": "Către: {{name}}",
+    "just_now": "Chiar acum",
+    "written_by": "Scris de MailMind · 4 agenți",
+    "try_again": "Încearcă din nou",
+    "try_mailmind": "Încearcă MailMind Gratuit",
+    "stat_time": "Timp procesare",
+    "stat_agents": "Agenți folosiți",
+    "stat_confidence": "Scor încredere",
+    "bottom_text": "Aceasta este o simulare — emailurile reale sunt și mai personalizate.",
+    "bottom_cta": "Încearcă MailMind Gratuit"
+  },
+  "auth": {
+    "sign_in_title": "Autentificare în contul tău",
+    "sign_in_desc": "Introdu emailul mai jos pentru a te autentifica",
+    "sign_up_title": "Creează un cont",
+    "sign_up_desc": "Introdu detaliile mai jos pentru a te înregistra",
+    "email_label": "Email",
+    "email_placeholder": "m@example.com",
+    "password_label": "Parolă",
+    "password_placeholder": "Parolă",
+    "name_label": "Nume Complet",
+    "name_placeholder": "John Doe",
+    "sign_in_button": "Autentificare",
+    "sign_up_button": "Înregistrare",
+    "no_account": "Nu ai un cont?",
+    "has_account": "Ai deja un cont?",
+    "sign_up_link": "Înregistrează-te",
+    "sign_in_link": "Autentifică-te",
+    "or_continue": "Sau continuă cu",
+    "google_button": "Continuă cu Google",
+    "show_password": "Arată parola",
+    "hide_password": "Ascunde parola",
+    "quote_sign_in": "Bine ai revenit! Călătoria continuă.",
+    "quote_sign_up": "Creează un cont. Un nou capitol te așteaptă.",
+    "author": "MailMind",
+    "toast_signup_success": "Cont creat cu succes!",
+    "toast_signup_error": "Înregistrarea a eșuat",
+    "toast_signin_success": "Autentificare reușită!",
+    "toast_signin_error": "Autentificarea a eșuat",
+    "toast_unexpected": "A apărut o eroare neașteptată",
+    "toast_google_error": "Autentificarea cu Google a eșuat"
+  },
+  "not_found": {
+    "error_title": "Boo! S-a stricat ceva!",
+    "not_found_title": "Boo! Pagina lipsește!",
+    "error_desc": "Hopa! O fantomă trebuie să fi încurcat firele din server!",
+    "not_found_desc": "Hopa! Se pare că această pagină este o fantomă — nu există!",
+    "try_again": "Încearcă din nou",
+    "find_shelter": "Găsește adăpost",
+    "error_info": "Ceva nu a mers bine din partea noastră.",
+    "not_found_info": "Ce înseamnă 404?"
+  },
+  "onboarding": {
+    "loading": "Se încarcă...",
+    "step_welcome": "Bun venit",
+    "step_brand": "Brand",
+    "step_audience": "Public",
+    "step_voice": "Voce",
+    "step_values": "Valori",
+    "step_pain_points": "Probleme",
+    "step_tools": "Tool-uri",
+    "step_final": "Final",
+    "aurelius_welcome_1": "Bun venit în MailMind! 👋 Sunt Aurelius, asistentul tău AI. O să te ghidez pas cu pas prin configurarea contului tău. Hai să ne cunoaștem!",
+    "aurelius_welcome_2": "Îți voi pune câteva întrebări despre brandul tău, apoi îți voi prezenta tool-urile puternice pe care le ai la dispoziție. Totul durează cam 2-3 minute.",
+    "aurelius_welcome_3": "Sunt aici să te ajut — dacă ai întrebări pe parcurs, nu ezita să le pui. Acum, să începem!",
+    "start_button": "Să începem!",
+    "brand_label": "Nume Brand *",
+    "brand_placeholder": "Ex: MailMind",
+    "industry_label": "Industrie *",
+    "industry_placeholder": "Ex: SaaS / Tehnologie",
+    "aurelius_brand": "Pentru început, spune-mi despre brandul tău. Cum te numești și în ce industrie activezi? Astea mă ajută să înțeleg contextul în care vei lucra.",
+    "audience_label": "Public Țintă *",
+    "audience_placeholder": "Ex: Fondatori de startup-uri tech, Directori de vânzări în enterprise",
+    "audience_hint": "Sfat: \"CMO-uri în companii B2B cu 50-500 angajați\" e mai util decât \"toată lumea\"",
+    "aurelius_audience": "Acum, spune-mi cui te adresezi. Cu cât îmi dai mai multe detalii despre publicul tău țintă, cu atât mai bine voi putea personaliza mesajele. Gândește-te la clientul tău ideal.",
+    "voice_label": "Ton de Voce *",
+    "voice_placeholder": "Ex: Profesional dar prietenos, Autoritar, Cald și empatic",
+    "aurelius_voice": "Cum sună brandul tău? Tonul vocii este esențial — el definește personalitatea comunicării tale. Poți alege un ton existent sau poți combina. De exemplu: profesional dar prietenos.",
+    "aurelius_values": "Valorile brandului sunt principiile care îți ghidează comunicarea. Ele vor influența modul în care Swarm-ul meu abordează fiecare campanie. Alege cel puțin una — câte vrei!",
+    "values_count": "{{count}} valori selectate",
+    "aurelius_pain": "Ultimele întrebări despre brand! Cu ce provocări te confrunți în email-urile tale? Selectează-le pe cele care rezonează cu tine — mă vor ajuta să prioritizez soluțiile potrivite.",
+    "pain_placeholder": "Altă provocare (opțional)...",
+    "pain_add": "Adaugă",
+    "aurelius_tools_1": "Perfect! Am reținut totul despre brandul tău. Acum, hai să-ți arăt ce poate face MailMind pentru tine. Fiecare tool e gândit să transforme modul în care scrii emailuri.",
+    "aurelius_tools_2": "Apasă pe fiecare tool pentru detalii — sunt create să lucreze împreună ca un sistem integrat.",
+    "expand_all": "Deschide toate",
+    "collapse_all": "Închide toate",
+    "click_expand": "Click pentru detalii",
+    "click_collapse": "Click pentru a minimiza",
+    "click_to_minimize": "Apasă din nou pe card pentru a-l minimiza",
+    "aurelius_final_1": "Atingeri finale! Alege-ți avatarul și adaugă orice context suplimentar dorești. Apoi voi activa totul și vei fi gata să începi.",
+    "aurelius_final_2": "După finalizare, vei fi redirecționat în Dashboard, unde mă poți găsi oricând în colțul din dreapta jos. 💬",
+    "context_label": "Context / Slogan",
+    "context_placeholder": "Misiune, slogan, sau orice altceva ce vrei să știm...",
+    "recap_title": "Recapitulare",
+    "recap_brand": "Brand",
+    "recap_industry": "Industrie",
+    "recap_tone": "Ton",
+    "recap_audience": "Public",
+    "recap_values": "{{count}} valori",
+    "recap_pain": "{{count}} provocări",
+    "back": "Înapoi",
+    "skip_to_end": "Am înțeles, mergi la final",
+    "see_end": "Vezi finalul",
+    "continue": "Continuă",
+    "activate": "Activează MailMind",
+    "configuring": "Se configurează...",
+    "step_counter": "Pasul {{current}} din {{total}}",
+    "section_questions": "Întrebări",
+    "section_tools": "Prezentare tool-uri",
+    "section_final": "Finalizare",
+    "toast_name_industry": "Completează numele brandului și industria.",
+    "toast_audience": "Specifică publicul țintă.",
+    "toast_voice": "Alege tonul de voce.",
+    "toast_values": "Selectează cel puțin o valoare de brand.",
+    "toast_success": "Totul e configurat! Bine ai venit în MailMind.",
+    "toast_error": "Ceva nu a mers bine.",
+    "toast_connection": "Eroare de conexiune."
+  },
+  "brand_values": ["Inovație", "Exclusivitate", "Integritate", "Eficiență", "Empatie", "Transparență", "Sustenabilitate", "Calitate", "Autenticitate", "Curaj", "Precizie", "Rafinament"],
+  "pain_labels": {
+    "low-response": "Rata de răspuns scăzută",
+    "poor-personalization": "Personalizare insuficientă",
+    "time-research": "Research consumă prea mult timp",
+    "inconsistent-voice": "Ton de voce inconsecvent",
+    "hard-to-scale": "Dificil de scalat email-urile",
+    "no-tracking": "Nu pot urmări eficiența",
+    "low-conversion": "Rata de conversie scăzută",
+    "wrong-audience": "Public țintă neclar definit"
+  },
+  "tone_options": ["Direct", "Profesional", "Prietenos", "Academic", "Inspirațional", "Autoritar", "Empatic", "Jucăuș"],
+  "tool_titles": {
+    "swarm": "Swarm — Agenți AI Autonomi",
+    "digital-twin": "Digital Twin — Profil Psihologic",
+    "vault": "Vault — Depozit de Asset-uri",
+    "war-room": "War Room — Centru de Comandă"
+  },
+  "tool_descriptions": {
+    "swarm": "Patru agenți specializați (Researcher, Psychologist, Strategist, Copywriter) colaborează autonom pentru a crea emailuri hiper-personalizate. Fiecare agent are un rol specializat, iar Consensul validează rezultatul final.",
+    "digital-twin": "Un model psihologic al prospectului bazat pe modelul Big Five (OCEAN). Score-urile de Openness, Conștiinciozitate, Extraversiune, Agreabilitate și Neuroticism ghidează tonul și unghiul mesajului.",
+    "vault": "Stochează brief-uri, referințe, imagini și documente direct în cloud (R2). Tot ce încarci devine context pentru Swarm, rezultând campanii mai informate și mai coerente.",
+    "war-room": "Monitorizează swarm-urile în timp real, vezi progresul agenților, aprobă strategii și ajustează parametrii. Totul dintr-un singur loc, cu tab-uri pentru Twin, Chat, Tools și API."
+  },
+  "tool_features": {
+    "swarm": ["Research automat pe prospect", "Profil psihologic OCEAN", "Strategie de comunicare", "Copywriting personalizat"],
+    "digital-twin": ["Profil OCEAN complet", "Analiză psihologică deep", "Recomandări de ton bazate pe scoruri", "Comparație cu brand values"],
+    "vault": ["Upload fișiere direct din dashboard", "Integrare cu contextul Swarm", "Acces sigur și rapid", "Organizare pe proiecte"],
+    "war-room": ["Vizualizare live a agenților", "Aprobare strategii cu un click", "Tool-uri speciale: A/B Test, Sequence Builder", "Configurare API și monitorizare usage"]
   },
   "common": {
     "loading": "Se încarcă...",
     "error": "A apărut o eroare",
     "save": "Salvează",
-    "cancel": "Anulează"
+    "cancel": "Anulează",
+    "email_ready": "Email gata"
   }
 }

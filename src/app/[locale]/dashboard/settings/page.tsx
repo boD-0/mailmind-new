@@ -35,7 +35,7 @@ const TONES = [
 ];
 
 const PAIN_POINTS_PRESET = [
-  "Low response rates", "Generic outreach feels spammy",
+  "Low response rates", "Generic emails feel spammy",
   "Too many tools, no workflow", "Can't scale personalization",
   "Hard to track prospect research", "Team collaboration is messy",
   "No data-driven copy decisions", "Templates feel robotic",

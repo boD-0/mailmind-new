@@ -2,6 +2,123 @@
 
 ## [Unreleased] — 2026-05-17
 
+### 🌐 Internationalization — Full i18n Migration
+
+ALL text across ALL pages migrated to use the `t()` translation hook from `@/components/I18nProvider`. Text is no longer hardcoded — everything translates based on the URL locale prefix (`/ro/...`, `/en/...`, `/fr/...`, `/de/...`).
+
+#### `src/messages/en.json`, `ro.json`, `fr.json`, `de.json` *(FULL)*
+Fișiere comprehensive cu TOATE cheile de traducere:
+- **home** — Hero, Features, Demo Steps, Differentiation, Pricing, FAQ, CTA, Footer
+- **pricing** — Hero, Cards, Comparison Table, FAQ, CTA, Footer
+- **demo** — Steps, Agents, Actions, Email Preview, Stats
+- **auth** — Form labels, buttons, error messages, quotes
+- **notFound** — Ghost text, action buttons
+- **common** — Navigation, shared labels
+- **onboarding** — Aurelius bubbles, step labels, form fields, tone options, brand values, pain points, tool cards
+- Toate textele rămase în engleză traduse complet în **franceză** și **germană**
+- `brand_values`, `pain_labels`, `tone_options`, `tool_titles/descriptions/features` adăugate și în **română**
+
+#### `src/app/[locale]/page.tsx` *(MODIFIED)*
+- Header, Hero, Features, Demo, Differentiation, Pricing, FAQ, CTA, Footer → totul prin `t()`
+
+#### `src/app/[locale]/pricing/page.tsx` *(MODIFIED)*
+- Header, Hero, Cards, Comparison, FAQ, CTA, Footer → totul prin `t()`
+
+#### `src/app/[locale]/demo/page.tsx` *(MODIFIED)*
+- Steps, Agents, Actions, Email, Stats → totul prin `t()`
+
+#### `src/app/[locale]/(auth)/sign-up/page.tsx` / `login/page.tsx` *(MODIFIED)*
+- Form labels, toast messages → prin `t()`
+
+#### `src/components/ui/auth-fuse.tsx` *(MODIFIED)*
+- Form labels, buttons, toggles, quotes → prin `t()`
+
+#### `src/components/ui/NotFoundPage.tsx` *(MODIFIED)*
+- Ghost text, buttons → prin `t()`
+
+#### `src/app/[locale]/loading.tsx` *(MODIFIED)*
+- Loading text → prin `t()`
+
+#### `src/app/[locale]/onboarding/page.tsx` *(MODIFIED)*
+- Rescris complet: Aurelius bubbles, labels, placeholders, hints, tone options, brand values, pain points, tool cards, buttons, toasts, step counter → **TOATE** prin `t()`
+
+**TypeScript: 0 erori**
+
+---
+
+### 🚀 Live Demo Page
+
+#### `src/app/[locale]/demo/page.tsx` *(NEW)*
+Pagină interactivă de demo care simulează flow-ul MailMind:
+
+**Input stage:**
+- 3 quick-pick prospects (Sarah Chen / Marcus Webb / Priya Patel) cu avatar + company
+- Custom name + company input fields
+- Divider între preset și custom
+- Buton Launch Demo cu numele prospectului afișat
+
+**Agent Pipeline (animație):**
+- 4 AI agents activați secvențial (Researcher → Psychologist → Strategist → Copywriter)
+- Fiecare agent: icon animat, nume, status (waiting → working → done cu checkmark)
+- Progress bar per agent (2s fill animation)
+- Live status bar cu text dinamic (`Working on {agent}...` / `Finalizing your text...`)
+- Prospect info badge în centru
+- Colaborare/finalizare mesaje glisante
+
+**Email Preview:**
+- Success banner cu Sparkles + animate
+- Agent recap badges (toți 4 cu checkmark)
+- Email card: header (to, company, clock), body text (formatat pentru Sarah Chen), acțiuni (Try Again / Try MailMind Free)
+- Stats grid: 12s processing time, 4 agents, 93% confidence
+- Bottom CTA section după finalizare
+
+**UX:**
+- Step indicator cu 3 pași (Enter → Process → Ready), checkmark pe completat
+- AnimatePresence pentru tranziții între pași
+- Reset complet la Try Again
+- Header cu MailMind logo + Live Demo badge + Sign Up CTA
+- Toate textele traduse prin i18n
+
+**TypeScript: 0 erori**
+
+---
+
+### 🌍 Language Switcher
+
+#### `src/components/ui/language-switcher.tsx` *(NEW)*
+Componentă dropdown reutilizabilă:
+- 4 limbi: Română 🇷🇴, English 🇬🇧, Français 🇫🇷, Deutsch 🇩🇪
+- Afișare label complet pe desktop, doar flag pe mobile
+- Active language indicator cu bulină roșie
+- Animații: dropdown scale+fade la deschidere/închidere, ChevronDown rotate
+- Outside-click-to-close + Escape-key-to-close
+- Schimbă prefixul URL pentru a schimba limba (ex: `/ro/pricing` → `/en/pricing`)
+
+#### `src/app/[locale]/page.tsx` *(MODIFIED)*
+- Adăugat în header-ul desktop (între nav links și auth buttons)
+- Adăugat în mobile menu (secțiune "Language" cu separator)
+
+#### `src/app/[locale]/pricing/page.tsx` *(MODIFIED)*
+- Adăugat în header-ul desktop și mobile menu
+
+#### `src/app/[locale]/page.tsx` *(MODIFIED)*
+- Eliminat textul "The AI Swarm for Outreach" din HeroSection badge
+- Curățat wrapper-ul motion.div rămas gol
+
+**TypeScript: 0 erori**
+
+---
+
+### 🐛 Error Pages
+
+#### `src/app/[locale]/not-found.tsx` *(MODIFIED)*
+- Pagina 404 cu fantomă + butoane traduse prin i18n
+
+#### `src/app/[locale]/error.tsx` *(MODIFIED)*
+- Pagina de eroare cu fantomă + Try Again button
+
+**TypeScript: 0 erori**
+
 ### 🛠 Standalone War Room Tools Page
 
 #### `src/app/[locale]/dashboard/tools/page.tsx` *(NEW)*

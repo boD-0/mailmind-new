@@ -156,7 +156,7 @@ export function CountdownBanner() {
           transition={{ delay: 0.8, duration: 0.5 }}
           className="text-center mt-8 text-xs text-white/20 tracking-wider"
         >
-          MailMind <span className="mx-2">·</span> Swarm Intelligence Outreach
+          MailMind <span className="mx-2">·</span> Swarm Intelligence Email
         </motion.p>
       </div>
     </section>

@@ -192,12 +192,12 @@ const COMMANDS_SOURCE: OmniSource = {
     const commands: OmniItem[] = [        {
         id: "cmd-new-project",
         label: "New Project",
-        subtitle: "Create a new outreach campaign",
+        subtitle: "Create a new email campaign",
         groupId: "commands",
         icon: <FolderKanban size={16} />,
         href: "/dashboard",
         pinned: true,
-        keywords: ["create", "campaign", "outreach", "add"],
+        keywords: ["create", "campaign", "email", "add"],
       },
       {
         id: "cmd-new-idea",

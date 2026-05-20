@@ -2,6 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['26.188.219.186'],
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'xubohuah.github.io',
+      },
+    ],
+  },
   async rewrites() {
     return [
       // PostHog Rewrites - Support both root and locale-prefixed paths

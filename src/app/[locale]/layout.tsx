@@ -21,8 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MAILMIND | Swarm Intelligence Outreach",
-  description: "Paradigmă de Swarm Intelligence + Prospect Empathy Mapping pentru outreach de lux.",
+  title: "MAILMIND | Swarm Intelligence Email",
+  description: "Paradigmă de Swarm Intelligence + Prospect Empathy Mapping pentru emailuri de lux.",
 };
 
 export default async function RootLayout({

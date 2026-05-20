@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "@/components/I18nProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,79 +18,6 @@ import {
   TrendingUpDown, Sparkles, Brain, Zap, Database,
   Layout, Bot,
 } from "lucide-react";
-
-// ─── DATA ─────────────────────────────────────────────────────────────────────
-
-const BRAND_VALUES = [
-  "Inovație", "Exclusivitate", "Integritate", "Eficiență",
-  "Empatie", "Transparență", "Sustenabilitate", "Calitate",
-  "Autenticitate", "Curaj", "Precizie", "Rafinament",
-];
-
-const PAIN_POINTS_OPTIONS = [
-  { id: "low-response", label: "Rata de răspuns scăzută", icon: "📉" },
-  { id: "poor-personalization", label: "Personalizare insuficientă", icon: "🤖" },
-  { id: "time-research", label: "Research consumă prea mult timp", icon: "⏰" },
-  { id: "inconsistent-voice", label: "Ton de voce inconsecvent", icon: "🎭" },
-  { id: "hard-to-scale", label: "Dificil de scalat outreach-ul", icon: "📈" },
-  { id: "no-tracking", label: "Nu pot urmări eficiența", icon: "📊" },
-  { id: "low-conversion", label: "Rata de conversie scăzută", icon: "🎯" },
-  { id: "wrong-audience", label: "Public țintă neclar definit", icon: "🎪" },
-];
-
-const TOOLS = [
-  {
-    id: "swarm",
-    icon: Bot,
-    color: "from-purple-500 to-pink-500",
-    bgColor: "bg-purple-50",
-    iconColor: "text-purple-600",
-    title: "Swarm — Agenți AI Autonomi",
-    description: "Patru agenți (Researcher, Psychologist, Strategist, Copywriter) colaborează autonom să creeze outreach hiper-personalizat. Fiecare agent are un rol specializat, iar Consensul validează rezultatul final.",
-    features: ["Research automat pe prospect", "Profil psihologic OCEAN", "Strategie de comunicare", "Copywriting personalizat"],
-  },
-  {
-    id: "digital-twin",
-    icon: Brain,
-    color: "from-blue-500 to-cyan-500",
-    bgColor: "bg-blue-50",
-    iconColor: "text-blue-600",
-    title: "Digital Twin — Geamănul Digital",
-    description: "Un model psihologic al prospectului bazat pe modelul Big Five (OCEAN). Score-urile de Openness, Conștiinciozitate, Extraversiune, Agreabilitate și Neuroticism ghidează tonul și unghiul mesajului.",
-    features: ["Profil OCEAN complet", "Analiză psihologică deep", "Recomandări de ton bazate pe scoruri", "Comparație cu brand values"],
-  },
-  {
-    id: "vault",
-    icon: Database,
-    color: "from-emerald-500 to-teal-500",
-    bgColor: "bg-emerald-50",
-    iconColor: "text-emerald-600",
-    title: "Vault — Depozit de Asset-uri",
-    description: "Stochează brief-uri, referințe, imagini și documente direct în cloud (R2). Tot ce încarci devine context pentru Swarm, rezultând un outreach mai informat și mai coerent.",
-    features: ["Upload fișiere direct din dashboard", "Integrare cu contextul Swarm", "Acces sigur și rapid", "Organizare pe proiecte"],
-  },
-  {
-    id: "war-room",
-    icon: Layout,
-    color: "from-amber-500 to-orange-500",
-    bgColor: "bg-amber-50",
-    iconColor: "text-amber-600",
-    title: "War Room — Centru de Comandă",
-    description: "Monitorizează swarm-urile în timp real, vezi progresul agenților, aprobă strategii și ajustează parametrii. Totul dintr-un singur loc, cu tab-uri pentru Twin, Chat, Tools și API.",
-    features: ["Vizualizare live a agenților", "Aprobare strategii cu un click", "Tool-uri speciale: A/B Test, Sequence Builder", "Configurare API și monitorizare usage"],
-  },
-];
-
-const STEPS = [
-  { id: "welcome", label: "Bun venit", icon: Sparkles },
-  { id: "brand", label: "Brand", icon: Building2 },
-  { id: "audience", label: "Public", icon: Users },
-  { id: "voice", label: "Voce", icon: PenLine },
-  { id: "values", label: "Valori", icon: HeartHandshake },
-  { id: "pain-points", label: "Probleme", icon: TrendingUpDown },
-  { id: "tools", label: "Tool-uri", icon: Zap },
-  { id: "final", label: "Final", icon: Sparkles },
-];
 
 // ─── VARIANTS ─────────────────────────────────────────────────────────────────
 
@@ -109,7 +37,6 @@ function AureliusBubble({ text, delay = 0 }: { text: string; delay?: number }) {
       transition={{ duration: 0.5, delay, ease: "easeOut" }}
       className="flex items-start gap-3 mb-6"
     >
-      {/* Aurelius avatar */}
       <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff5f5f] to-purple-500 flex items-center justify-center shrink-0 shadow-lg shadow-[#ff5f5f]/20">
         <Sparkles size={18} className="text-white" />
       </div>
@@ -127,11 +54,22 @@ function ToolCard({
   index,
   isExpanded,
   onToggle,
+  t,
 }: {
-  tool: (typeof TOOLS)[number];
+  tool: {
+    id: string;
+    icon: React.ComponentType<{ size?: number }>;
+    color: string;
+    bgColor: string;
+    iconColor: string;
+    title: string;
+    description: string;
+    features: string[];
+  };
   index: number;
   isExpanded: boolean;
   onToggle: (id: string) => void;
+  t: (key: string, vars?: Record<string, string | number>) => string;
 }) {
   return (
     <motion.div
@@ -144,7 +82,7 @@ function ToolCard({
           : "border-gray-200 hover:border-gray-300 hover:shadow-md"
       }`}
       onClick={() => onToggle(tool.id)}
->
+    >
       <div className="p-5">
         <div className="flex items-center gap-4">
           <div className={`w-12 h-12 rounded-xl ${tool.bgColor} flex items-center justify-center ${tool.iconColor}`}>
@@ -153,7 +91,7 @@ function ToolCard({
           <div className="flex-1 min-w-0">
             <h4 className="text-sm font-bold text-gray-900">{tool.title}</h4>
             <p className="text-xs text-gray-400 mt-0.5">
-              {isExpanded ? "Click pentru a minimiza" : "Click pentru detalii"}
+              {isExpanded ? t('onboarding.click_collapse') : t('onboarding.click_expand')}
             </p>
           </div>
           <motion.div
@@ -216,15 +154,143 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
   );
 }
 
+// ─── BRAND VALUES (translatable) ─────────────────────────────────────────────
+
+function getBrandValues(t: (key: string) => string): string[] {
+  // Keys in messages (e.g. en.json has brand_values array)
+  // Fallback to English array if not available
+  try {
+    // We use individual t() calls per value
+    return [
+      t('brand_values.0') !== 'brand_values.0' ? t('brand_values.0') : "Innovation",
+      t('brand_values.1') !== 'brand_values.1' ? t('brand_values.1') : "Exclusivity",
+      t('brand_values.2') !== 'brand_values.2' ? t('brand_values.2') : "Integrity",
+      t('brand_values.3') !== 'brand_values.3' ? t('brand_values.3') : "Efficiency",
+      t('brand_values.4') !== 'brand_values.4' ? t('brand_values.4') : "Empathy",
+      t('brand_values.5') !== 'brand_values.5' ? t('brand_values.5') : "Transparency",
+      t('brand_values.6') !== 'brand_values.6' ? t('brand_values.6') : "Sustainability",
+      t('brand_values.7') !== 'brand_values.7' ? t('brand_values.7') : "Quality",
+      t('brand_values.8') !== 'brand_values.8' ? t('brand_values.8') : "Authenticity",
+      t('brand_values.9') !== 'brand_values.9' ? t('brand_values.9') : "Courage",
+      t('brand_values.10') !== 'brand_values.10' ? t('brand_values.10') : "Precision",
+      t('brand_values.11') !== 'brand_values.11' ? t('brand_values.11') : "Refinement",
+    ];
+  } catch {
+    return ["Innovation", "Exclusivity", "Integrity", "Efficiency", "Empathy", "Transparency", "Sustainability", "Quality", "Authenticity", "Courage", "Precision", "Refinement"];
+  }
+}
+
 // ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 
 export default function OnboardingPage() {
   const router = useRouter();
   const { locale } = useParams();
   const { data: session, isPending } = authClient.useSession();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(0);
   const [activeTools, setActiveTools] = useState<string[]>([]);
+
+  // ── Data (translated) ──
+
+  const BRAND_VALUES = getBrandValues(t);
+
+  const PAIN_POINTS_OPTIONS = [
+    { id: "low-response", label: t('pain_labels.low-response'), icon: "📉" },
+    { id: "poor-personalization", label: t('pain_labels.poor-personalization'), icon: "🤖" },
+    { id: "time-research", label: t('pain_labels.time-research'), icon: "⏰" },
+    { id: "inconsistent-voice", label: t('pain_labels.inconsistent-voice'), icon: "🎭" },
+    { id: "hard-to-scale", label: t('pain_labels.hard-to-scale'), icon: "📈" },
+    { id: "no-tracking", label: t('pain_labels.no-tracking'), icon: "📊" },
+    { id: "low-conversion", label: t('pain_labels.low-conversion'), icon: "🎯" },
+    { id: "wrong-audience", label: t('pain_labels.wrong-audience'), icon: "🎪" },
+  ];
+
+  const TONE_OPTIONS = [
+    t('tone_options.0') !== 'tone_options.0' ? t('tone_options.0') : "Direct",
+    t('tone_options.1') !== 'tone_options.1' ? t('tone_options.1') : "Professional",
+    t('tone_options.2') !== 'tone_options.2' ? t('tone_options.2') : "Friendly",
+    t('tone_options.3') !== 'tone_options.3' ? t('tone_options.3') : "Academic",
+    t('tone_options.4') !== 'tone_options.4' ? t('tone_options.4') : "Inspirational",
+    t('tone_options.5') !== 'tone_options.5' ? t('tone_options.5') : "Authoritative",
+    t('tone_options.6') !== 'tone_options.6' ? t('tone_options.6') : "Empathetic",
+    t('tone_options.7') !== 'tone_options.7' ? t('tone_options.7') : "Playful",
+  ];
+
+  const TOOLS = [
+    {
+      id: "swarm",
+      icon: Bot,
+      color: "from-purple-500 to-pink-500",
+      bgColor: "bg-purple-50",
+      iconColor: "text-purple-600",
+      title: t('tool_titles.swarm'),
+      description: t('tool_descriptions.swarm'),
+      features: [
+        t('tool_features.swarm.0'),
+        t('tool_features.swarm.1'),
+        t('tool_features.swarm.2'),
+        t('tool_features.swarm.3'),
+      ],
+    },
+    {
+      id: "digital-twin",
+      icon: Brain,
+      color: "from-blue-500 to-cyan-500",
+      bgColor: "bg-blue-50",
+      iconColor: "text-blue-600",
+      title: t('tool_titles.digital-twin'),
+      description: t('tool_descriptions.digital-twin'),
+      features: [
+        t('tool_features.digital-twin.0'),
+        t('tool_features.digital-twin.1'),
+        t('tool_features.digital-twin.2'),
+        t('tool_features.digital-twin.3'),
+      ],
+    },
+    {
+      id: "vault",
+      icon: Database,
+      color: "from-emerald-500 to-teal-500",
+      bgColor: "bg-emerald-50",
+      iconColor: "text-emerald-600",
+      title: t('tool_titles.vault'),
+      description: t('tool_descriptions.vault'),
+      features: [
+        t('tool_features.vault.0'),
+        t('tool_features.vault.1'),
+        t('tool_features.vault.2'),
+        t('tool_features.vault.3'),
+      ],
+    },
+    {
+      id: "war-room",
+      icon: Layout,
+      color: "from-amber-500 to-orange-500",
+      bgColor: "bg-amber-50",
+      iconColor: "text-amber-600",
+      title: t('tool_titles.war-room'),
+      description: t('tool_descriptions.war-room'),
+      features: [
+        t('tool_features.war-room.0'),
+        t('tool_features.war-room.1'),
+        t('tool_features.war-room.2'),
+        t('tool_features.war-room.3'),
+      ],
+    },
+  ];
+
+  const STEPS = [
+    { id: "welcome", label: t('onboarding.step_welcome'), icon: Sparkles },
+    { id: "brand", label: t('onboarding.step_brand'), icon: Building2 },
+    { id: "audience", label: t('onboarding.step_audience'), icon: Users },
+    { id: "voice", label: t('onboarding.step_voice'), icon: PenLine },
+    { id: "values", label: t('onboarding.step_values'), icon: HeartHandshake },
+    { id: "pain-points", label: t('onboarding.step_pain_points'), icon: TrendingUpDown },
+    { id: "tools", label: t('onboarding.step_tools'), icon: Zap },
+    { id: "final", label: t('onboarding.step_final'), icon: Sparkles },
+  ];
+
   const allToolsOpen = activeTools.length === TOOLS.length;
   const toggleTool = (id: string) => {
     setActiveTools((prev) =>
@@ -251,7 +317,6 @@ export default function OnboardingPage() {
     }
   }, [session, isPending, router, locale]);
 
-  // Auto-scroll when content changes
   useEffect(() => {
     contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [step]);
@@ -260,19 +325,19 @@ export default function OnboardingPage() {
 
   const goNext = () => {
     if (step === 1 && (!formData.name || !formData.industry)) {
-      toast.error("Completează numele brandului și industria.");
+      toast.error(t('onboarding.toast_name_industry'));
       return;
     }
     if (step === 2 && !formData.targetAudience) {
-      toast.error("Specifică publicul țintă.");
+      toast.error(t('onboarding.toast_audience'));
       return;
     }
     if (step === 3 && !formData.toneOfVoice) {
-      toast.error("Alege tonul de voce.");
+      toast.error(t('onboarding.toast_voice'));
       return;
     }
     if (step === 4 && selectedValues.length === 0) {
-      toast.error("Selectează cel puțin o valoare de brand.");
+      toast.error(t('onboarding.toast_values'));
       return;
     }
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
@@ -320,13 +385,13 @@ export default function OnboardingPage() {
           brand_values_count: selectedValues.length,
           pain_points_count: selectedPainPoints.length,
         });
-        toast.success("Totul e configurat! Bine ai venit în MailMind.");
+        toast.success(t('onboarding.toast_success'));
         router.push(`/${locale}/dashboard`);
       } else {
-        toast.error(res.error || "Ceva nu a mers bine.");
+        toast.error(res.error || t('onboarding.toast_error'));
       }
     } catch {
-      toast.error("Eroare de conexiune.");
+      toast.error(t('onboarding.toast_connection'));
     } finally {
       setLoading(false);
     }
@@ -335,21 +400,18 @@ export default function OnboardingPage() {
   if (isPending) {
     return (
       <div className="min-h-screen bg-[#fdfbf7] flex items-center justify-center">
-        <div className="text-[#ff5f5f] animate-pulse font-display text-xl">Se încarcă...</div>
+        <div className="text-[#ff5f5f] animate-pulse font-display text-xl">{t('onboarding.loading')}</div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-[#fdfbf7] flex flex-col items-center justify-center p-4 py-12 relative overflow-hidden">
-      {/* Subtle background decoration */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-b from-[#ff5f5f]/5 to-transparent blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-2xl mx-auto relative z-10">
-        {/* ── Progress Bar ── */}
         {step > 0 && <ProgressBar current={step} total={STEPS.length} />}
 
-        {/* ── Step Content ── */}
         <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
@@ -365,21 +427,10 @@ export default function OnboardingPage() {
               {/* ──────── STEP 0: WELCOME ──────── */}
               {step === 0 && (
                 <div className="space-y-6">
-                  {/* Aurelius intro */}
-                  <AureliusBubble
-                    text="Bun venit în MailMind! 👋 Sunt Aurelius, asistentul tău AI. O să te ghidez pas cu pas prin configurarea contului tău. Hai să ne cunoaștem!"
-                    delay={0}
-                  />
-                  <AureliusBubble
-                    text="Îți voi pune câteva întrebări despre brandul tău, apoi îți voi prezenta tool-urile puternice pe care le ai la dispoziție. Totul durează cam 2-3 minute."
-                    delay={0.3}
-                  />
-                  <AureliusBubble
-                    text="Sunt aici să te ajut — dacă ai întrebări pe parcurs, nu ezita să le pui. Acum, să începem!"
-                    delay={0.6}
-                  />
+                  <AureliusBubble text={t('onboarding.aurelius_welcome_1')} delay={0} />
+                  <AureliusBubble text={t('onboarding.aurelius_welcome_2')} delay={0.3} />
+                  <AureliusBubble text={t('onboarding.aurelius_welcome_3')} delay={0.6} />
 
-                  {/* Start button */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -391,7 +442,7 @@ export default function OnboardingPage() {
                       onClick={goNext}
                       className="bg-[#ff5f5f] hover:bg-red-500 text-white h-12 px-10 rounded-xl shadow-lg shadow-[#ff5f5f]/25 text-sm font-bold tracking-wide"
                     >
-                      Să începem!
+                      {t('onboarding.start_button')}
                       <ArrowRight size={18} className="ml-2" />
                     </Button>
                   </motion.div>
@@ -401,10 +452,7 @@ export default function OnboardingPage() {
               {/* ──────── STEP 1: Brand ──────── */}
               {step === 1 && (
                 <div className="space-y-6">
-                  <AureliusBubble
-                    text="Pentru început, spune-mi despre brandul tău. Cum te numești și în ce industrie activezi? Astea mă ajută să înțeleg contextul în care vei lucra."
-                    delay={0}
-                  />
+                  <AureliusBubble text={t('onboarding.aurelius_brand')} delay={0} />
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -412,18 +460,18 @@ export default function OnboardingPage() {
                     className="grid grid-cols-1 md:grid-cols-2 gap-5"
                   >
                     <div className="space-y-2">
-                      <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">Nume Brand *</label>
+                      <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">{t('onboarding.brand_label')}</label>
                       <Input
-                        placeholder="Ex: MailMind"
+                        placeholder={t('onboarding.brand_placeholder')}
                         className="bg-gray-50 border-gray-200 focus:border-[#ff5f5f] h-12"
                         value={formData.name}
                         onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">Industrie *</label>
+                      <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">{t('onboarding.industry_label')}</label>
                       <Input
-                        placeholder="Ex: SaaS / Tehnologie"
+                        placeholder={t('onboarding.industry_placeholder')}
                         className="bg-gray-50 border-gray-200 focus:border-[#ff5f5f] h-12"
                         value={formData.industry}
                         onChange={(e) => setFormData((p) => ({ ...p, industry: e.target.value }))}
@@ -436,25 +484,22 @@ export default function OnboardingPage() {
               {/* ──────── STEP 2: Target Audience ──────── */}
               {step === 2 && (
                 <div className="space-y-6">
-                  <AureliusBubble
-                    text="Acum, spune-mi cui te adresezi. Cu cât îmi dai mai multe detalii despre publicul tău țintă, cu atât mai bine voi putea personaliza mesajele. Gândește-te la clientul tău ideal."
-                    delay={0}
-                  />
+                  <AureliusBubble text={t('onboarding.aurelius_audience')} delay={0} />
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5, duration: 0.4 }}
                     className="space-y-2"
                   >
-                    <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">Public Țintă *</label>
+                    <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">{t('onboarding.audience_label')}</label>
                     <Input
-                      placeholder="Ex: Fondatori de startup-uri tech, Directori de vânzări în enterprise"
+                      placeholder={t('onboarding.audience_placeholder')}
                       className="bg-gray-50 border-gray-200 focus:border-[#ff5f5f] h-12"
                       value={formData.targetAudience}
                       onChange={(e) => setFormData((p) => ({ ...p, targetAudience: e.target.value }))}
                     />
                     <p className="text-gray-400 text-xs mt-1 italic">
-                      Sfat: &quot;CMO-uri în companii B2B cu 50-500 angajați&quot; e mai util decât &quot;toată lumea&quot;
+                      {t('onboarding.audience_hint')}
                     </p>
                   </motion.div>
                 </div>
@@ -463,25 +508,22 @@ export default function OnboardingPage() {
               {/* ──────── STEP 3: Tone of Voice ──────── */}
               {step === 3 && (
                 <div className="space-y-6">
-                  <AureliusBubble
-                    text="Cum sună brandul tău? Tonul vocii este esențial — el definește personalitatea comunicării tale. Poți alege un ton existent sau poți combina. De exemplu: profesional dar prietenos."
-                    delay={0}
-                  />
+                  <AureliusBubble text={t('onboarding.aurelius_voice')} delay={0} />
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5, duration: 0.4 }}
                     className="space-y-2"
                   >
-                    <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">Ton de Voce *</label>
+                    <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">{t('onboarding.voice_label')}</label>
                     <Input
-                      placeholder="Ex: Profesional dar prietenos, Autoritar, Cald și empatic"
+                      placeholder={t('onboarding.voice_placeholder')}
                       className="bg-gray-50 border-gray-200 focus:border-[#ff5f5f] h-12"
                       value={formData.toneOfVoice}
                       onChange={(e) => setFormData((p) => ({ ...p, toneOfVoice: e.target.value }))}
                     />
                     <div className="flex flex-wrap gap-2 mt-3">
-                      {["Direct", "Profesional", "Prietenos", "Academic", "Inspirațional", "Autoritar", "Empatic", "Jucăuș"].map((tone) => (
+                      {TONE_OPTIONS.map((tone) => (
                         <button
                           key={tone}
                           type="button"
@@ -503,10 +545,7 @@ export default function OnboardingPage() {
               {/* ──────── STEP 4: Brand Values ──────── */}
               {step === 4 && (
                 <div className="space-y-6">
-                  <AureliusBubble
-                    text="Valorile brandului sunt principiile care îți ghidează comunicarea. Ele vor influența modul în care Swarm-ul meu abordează fiecare campanie. Alege cel puțin una — câte vrei!"
-                    delay={0}
-                  />
+                  <AureliusBubble text={t('onboarding.aurelius_values')} delay={0} />
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -531,7 +570,7 @@ export default function OnboardingPage() {
                   </motion.div>
                   {selectedValues.length > 0 && (
                     <p className="text-center text-xs text-gray-400">
-                      {selectedValues.length} valori selectate
+                      {t('onboarding.values_count', { count: selectedValues.length })}
                     </p>
                   )}
                 </div>
@@ -540,10 +579,7 @@ export default function OnboardingPage() {
               {/* ──────── STEP 5: Pain Points ──────── */}
               {step === 5 && (
                 <div className="space-y-6">
-                  <AureliusBubble
-                    text="Ultimele întrebări despre brand! Cu ce provocări te confrunți în outreach-ul tău? Selectează-le pe cele care rezonează cu tine — mă vor ajuta să prioritizez soluțiile potrivite."
-                    delay={0}
-                  />
+                  <AureliusBubble text={t('onboarding.aurelius_pain')} delay={0} />
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -571,7 +607,7 @@ export default function OnboardingPage() {
                   </motion.div>
                   <div className="flex gap-2">
                     <Input
-                      placeholder="Altă provocare (opțional)..."
+                      placeholder={t('onboarding.pain_placeholder')}
                       className="bg-gray-50 border-gray-200 focus:border-[#ff5f5f] h-11"
                       value={customPainPoint}
                       onChange={(e) => setCustomPainPoint(e.target.value)}
@@ -588,7 +624,7 @@ export default function OnboardingPage() {
                       onClick={addCustomPainPoint}
                       className="shrink-0 border-gray-200 text-gray-500"
                     >
-                      Adaugă
+                      {t('onboarding.pain_add')}
                     </Button>
                   </div>
                 </div>
@@ -597,14 +633,8 @@ export default function OnboardingPage() {
               {/* ──────── STEP 6: TOOL SHOWCASE ──────── */}
               {step === 6 && (
                 <div className="space-y-6">
-                  <AureliusBubble
-                    text="Perfect! Am reținut totul despre brandul tău. Acum, hai să-ți arăt ce poate face MailMind pentru tine. Fiecare tool e gândit să transforme modul în care faci outreach."
-                    delay={0}
-                  />
-                  <AureliusBubble
-                    text="Apasă pe fiecare tool pentru detalii — sunt create să lucreze împreună ca un sistem integrat."
-                    delay={0.3}
-                  />
+                  <AureliusBubble text={t('onboarding.aurelius_tools_1')} delay={0} />
+                  <AureliusBubble text={t('onboarding.aurelius_tools_2')} delay={0.3} />
 
                   <motion.div
                     initial={{ opacity: 0 }}
@@ -612,7 +642,6 @@ export default function OnboardingPage() {
                     transition={{ delay: 0.8 }}
                     className="space-y-3 pt-2"
                   >
-                    {/* Toggle all button */}
                     <div className="flex items-center justify-center pt-1 pb-2">
                       <button
                         type="button"
@@ -624,7 +653,7 @@ export default function OnboardingPage() {
                         className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400 hover:text-[#ff5f5f] transition-colors"
                       >
                         <Layout size={12} />
-                        {allToolsOpen ? "Închide toate" : "Deschide toate"}
+                        {allToolsOpen ? t('onboarding.collapse_all') : t('onboarding.expand_all')}
                       </button>
                     </div>
 
@@ -635,6 +664,7 @@ export default function OnboardingPage() {
                         index={i}
                         isExpanded={activeTools.includes(tool.id)}
                         onToggle={toggleTool}
+                        t={t}
                       />
                     ))}
                   </motion.div>
@@ -645,7 +675,7 @@ export default function OnboardingPage() {
                       animate={{ opacity: 1 }}
                       className="text-center text-xs text-gray-400 italic"
                     >
-                      Apasă din nou pe card pentru a-l minimiza
+                      {t('onboarding.click_to_minimize')}
                     </motion.p>
                   )}
                 </div>
@@ -654,14 +684,8 @@ export default function OnboardingPage() {
               {/* ──────── STEP 7: FINAL ──────── */}
               {step === 7 && (
                 <div className="space-y-6">
-                  <AureliusBubble
-                    text="Atingeri finale! Alege-ți avatarul și adaugă orice context suplimentar dorești. Apoi voi activa totul și vei fi gata să începi."
-                    delay={0}
-                  />
-                  <AureliusBubble
-                    text="După finalizare, vei fi redirecționat în Dashboard, unde mă poți găsi oricând în colțul din dreapta jos. 💬"
-                    delay={0.3}
-                  />
+                  <AureliusBubble text={t('onboarding.aurelius_final_1')} delay={0} />
+                  <AureliusBubble text={t('onboarding.aurelius_final_2')} delay={0.3} />
 
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -669,11 +693,10 @@ export default function OnboardingPage() {
                     transition={{ delay: 0.8, duration: 0.4 }}
                     className="space-y-6"
                   >
-                    {/* Context */}
                     <div className="space-y-2">
-                      <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">Context / Slogan</label>
+                      <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">{t('onboarding.context_label')}</label>
                       <Textarea
-                        placeholder="Misiune, slogan, sau orice altceva ce vrei să știm..."
+                        placeholder={t('onboarding.context_placeholder')}
                         className="bg-gray-50 border-gray-200 focus:border-[#ff5f5f] resize-none"
                         rows={3}
                         value={formData.context}
@@ -681,38 +704,36 @@ export default function OnboardingPage() {
                       />
                     </div>
 
-                    {/* Recap */}
                     <div className="bg-[#fdfbf7] rounded-2xl border border-gray-200 p-5 space-y-3">
-                      <p className="text-[10px] uppercase tracking-widest font-bold text-gray-400">Recap</p>
+                      <p className="text-[10px] uppercase tracking-widest font-bold text-gray-400">{t('onboarding.recap_title')}</p>
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <div>
-                          <span className="text-gray-400 text-[10px] uppercase tracking-wider">Brand</span>
+                          <span className="text-gray-400 text-[10px] uppercase tracking-wider">{t('onboarding.recap_brand')}</span>
                           <p className="font-semibold text-gray-800">{formData.name || "—"}</p>
                         </div>
                         <div>
-                          <span className="text-gray-400 text-[10px] uppercase tracking-wider">Industrie</span>
+                          <span className="text-gray-400 text-[10px] uppercase tracking-wider">{t('onboarding.recap_industry')}</span>
                           <p className="font-semibold text-gray-800">{formData.industry || "—"}</p>
                         </div>
                         <div>
-                          <span className="text-gray-400 text-[10px] uppercase tracking-wider">Ton</span>
+                          <span className="text-gray-400 text-[10px] uppercase tracking-wider">{t('onboarding.recap_tone')}</span>
                           <p className="font-semibold text-gray-800">{formData.toneOfVoice || "—"}</p>
                         </div>
                         <div>
-                          <span className="text-gray-400 text-[10px] uppercase tracking-wider">Public</span>
+                          <span className="text-gray-400 text-[10px] uppercase tracking-wider">{t('onboarding.recap_audience')}</span>
                           <p className="font-semibold text-gray-800 truncate">{formData.targetAudience || "—"}</p>
                         </div>
                       </div>
                       <div className="flex gap-3 text-xs text-gray-500">
                         {selectedValues.length > 0 && (
-                          <span>{selectedValues.length} valori</span>
+                          <span>{t('onboarding.recap_values', { count: selectedValues.length })}</span>
                         )}
                         {selectedPainPoints.length > 0 && (
-                          <span>{selectedPainPoints.length} provocări</span>
+                          <span>{t('onboarding.recap_pain', { count: selectedPainPoints.length })}</span>
                         )}
                       </div>
                     </div>
 
-                    {/* Avatar */}
                     <AvatarPicker />
                   </motion.div>
                 </div>
@@ -730,14 +751,14 @@ export default function OnboardingPage() {
                 className="border-gray-200 text-gray-500 hover:bg-gray-50 h-11 px-6"
               >
                 <ArrowRight size={16} className="mr-2 rotate-180" />
-                Înapoi
+                {t('onboarding.back')}
               </Button>
             ) : (
               <div />
             )}
 
             {step === 0 ? (
-              <div /> /* Start button is inside the step content */
+              <div />
             ) : step < STEPS.length - 1 ? (
               <div className="flex items-center gap-3">
                 {step === 6 ? (
@@ -747,7 +768,7 @@ export default function OnboardingPage() {
                     onClick={() => setStep(STEPS.length - 1)}
                     className="text-gray-400 hover:text-gray-600 h-11 px-4 text-xs"
                   >
-                    Am înțeles, mergi la final
+                    {t('onboarding.skip_to_end')}
                     <ArrowRight size={14} className="ml-1.5" />
                   </Button>
                 ) : null}
@@ -756,7 +777,7 @@ export default function OnboardingPage() {
                   onClick={goNext}
                   className="bg-[#ff5f5f] hover:bg-red-500 text-white h-11 px-8 shadow-lg shadow-[#ff5f5f]/20"
                 >
-                  {step === 6 ? "Vezi finalul" : "Continuă"}
+                  {step === 6 ? t('onboarding.see_end') : t('onboarding.continue')}
                   <ArrowRight size={16} className="ml-2" />
                 </Button>
               </div>
@@ -770,12 +791,12 @@ export default function OnboardingPage() {
                 {loading ? (
                   <>
                     <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2" />
-                    Se configurează...
+                    {t('onboarding.configuring')}
                   </>
                 ) : (
                   <>
                     <Sparkles size={16} className="mr-2" />
-                    Activează MailMind
+                    {t('onboarding.activate')}
                   </>
                 )}
               </Button>
@@ -783,16 +804,15 @@ export default function OnboardingPage() {
           </div>
         </div>
 
-        {/* ── Step Counter ── */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="text-center text-xs text-gray-400 mt-6 font-mono"
         >
-          Pasul {step + 1} din {STEPS.length}
+          {t('onboarding.step_counter', { current: step + 1, total: STEPS.length })}
           {step > 0 && step < STEPS.length - 1 && (
             <span className="ml-2 text-gray-300">
-              · {step <= 5 ? "Întrebări" : step === 6 ? "Prezentare tool-uri" : "Finalizare"}
+              · {step <= 5 ? t('onboarding.section_questions') : step === 6 ? t('onboarding.section_tools') : t('onboarding.section_final')}
             </span>
           )}
         </motion.p>

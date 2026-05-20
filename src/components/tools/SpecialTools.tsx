@@ -285,7 +285,7 @@ export function SpecialTools() {
               <input
                 value={sequenceTopic}
                 onChange={(e) => setSequenceTopic(e.target.value)}
-                placeholder="e.g. Cold outreach for SaaS demo"
+                placeholder="e.g. Cold email for SaaS demo"
                 className="w-full px-2.5 py-2 rounded-lg bg-white border border-gray-200 text-xs outline-none focus:border-blue-500 placeholder:text-gray-300"
               />
               <button

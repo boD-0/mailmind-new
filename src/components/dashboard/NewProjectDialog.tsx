@@ -32,7 +32,7 @@ export function NewProjectDialog({ open, onClose, onCreate, userPlan }: {
     e.preventDefault();
     posthog.capture('project_created', {
       prospect_company: company,
-      outreach_tone: tone,
+      campaign_tone: tone,
       has_deadline: !!deadline,
     });
     onCreate({ name, company, goal, tone, deadline });
@@ -87,7 +87,7 @@ export function NewProjectDialog({ open, onClose, onCreate, userPlan }: {
                 </div>
               </div>
               <div>
-                <label className="text-[10px] tracking-widest text-gray-400 uppercase">Goal of outreach</label>
+                <label className="text-[10px] tracking-widest text-gray-400 uppercase">Campaign Goal</label>
                 <textarea required value={goal} onChange={(e) => setGoal(e.target.value)} rows={3}
                   placeholder="Book a 20-min discovery call about treasury automation."
                   className="mt-1 w-full px-3 py-2 rounded-md bg-gray-50 border border-gray-200 text-gray-800 outline-none focus:border-[#ff5f5f] text-[13px] resize-none placeholder:text-gray-400" />

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { motion, AnimatePresence, useScroll, useTransform, type Variants } from "framer-motion"
 import { useParams } from "next/navigation"
 import Link from "next/link"
@@ -15,6 +15,8 @@ import {
   Play, Send, Mail, Sparkles, Globe, Heart, Shield,
   Zap,
 } from "lucide-react"
+import { LanguageSwitcher } from "@/components/ui/language-switcher"
+import { useTranslation } from '@/components/I18nProvider'
 
 /* ════════════════════════════════════════════════════════════
    ANIMATION VARIANT PRESETS
@@ -72,126 +74,112 @@ const slideInRight: Variants = {
 const specialists = [
   {
     name: "The Researcher",
+    tKey: 'home.features.researcher.name',
+    descKey: 'home.features.researcher.description',
     icon: Search,
     bg: "bg-emerald-100",
     iconBg: "bg-emerald-200 text-emerald-700",
     border: "border-emerald-200",
     accent: "emerald",
-    description:
-      "Scans LinkedIn, news, podcasts and press to surface the precise intel you need — right-moment context that makes your email land.",
   },
   {
     name: "The Psychologist",
+    tKey: 'home.features.psychologist.name',
+    descKey: 'home.features.psychologist.description',
     icon: Brain,
     bg: "bg-amber-100",
     iconBg: "bg-amber-200 text-amber-700",
     border: "border-amber-200",
     accent: "amber",
-    description:
-      "Builds a Big Five OCEAN profile — your Digital Twin. Public signals become a map of how they think, feel, and decide.",
   },
   {
     name: "The Strategist",
+    tKey: 'home.features.strategist.name',
+    descKey: 'home.features.strategist.description',
     icon: Target,
     bg: "bg-indigo-100",
     iconBg: "bg-indigo-200 text-indigo-700",
     border: "border-indigo-200",
     accent: "indigo",
-    description:
-      "Plans the outreach angle, hook, tone, and sequence. Knows what to say, in what order, and why it will work.",
   },
   {
     name: "The Copywriter",
+    tKey: 'home.features.copywriter.name',
+    descKey: 'home.features.copywriter.description',
     icon: PenTool,
     bg: "bg-rose-100",
     iconBg: "bg-rose-200 text-rose-700",
     border: "border-rose-200",
     accent: "rose",
-    description:
-      "Writes the actual email — personalized, calibrated, and human. Not a template. A message crafted for one person.",
   },
 ]
 
 const demoSteps = [
-  { icon: Search, label: "Research", color: "bg-emerald-100 text-emerald-600 border-emerald-200", desc: "Deep scan of prospect data" },
-  { icon: Brain, label: "Profile", color: "bg-amber-100 text-amber-600 border-amber-200", desc: "Build psychological profile" },
-  { icon: Target, label: "Strategy", color: "bg-indigo-100 text-indigo-600 border-indigo-200", desc: "Plan outreach angle" },
-  { icon: PenTool, label: "Write", color: "bg-rose-100 text-rose-600 border-rose-200", desc: "Craft personalized email" },
-  { icon: Send, label: "Send", color: "bg-purple-100 text-purple-600 border-purple-200", desc: "Ready to deploy" },
+  { icon: Search, label: "Research", labelKey: 'home.demo.step_research', descKey: 'home.demo.desc_research', color: "bg-emerald-100 text-emerald-600 border-emerald-200" },
+  { icon: Brain, label: "Profile", labelKey: 'home.demo.step_profile', descKey: 'home.demo.desc_profile', color: "bg-amber-100 text-amber-600 border-amber-200" },
+  { icon: Target, label: "Strategy", labelKey: 'home.demo.step_strategy', descKey: 'home.demo.desc_strategy', color: "bg-indigo-100 text-indigo-600 border-indigo-200" },
+  { icon: PenTool, label: "Write", labelKey: 'home.demo.step_copy', descKey: 'home.demo.desc_write', color: "bg-rose-100 text-rose-600 border-rose-200" },
+  { icon: Send, label: "Send", labelKey: 'home.demo.step_send', descKey: 'home.demo.desc_send', color: "bg-purple-100 text-purple-600 border-purple-200" },
 ]
 
 const plans = [
   {
-    name: "Free",
+    nameKey: 'home.pricing.free.name',
     price: "$0",
-    period: "/month",
+    period: '/month',
+    periodKey: 'home.pricing.free.period',
     badge: null,
     features: [
-      "1 AI scan per day",
-      "1 swarm per day",
-      "Basic research only",
-      "1 active agent",
+      'home.pricing.free.features.0',
+      'home.pricing.free.features.1',
+      'home.pricing.free.features.2',
+      'home.pricing.free.features.3',
     ],
-    cta: "Start Free",
+    ctaKey: 'home.pricing.free.cta',
     highlight: false,
   },
   {
-    name: "Pro",
+    nameKey: 'home.pricing.pro.name',
     price: "$49",
-    period: "/month",
-    badge: "POPULAR",
+    period: '/month',
+    periodKey: 'home.pricing.pro.period',
+    badge: 'POPULAR',
+    badgeKey: 'home.pricing.pro.badge',
     features: [
-      "Unlimited weekly launches",
-      "1000 memory seeds",
-      "Full swarm access",
-      "Vault included",
-      "Priority support",
+      'home.pricing.pro.features.0',
+      'home.pricing.pro.features.1',
+      'home.pricing.pro.features.2',
+      'home.pricing.pro.features.3',
+      'home.pricing.pro.features.4',
     ],
-    cta: "Get Started",
+    ctaKey: 'home.pricing.pro.cta',
     highlight: true,
   },
   {
-    name: "Team",
+    nameKey: 'home.pricing.team.name',
     price: "$199",
-    period: "/month",
+    period: '/month',
+    periodKey: 'home.pricing.team.period',
     badge: null,
     features: [
-      "Unlimited everything",
-      "Team seats",
-      "CRM integration",
-      "Custom onboarding",
-      "Dedicated support",
+      'home.pricing.team.features.0',
+      'home.pricing.team.features.1',
+      'home.pricing.team.features.2',
+      'home.pricing.team.features.3',
+      'home.pricing.team.features.4',
     ],
-    cta: "Contact Us",
+    ctaKey: 'home.pricing.team.cta',
     highlight: false,
   },
 ]
 
 const faqs = [
-  {
-    q: "How is this different from ChatGPT or a template?",
-    a: "MailMind uses 4 specialized agents that research your prospect in real-time, build a psychological profile, and write a custom email — not a template filled with variables.",
-  },
-  {
-    q: "What is the OCEAN profile all about?",
-    a: "OCEAN (Big Five) is the gold standard personality model used in psychology research. Our Psychologist agent builds a Digital Twin from public signals to predict how your prospect thinks, feels, and decides.",
-  },
-  {
-    q: "Are emails actually sent?",
-    a: "No — MailMind writes and optimizes your email. You send it through your existing email client or connect your CRM.",
-  },
-  {
-    q: "What about email deliverability?",
-    a: "We include a Sandbox simulation that predicts prospect reaction and a SpamGuard check before you send anything.",
-  },
-  {
-    q: "Is my data protected?",
-    a: "Yes. All prospect data is processed ephemerally and never stored or used for model training. We are SOC 2 compliant.",
-  },
-  {
-    q: "How fast will I get results?",
-    a: "Most users see a complete, ready-to-send email in under 90 seconds from entering a prospect name.",
-  },
+  { qKey: 'home.faq.q1', aKey: 'home.faq.a1' },
+  { qKey: 'home.faq.q2', aKey: 'home.faq.a2' },
+  { qKey: 'home.faq.q3', aKey: 'home.faq.a3' },
+  { qKey: 'home.faq.q4', aKey: 'home.faq.a4' },
+  { qKey: 'home.faq.q5', aKey: 'home.faq.a5' },
+  { qKey: 'home.faq.q6', aKey: 'home.faq.a6' },
 ]
 
 /* ════════════════════════════════════════════════════════════
@@ -235,16 +223,26 @@ function FloatingOrbs() {
   )
 }
 
-/** Floating tiny dots/circles in the hero */
-function FloatingParticles() {
-  const particles = Array.from({ length: 12 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 4 + 2,
-    delay: Math.random() * 5,
-    duration: Math.random() * 6 + 4,
-  }))
+/** Floating tiny dots/circles in the hero */function FloatingParticles() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const particles = useMemo(() =>
+    Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 4 + 2,
+      delay: Math.random() * 5,
+      duration: Math.random() * 6 + 4,
+    })),
+  [])
+
+  if (!mounted) return null
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {particles.map((p) => (
@@ -326,6 +324,7 @@ function SectionHeading({
 
 function Header({ locale }: { locale: string }) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { t } = useTranslation()
   const { scrollY } = useScroll()
   const headerBg = useTransform(
     scrollY,
@@ -352,35 +351,37 @@ function Header({ locale }: { locale: string }) {
 
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-500">
           <Link href={`/${locale}/#features`} className="relative hover:text-[#1a1a1a] transition-colors group">
-            Features
+            {t('nav.features')}
             <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#ff5f5f] transition-all duration-300 group-hover:w-full" />
           </Link>
           <Link href={`/${locale}/#how-it-works`} className="relative hover:text-[#1a1a1a] transition-colors group">
-            How it works
+            {t('nav.how_it_works')}
             <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#ff5f5f] transition-all duration-300 group-hover:w-full" />
           </Link>
           <Link href={`/${locale}/pricing`} className="relative hover:text-[#1a1a1a] transition-colors group">
-            Pricing
+            {t('nav.pricing')}
             <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#ff5f5f] transition-all duration-300 group-hover:w-full" />
           </Link>
           <Link href={`/${locale}/#faq`} className="relative hover:text-[#1a1a1a] transition-colors group">
-            FAQ
+            {t('nav.faq')}
             <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#ff5f5f] transition-all duration-300 group-hover:w-full" />
           </Link>
         </nav>
 
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-3">
+          <LanguageSwitcher />
+          <div className="w-px h-5 bg-gray-200" />
           <Link
             href={`/${locale}/login`}
             className="text-sm font-medium text-gray-500 hover:text-[#1a1a1a] transition-colors"
           >
-            Log in
+            {t('nav.log_in')}
           </Link>
           <Link
             href={`/${locale}/sign-up`}
             className="bg-[#ff5f5f] text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-200/50 relative overflow-hidden group"
           >
-            <span className="relative z-10">Get Started</span>
+            <span className="relative z-10">{t('nav.get_started')}</span>
             <motion.span
               className="absolute inset-0 bg-gradient-to-r from-red-500 to-[#ff5f5f]"
               initial={{ x: "100%" }}
@@ -419,10 +420,17 @@ function Header({ locale }: { locale: string }) {
               animate="visible"
               className="mt-4 pt-4 border-t border-gray-200/50 flex flex-col gap-2"
             >
-                <motion.a variants={fadeUp} href={`/${locale}/#features`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>Features</motion.a>
-                <motion.a variants={fadeUp} href={`/${locale}/#how-it-works`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>How it works</motion.a>
-                <Link href={`/${locale}/pricing`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>Pricing</Link>
-                <motion.a variants={fadeUp} href={`/${locale}/#faq`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>FAQ</motion.a>
+                <motion.a variants={fadeUp} href={`/${locale}/#features`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.features')}</motion.a>
+                <motion.a variants={fadeUp} href={`/${locale}/#how-it-works`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.how_it_works')}</motion.a>
+                <Link href={`/${locale}/pricing`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.pricing')}</Link>
+                <motion.a variants={fadeUp} href={`/${locale}/#faq`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.faq')}</motion.a>
+              <motion.div
+                variants={fadeUp}
+                className="flex items-center justify-between pb-2 border-b border-gray-100"
+              >
+                <span className="text-xs font-semibold text-gray-400 tracking-wider uppercase">{t('nav.language')}</span>
+                <LanguageSwitcher />
+              </motion.div>
               <motion.div
                 variants={fadeUp}
                 className="flex gap-3 pt-2 mt-2 border-t border-gray-100"
@@ -432,14 +440,14 @@ function Header({ locale }: { locale: string }) {
                   className="flex-1 text-center text-sm font-medium text-gray-600 px-4 py-2.5 border border-gray-300 rounded-full hover:border-gray-400 transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
-                  Log in
+                  {t('nav.log_in')}
                 </Link>
                 <Link
                   href={`/${locale}/sign-up`}
                   className="flex-1 text-center bg-[#ff5f5f] text-white text-sm font-semibold px-4 py-2.5 rounded-full hover:bg-red-500 transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
-                  Get Started
+                  {t('nav.get_started')}
                 </Link>
               </motion.div>
             </motion.div>
@@ -453,38 +461,24 @@ function Header({ locale }: { locale: string }) {
 /* ── 2. HERO ── */
 
 function HeroSection({ locale }: { locale: string }) {
+  const { t } = useTranslation()
   return (
     <section className="relative pt-24 pb-20 px-6 text-center bg-[#fdfbf7] overflow-hidden">
       <FloatingOrbs />
       <FloatingParticles />
 
-      <div className="max-w-5xl mx-auto relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 12, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <motion.span
-            className="inline-flex items-center gap-1.5 bg-[#ff5f5f]/10 text-[#ff5f5f] text-xs font-semibold tracking-wider px-4 py-1.5 rounded-full mb-8"
-            whileHover={{ scale: 1.05 }}
-          >
-            <Sparkles size={12} />
-            The AI Swarm for Outreach
-          </motion.span>
-        </motion.div>
-
-        <motion.h1
+      <div className="max-w-5xl mx-auto relative z-10">        <motion.h1
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-[1.1] mb-6 text-[#1a1a1a]"
         >
-          Cold email, but it{" "}
+          {t('home.hero.headline_1')}{" "}
           <span className="relative inline-block">
             <motion.span
               className="relative z-10 bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent bg-[length:200%_100%] animate-gradient-x"
             >
-              actually knows
+              {t('home.hero.headline_knows')}
             </motion.span>
             <motion.span
               className="absolute -inset-1 bg-[#ff5f5f]/10 rounded-lg -z-10"
@@ -494,7 +488,7 @@ function HeroSection({ locale }: { locale: string }) {
               style={{ transformOrigin: "left" }}
             />
           </span>{" "}
-          them.
+          {t('home.hero.headline_2')}
         </motion.h1>
 
         <motion.p
@@ -503,8 +497,7 @@ function HeroSection({ locale }: { locale: string }) {
           transition={{ duration: 0.6, delay: 0.35 }}
           className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed"
         >
-          Four specialized AI agents — Researcher, Psychologist, Strategist and Copywriter — work in parallel
-          to craft psychologically calibrated emails that don&apos;t sound like they came from a template.
+          {t('home.hero.subheadline')}
         </motion.p>
 
         <motion.div
@@ -528,7 +521,7 @@ function HeroSection({ locale }: { locale: string }) {
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
               />
               <span className="relative z-10 flex items-center gap-2">
-                Get Started Now
+                {t('home.hero.cta_get_started')}
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </span>
             </Link>
@@ -538,11 +531,11 @@ function HeroSection({ locale }: { locale: string }) {
             whileTap={{ scale: 0.97 }}
           >
             <Link
-              href={`/${locale}/dashboard`}
+              href={`/${locale}/demo`}
               className="border border-gray-300 text-gray-600 px-8 py-3.5 rounded-full font-semibold hover:border-gray-400 hover:text-[#1a1a1a] transition-all inline-flex items-center gap-2"
             >
               <Play size={16} />
-              Live Demo
+              {t('home.hero.cta_live_demo')}
             </Link>
           </motion.div>
         </motion.div>
@@ -577,7 +570,7 @@ function HeroSection({ locale }: { locale: string }) {
                 transition={{ duration: 3, repeat: Infinity, delay: 0.6 }}
               />
               <div className="flex-1 max-w-[50%] mx-auto h-7 bg-gray-50 rounded-lg flex items-center px-3 border border-gray-100">
-                <span className="text-[10px] text-gray-400 font-medium">app.mailmind.app</span>
+                <span className="text-[10px] text-gray-400 font-medium">{t('home.hero.app_url')}</span>
               </div>
             </div>
             {/* Mock dashboard content */}
@@ -638,6 +631,7 @@ function HeroSection({ locale }: { locale: string }) {
 /* ── 3. FEATURES — 4 SPECIALISTS ── */
 
 function FeaturesSection() {
+  const { t } = useTranslation()
   const pastelBgs = ["bg-emerald-50", "bg-amber-50", "bg-indigo-50", "bg-rose-50"]
 
   return (
@@ -645,10 +639,10 @@ function FeaturesSection() {
       <FloatingOrbs />
       <div className="max-w-5xl mx-auto relative z-10">
         <SectionHeading
-          label="The Specialists"
-          title="Not one model."
-          highlight="Four specialists."
-          description="Each agent is great at exactly one thing. Together they replace your team — and more."
+          label={t('home.features.label')}
+          title={t('home.features.title')}
+          highlight={t('home.features.highlight')}
+          description={t('home.features.description')}
         />
 
         <motion.div
@@ -687,16 +681,15 @@ function FeaturesSection() {
                   >
                     <Icon size={22} />
                   </motion.div>
-                  <div>
-                    <motion.span
-                      className={`inline-block text-xs font-bold px-3 py-1 rounded-full ${specialist.iconBg}`}
-                    >
-                      {specialist.name}
-                    </motion.span>
+                  <div>                      <motion.span
+                        className={`inline-block text-xs font-bold px-3 py-1 rounded-full ${specialist.iconBg}`}
+                      >
+                        {t(specialist.tKey)}
+                      </motion.span>
                   </div>
                 </div>
                 <p className="text-gray-600 leading-relaxed text-sm md:text-base relative z-10">
-                  {specialist.description}
+                  {t(specialist.descKey)}
                 </p>
               </motion.div>
             )
@@ -710,14 +703,17 @@ function FeaturesSection() {
 /* ── 4. INTERACTIVE DEMO ── */
 
 function InteractiveDemoSection() {
+  const { t } = useTranslation()
+  const demoStepLabels = [t('home.demo.step_research'), t('home.demo.step_profile'), t('home.demo.step_strategy'), t('home.demo.step_copy'), t('home.demo.step_send')]
+
   return (
     <section id="how-it-works" className="relative py-24 px-6 bg-[#fdfbf7] overflow-hidden">
       <div className="max-w-5xl mx-auto relative z-10">
         <SectionHeading
-          label="How It Works"
-          title="One command."
-          highlight="Zero copy-paste."
-          description="From prospect name to calibrated email in under 90 seconds."
+          label={t('home.demo.label')}
+          title={t('home.demo.title')}
+          highlight={t('home.demo.highlight')}
+          description={t('home.demo.description')}
         />
 
         {/* Step labels */}
@@ -728,7 +724,7 @@ function InteractiveDemoSection() {
           variants={stagger}
           className="hidden md:flex items-center justify-between mb-4 px-2"
         >
-          {["Research", "Profile", "Strategy", "Copy", "Send"].map((label, i) => (
+          {demoStepLabels.map((label, i) => (
             <motion.span
               key={label}
               variants={fadeUp}
@@ -801,7 +797,7 @@ function InteractiveDemoSection() {
                 >
                   <Icon size={20} />
                 </motion.div>
-                <span className="text-xs font-bold tracking-wide">{step.label}</span>
+                <span className="text-xs font-bold tracking-wide">{t(step.labelKey)}</span>
                 <motion.span
                   className="text-[10px] text-gray-500 font-medium hidden md:block"
                   initial={{ opacity: 0 }}
@@ -809,7 +805,7 @@ function InteractiveDemoSection() {
                   viewport={{ once: true }}
                   transition={{ delay: 0.5 + i * 0.1 }}
                 >
-                  {step.desc}
+                  {t(step.descKey)}
                 </motion.span>
               </motion.div>
             )
@@ -824,7 +820,7 @@ function InteractiveDemoSection() {
           className="mt-6 text-center md:hidden"
         >
           <p className="text-xs text-gray-400">
-            Research → Profile → Strategy → Copy → Send
+            {t('home.demo.mobile_flow')}
           </p>
         </motion.div>
       </div>
@@ -835,6 +831,14 @@ function InteractiveDemoSection() {
 /* ── 5. DIFFERENTIATION ── */
 
 function DifferentiationSection() {
+  const { t } = useTranslation()
+  const diffItems = [
+    t('home.differentiation.items.0'),
+    t('home.differentiation.items.1'),
+    t('home.differentiation.items.2'),
+    t('home.differentiation.items.3'),
+  ]
+
   return (
     <section className="relative py-24 px-6 bg-white overflow-hidden">
       <div className="max-w-5xl mx-auto relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
@@ -845,21 +849,19 @@ function DifferentiationSection() {
           viewport={{ once: true, margin: "-60px" }}
         >
           <span className="inline-block text-xs font-semibold tracking-widest uppercase text-gray-400 mb-4 px-4 py-1.5 rounded-full bg-gray-100/50 border border-gray-200/50">
-            The Difference
+            {t('home.differentiation.label')}
           </span>
           <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter text-[#1a1a1a] mb-6 leading-[1.1]">
-            We don&apos;t write to a{" "}
-            <span className="line-through text-gray-300">job title.</span>
+            {t('home.differentiation.title_1')}{" "}
+            <span className="line-through text-gray-300">{t('home.differentiation.title_strikethrough')}</span>
             <br />
-            We write to a{" "}
+            {t('home.differentiation.title_2')}{" "}
             <span className="bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent">
-              person.
+              {t('home.differentiation.title_highlight')}
             </span>
           </h2>
           <p className="text-gray-600 leading-relaxed mb-8">
-            Most outreach tools blast the same template to hundreds of people. MailMind builds a psychological
-            profile of each prospect — their motivations, communication style, and decision-making patterns —
-            then crafts an email calibrated specifically for them.
+            {t('home.differentiation.description')}
           </p>
           <motion.ul
             variants={stagger}
@@ -868,12 +870,7 @@ function DifferentiationSection() {
             viewport={{ once: true }}
             className="space-y-3"
           >
-            {[
-              "Big Five OCEAN profile built from public signals",
-              "Personality-matched tone, hook, and angle for every email",
-              "Sandbox simulation predicts prospect reaction before you send",
-              "Continuous learning from engagement patterns",
-            ].map((item) => (
+            {diffItems.map((item) => (
               <motion.li
                 key={item}
                 variants={fadeUp}
@@ -1023,14 +1020,14 @@ function DifferentiationSection() {
               transition={{ delay: 1.4 }}
             >
               <div className="flex items-center justify-between text-xs text-gray-500">
-                <span className="font-semibold text-[#1a1a1a]">OCEAN Profile</span>
+                <span className="font-semibold text-[#1a1a1a]">{t('home.differentiation.ocean_profile')}</span>
                 <motion.span
                   className="flex items-center gap-1"
                   animate={{ opacity: [0.6, 1, 0.6] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
                   <span className="w-2 h-2 rounded-full bg-[#ff5f5f]" />
-                  Digital Twin
+                  {t('home.differentiation.digital_twin')}
                 </motion.span>
               </div>
             </motion.div>
@@ -1044,14 +1041,15 @@ function DifferentiationSection() {
 /* ── 6. PRICING ── */
 
 function PricingSection() {
+  const { t } = useTranslation()
   return (
     <section id="pricing" className="relative py-24 px-6 bg-[#fdfbf7] overflow-hidden">
       <div className="max-w-5xl mx-auto relative z-10">
         <SectionHeading
-          label="Pricing"
-          title="Simple, transparent"
-          highlight="pricing."
-          description="Start free, upgrade when you need more. Cancel anytime."
+          label={t('home.pricing.label')}
+          title={t('home.pricing.title')}
+          highlight={t('home.pricing.highlight')}
+          description={t('home.pricing.description')}
         />
 
         <motion.div
@@ -1063,7 +1061,7 @@ function PricingSection() {
         >
           {plans.map((plan, i) => (
             <motion.div
-              key={plan.name}
+              key={plan.nameKey}
               variants={fadeUpScale}
               custom={i * 0.1}
               className={`rounded-2xl p-8 border bg-white relative flex flex-col ${
@@ -1087,11 +1085,11 @@ function PricingSection() {
                   viewport={{ once: true }}
                   transition={{ delay: 0.3 + i * 0.1, type: "spring", stiffness: 300 }}
                 >
-                  {plan.badge}
+                  {t(plan.badgeKey || plan.nameKey)}
                 </motion.span>
               )}
               <h3 className={`font-bold text-lg mb-1 text-[#1a1a1a] ${plan.highlight ? "mt-2" : ""}`}>
-                {plan.name}
+                {t(plan.nameKey)}
               </h3>
               <div className="flex items-baseline gap-1 mb-6">
                 <motion.span
@@ -1106,9 +1104,9 @@ function PricingSection() {
                 <span className="text-gray-400 text-sm">{plan.period}</span>
               </div>
               <ul className="space-y-3 mb-8 flex-1">
-                {plan.features.map((f) => (
+                {plan.features.map((fKey) => (
                   <motion.li
-                    key={f}
+                    key={fKey}
                     className="flex items-center gap-2.5 text-sm text-gray-600"
                     initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -1116,7 +1114,7 @@ function PricingSection() {
                     transition={{ delay: 0.4 + i * 0.1 }}
                   >
                     <Check size={14} className="text-emerald-500 shrink-0" />
-                    <span>{f}</span>
+                    <span>{t(fKey)}</span>
                   </motion.li>
                 ))}
               </ul>
@@ -1129,7 +1127,7 @@ function PricingSection() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
               >
-                {plan.cta}
+                {t(plan.ctaKey)}
               </motion.button>
             </motion.div>
           ))}
@@ -1142,6 +1140,7 @@ function PricingSection() {
 /* ── 7. FAQ ── */
 
 function FAQSection() {
+  const { t } = useTranslation()
   return (
     <section id="faq" className="relative py-24 px-6 bg-white overflow-hidden">
       <div className="max-w-3xl mx-auto relative z-10">
@@ -1152,9 +1151,9 @@ function FAQSection() {
           transition={{ duration: 0.6 }}
           className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4 text-center text-[#1a1a1a]"
         >
-          Frequently asked{" "}
+          {t('home.faq.title')}{" "}
           <span className="bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent">
-            questions.
+            {t('home.faq.title_highlight')}
           </span>
         </motion.h2>
         <motion.p
@@ -1164,7 +1163,7 @@ function FAQSection() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="text-gray-600 text-center mb-12"
         >
-          Everything you need to know about MailMind.
+          {t('home.faq.subtitle')}
         </motion.p>
 
         <motion.div
@@ -1172,8 +1171,7 @@ function FAQSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
-        >
-          <Accordion type="single" collapsible className="w-full">
+        >              <Accordion type="single" collapsible className="w-full">
             {faqs.map((item, i) => (
               <motion.div
                 key={i}
@@ -1190,11 +1188,11 @@ function FAQSection() {
                       >
                         <Zap size={10} className="text-gray-400 group-hover:text-[#ff5f5f] transition-colors" />
                       </motion.span>
-                      {item.q}
+                      {t(item.qKey)}
                     </span>
                   </AccordionTrigger>
                   <AccordionContent className="text-gray-600 leading-relaxed pl-9">
-                    {item.a}
+                    {t(item.aKey)}
                   </AccordionContent>
                 </AccordionItem>
               </motion.div>
@@ -1209,6 +1207,7 @@ function FAQSection() {
 /* ── 8. FINAL CTA ── */
 
 function FinalCTASection() {
+  const { t } = useTranslation()
   const [email, setEmail] = useState("")
   const [subscribed, setSubscribed] = useState(false)
 
@@ -1275,7 +1274,7 @@ function FinalCTASection() {
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="text-4xl md:text-5xl font-extrabold tracking-tighter text-white mb-4 leading-[1.1]"
         >
-          Ready to send emails{" "}
+          {t('home.cta.title')}{" "}
           <motion.span
             className="italic font-bold inline-block"
             animate={{
@@ -1283,7 +1282,7 @@ function FinalCTASection() {
             }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           >
-            that get replies?
+            {t('home.cta.title_highlight')}
           </motion.span>
         </motion.h2>
         <motion.p
@@ -1293,7 +1292,7 @@ function FinalCTASection() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="text-white/80 text-lg mb-10 leading-relaxed max-w-lg mx-auto"
         >
-          Join thousands of founders and SDRs who already ship with MailMind.
+          {t('home.cta.subtitle')}
         </motion.p>
 
         {subscribed ? (
@@ -1307,7 +1306,7 @@ function FinalCTASection() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              ✓ You&apos;re in! Check your inbox for next steps.
+              {t('home.cta.success')}
             </motion.span>
           </motion.div>
         ) : (
@@ -1325,7 +1324,7 @@ function FinalCTASection() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
+                placeholder={t('home.cta.placeholder')}
                 required
                 className="w-full pl-11 pr-5 py-3.5 rounded-full text-sm outline-none text-[#1a1a1a] placeholder:text-gray-400 bg-white border-0 focus:ring-2 focus:ring-white/30 transition-shadow"
               />
@@ -1336,7 +1335,7 @@ function FinalCTASection() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
             >
-              Get Started
+              {t('home.cta.button')}
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </motion.button>
           </motion.form>
@@ -1351,14 +1350,14 @@ function FinalCTASection() {
           className="mt-10 pt-10 border-t border-white/15 flex flex-wrap justify-center gap-6 text-xs text-white/60"
         >
           {[
-            { icon: Shield, text: "SOC 2 Compliant" },
-            { icon: Globe, text: "99.9% Uptime" },
-            { icon: Heart, text: "No credit card required" },
+            { icon: Shield, textKey: 'home.cta.trust_soc2' },
+            { icon: Globe, textKey: 'home.cta.trust_uptime' },
+            { icon: Heart, textKey: 'home.cta.trust_nocc' },
           ].map((item, i) => {
             const Icon = item.icon
             return (
               <motion.span
-                key={item.text}
+                key={item.textKey}
                 className="flex items-center gap-1.5"
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -1366,7 +1365,7 @@ function FinalCTASection() {
                 transition={{ delay: 0.5 + i * 0.1 }}
               >
                 <Icon size={12} />
-                {item.text}
+                {t(item.textKey)}
               </motion.span>
             )
           })}
@@ -1379,6 +1378,33 @@ function FinalCTASection() {
 /* ── 9. FOOTER ── */
 
 function Footer({ locale }: { locale: string }) {
+  const { t } = useTranslation()
+  const footerColumns = [
+    {
+      titleKey: 'footer.product',
+      links: [
+        { href: "#features", labelKey: 'footer.product_features' },
+        { href: "#how-it-works", labelKey: 'footer.product_how' },
+        { href: "#pricing", labelKey: 'footer.product_pricing' },
+      ]
+    },
+    {
+      titleKey: 'footer.company',
+      links: [
+        { href: "#", labelKey: 'footer.company_about' },
+        { href: "#", labelKey: 'footer.company_blog' },
+        { href: "#", labelKey: 'footer.company_careers' },
+      ]
+    },
+    {
+      titleKey: 'footer.legal',
+      links: [
+        { href: "#", labelKey: 'footer.legal_privacy' },
+        { href: "#", labelKey: 'footer.legal_terms' },
+      ]
+    },
+  ]
+
   return (
     <footer className="bg-[#fdfbf7] border-t border-gray-200 py-16 px-6">
       <div className="max-w-6xl mx-auto">
@@ -1395,32 +1421,17 @@ function Footer({ locale }: { locale: string }) {
               <span className="font-bold text-lg text-[#1a1a1a] tracking-tight">MailMind</span>
             </Link>
             <p className="mt-4 text-sm text-gray-500 leading-relaxed max-w-[200px]">
-              AI-powered outreach that actually knows people.
+              {t('footer.tagline')}
             </p>
           </div>
-          {[
-            { title: "Product", links: [
-              { href: "#features", label: "Features" },
-              { href: "#how-it-works", label: "How it Works" },
-              { href: "#pricing", label: "Pricing" },
-            ]},
-            { title: "Company", links: [
-              { href: "#", label: "About" },
-              { href: "#", label: "Blog" },
-              { href: "#", label: "Careers" },
-            ]},
-            { title: "Legal", links: [
-              { href: "#", label: "Privacy Policy" },
-              { href: "#", label: "Terms of Service" },
-            ]},
-          ].map((col) => (
-            <div key={col.title}>
-              <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-4">{col.title}</p>
+          {footerColumns.map((col) => (
+            <div key={col.titleKey}>
+              <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-4">{t(col.titleKey)}</p>
               <ul className="space-y-2 text-sm text-gray-500">
                 {col.links.map((link) => (
-                  <li key={link.label}>
+                  <li key={link.labelKey}>
                     <a href={link.href} className="hover:text-[#1a1a1a] transition-colors relative inline-block group/link">
-                      {link.label}
+                      {t(link.labelKey)}
                       <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-[#ff5f5f] transition-all duration-300 group-hover/link:w-full" />
                     </a>
                   </li>
@@ -1436,15 +1447,19 @@ function Footer({ locale }: { locale: string }) {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <span>&copy; 2025 MailMind. All rights reserved.</span>
+          <span>{t('footer.copyright')}</span>
           <div className="flex gap-6">
-            {["Twitter/X", "LinkedIn", "GitHub"].map((social) => (
+            {[
+              { href: "#", labelKey: 'footer.social_twitter' },
+              { href: "#", labelKey: 'footer.social_linkedin' },
+              { href: "#", labelKey: 'footer.social_github' },
+            ].map((social) => (
               <a
-                key={social}
-                href="#"
+                key={social.labelKey}
+                href={social.href}
                 className="hover:text-gray-600 transition-colors relative group/social"
               >
-                {social}
+                {t(social.labelKey)}
                 <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-gray-400 transition-all duration-300 group-hover/social:w-full" />
               </a>
             ))}
