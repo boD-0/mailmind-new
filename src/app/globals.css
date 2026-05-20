@@ -11,13 +11,22 @@
 
 
 :root {
-  /* Brand Palette - V4 Luxury Preservation */
-  --obsidian:         var(--obsidian);
-  --obsidian-light:   var(--obsidian-light);
-  --copper:           var(--copper);
-  --copper-light:     var(--copper-light);
+  --elevation: 24 16% 10%;
+}
+
+.dark {
+  --elevation: 0 0% 0%;
+}
+
+:root {
+  /* Brand Palette - Dark (default) */
+  --obsidian:         #0C0C0A;
+  --obsidian-light:   #1A1A16;
+  --obsidian-mid:     #161612;
+  --copper:           #c17b3f;
+  --copper-light:     #d49455;
   --copper-muted:     rgba(193, 123, 63, 0.15);
-  --text-primary:     var(--text-primary);
+  --text-primary:     rgba(245, 245, 240, 0.92);
   --text-muted:       rgba(245, 245, 240, 0.55);
   --border-subtle:    rgba(193, 123, 63, 0.2);
   --consensus-green:  #4CAF50;
@@ -78,6 +87,8 @@
   --font-sans: 'Inter', 'DM Sans', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
+  --color-obsidian-mid: var(--obsidian-mid);
+
   --color-mailmind-bg: #FAFAF8;
   --color-mailmind-text: #1A1A1A;
   --color-mailmind-muted: #888880;
@@ -121,6 +132,72 @@ body {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ── Dashboard Light Theme ── */
+/* Overrides the dark obsidian theme with the landing page's warm light palette */
+
+.dashboard-light {
+  --obsidian:         #fdfbf7;
+  --obsidian-light:   #ffffff;
+  --obsidian-mid:     #f5f4f0;
+  --copper:           #ff5f5f;
+  --copper-light:     #ff7777;
+  --copper-muted:     rgba(255, 95, 95, 0.12);
+  --text-primary:     #1a1a1a;
+  --text-muted:       #888880;
+  --border-subtle:    #e0ddd5;
+
+  --cream:            var(--text-primary);
+  --background:       var(--obsidian);
+  --foreground:       var(--text-primary);
+  --card:             var(--obsidian-light);
+  --card-foreground:  var(--text-primary);
+  --popover:          var(--obsidian-light);
+  --popover-foreground: var(--text-primary);
+  --primary:          var(--copper);
+  --primary-foreground: #ffffff;
+  --secondary:        var(--obsidian-light);
+  --secondary-foreground: var(--text-primary);
+  --muted:            rgba(0, 0, 0, 0.04);
+  --muted-foreground: var(--text-muted);
+  --accent:           var(--copper-muted);
+  --accent-foreground: var(--text-primary);
+  --destructive:      var(--conflict-red);
+  --destructive-foreground: var(--cream);
+  --border:           var(--border-subtle);
+  --input:            var(--border-subtle);
+  --ring:             var(--copper);
+}
+
+.dashboard-light .glass-deep {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.dashboard-light .glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.dashboard-light .luxury-shadow {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 0 10px rgba(255, 95, 95, 0.03);
+}
+
+.dashboard-light .copper-streak {
+  opacity: 0.15;
+}
+
+.dashboard-light .bg-obsidian-mid { background: #f5f4f0; }
+.dashboard-light .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+/* Fix react-flow background to use light dot color */
+.dashboard-light .react-flow__background {
+  opacity: 0.5;
 }
 
 .glass-lift {
@@ -203,6 +280,26 @@ body {
 }
 
 .animate-iris { animation: iris-rotate 4s ease-in-out infinite; transform-origin: center; }
+
+@keyframes spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 6s linear infinite;
+}
+
+@keyframes gradient-x {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 4s ease infinite;
+}
 
 /* ── Liquid-Glass Design System ── */
 

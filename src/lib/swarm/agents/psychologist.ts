@@ -5,7 +5,7 @@ import { getAgentModel } from "./llm";
 import { safeJsonParse } from "@/lib/utils";
 
 export async function psychologistAgent(state: SwarmState) {
-const { research_data, campaign_id, prospect_url } = state;
+const { research_data, campaign_id, prospect_url, brand_context } = state;
 
   const update = {
     agent: 'psychologist' as const,
@@ -40,6 +40,15 @@ const { research_data, campaign_id, prospect_url } = state;
 
       Research Data:
       ${JSON.stringify(research_data)}
+
+      Brand Context (compania care contactează prospectul):
+      ${JSON.stringify(brand_context)}
+
+      Folosește Brand Context-ul mai sus pentru a înțelege CINE contactează prospectul:
+      - Industria brandului influențează tipul de prospect care ar răspunde bine
+      - Tonul vocii determină ce stil de comunicare ar atrage prospectul
+      - Valorile brandului ajută la calibrarea scorurilor de agreeableness și trust
+      - Pain points-urile brandului se aliniază cu pain_point_category din custom_signals
 
       Răspunde EXCLUSIV în JSON. Schema:
       {

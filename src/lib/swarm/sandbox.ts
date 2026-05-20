@@ -5,7 +5,7 @@ import { safeJsonParse } from "@/lib/utils";
 /**
  * Simulează reacția unui prospect (Digital Twin) la un draft de email.
  */
-export async function simulateReaction(email: string, profile: DigitalTwin): Promise<DigitalTwin['reaction_map']> {
+export async function simulateReaction(email: string, profile: DigitalTwin, brandContext?: Record<string, unknown>): Promise<DigitalTwin['reaction_map']> {
 const fallbackReaction = {
     curiosity: 50,
     interest: 50,
@@ -27,6 +27,15 @@ const fallbackReaction = {
       Digital Twin Profile:
       ${JSON.stringify(profile)}
 
+      ${brandContext && Object.keys(brandContext).length > 0 ? `Brand Context (cine trimite emailul):
+      ${JSON.stringify(brandContext)}
+
+      Ține cont de brandul care trimite emailul când evaluezi reacțiile:
+      - Industria brandului influențează relevanța (interest, trust)
+      - Tonul vocii influențează irritability (dacă e mismatch cu preferințele prospectului)
+      - Valorile brandului pot crește trust dacă se aliniază cu valorile prospectului
+      - Pain points comune cresc urgency_felt
+      ` : ''}
       Evaluează emailul și returnează scoruri de reacție (0-100) pentru următoarele metrici:
       - curiosity: cât de mult îl va face să vrea să afle mai multe.
       - interest: cât de relevant este subiectul pentru nevoile lui.

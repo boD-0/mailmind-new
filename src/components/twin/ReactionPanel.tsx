@@ -48,12 +48,12 @@ export function ReactionPanel({ data, isConsensus }: ReactionPanelProps) {
               width={100} 
               axisLine={false} 
               tickLine={false}
-              tick={{ fill: 'rgba(248, 247, 244, 0.4)', fontSize: 10, fontWeight: 700 }}
+              tick={{ fill: 'rgba(0, 0, 0, 0.3)', fontSize: 10, fontWeight: 700 }}
             />
             <Tooltip 
-              cursor={{ fill: 'rgba(193, 123, 63, 0.05)' }}
-              contentStyle={{ backgroundColor: 'var(--obsidian)', border: '1px solid rgba(193, 123, 63, 0.2)', borderRadius: '8px' }}
-              itemStyle={{ color: 'var(--cream)', fontSize: '12px' }}
+              cursor={{ fill: 'rgba(255, 95, 95, 0.05)' }}
+              contentStyle={{ backgroundColor: '#ffffff', border: '1px solid rgba(255, 95, 95, 0.2)', borderRadius: '8px', color: '#1a1a1a' }}
+              itemStyle={{ color: '#1a1a1a', fontSize: '12px' }}
             />
             <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={12}>
               {chartData.map((entry, index) => (

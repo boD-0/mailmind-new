@@ -88,6 +88,8 @@ export const projects = pgTable("projects", {
   targetAudience: text("target_audience"),
   context: text("context"),
   brandValues: jsonb("brand_values").$type<string[]>(),
+  painPoints: jsonb("pain_points").$type<string[]>(),
+  deadline: timestamp("deadline"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

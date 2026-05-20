@@ -96,8 +96,8 @@ export function UploadZone({ projectId, onUploadComplete, userPlan }: UploadZone
         className={`
           border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer
           ${isDragActive 
-            ? "border-copper bg-copper/5 scale-[1.01]" 
-            : "border-border/30 hover:border-copper/50 bg-obsidian-mid/50"
+            ? "border-[#ff5f5f] bg-[#ff5f5f]/5 scale-[1.01]" 
+            : "border-gray-300 hover:border-[#ff5f5f]/50 bg-gray-50"
           }
           ${uploading || !hasAccess ? "pointer-events-none" : ""}
           ${!hasAccess ? "opacity-40 grayscale" : ""}
@@ -105,7 +105,7 @@ export function UploadZone({ projectId, onUploadComplete, userPlan }: UploadZone
       >
         <input {...getInputProps()} />
         <div className="flex flex-col items-center justify-center space-y-3">
-          <div className="p-3 rounded-full bg-copper/10 text-copper">
+          <div className="p-3 rounded-full bg-[#ff5f5f]/10 text-[#ff5f5f]">
             {!hasAccess ? (
               <Lock className="w-6 h-6" />
             ) : uploading ? (
@@ -115,10 +115,10 @@ export function UploadZone({ projectId, onUploadComplete, userPlan }: UploadZone
             )}
           </div>
           <div>
-            <p className="text-cream font-medium">
+            <p className="text-gray-800 font-medium">
               {!hasAccess ? "Vault is Locked" : isDragActive ? "Lasă fișierul aici" : "Încarcă documente în Vault"}
             </p>
-            <p className="text-cream/50 text-sm mt-1">
+            <p className="text-gray-500 text-sm mt-1">
               {!hasAccess 
                 ? "Upgrade to Starter to use Email Vault" 
                 : "Drag & drop sau click pentru a selecta (PDF, DOCX, TXT)"}
@@ -126,7 +126,7 @@ export function UploadZone({ projectId, onUploadComplete, userPlan }: UploadZone
             {!hasAccess && (
               <Link 
                 href="/pricing" 
-                className="inline-block mt-4 px-4 py-1.5 rounded-full bg-copper text-obsidian text-[10px] font-bold uppercase tracking-widest pointer-events-auto hover:bg-copper-light transition-colors"
+                className="inline-block mt-4 px-4 py-1.5 rounded-full bg-[#ff5f5f] text-white text-[10px] font-bold uppercase tracking-widest pointer-events-auto hover:bg-red-500 transition-colors"
               >
                 Upgrade Now
               </Link>
@@ -137,11 +137,11 @@ export function UploadZone({ projectId, onUploadComplete, userPlan }: UploadZone
 
       {uploading && (
         <div className="space-y-2">
-          <div className="flex justify-between text-xs text-cream/60">
+          <div className="flex justify-between text-xs text-gray-500">
             <span>Se încarcă...</span>
             <span>{progress}%</span>
           </div>
-          <Progress value={progress} className="h-1 bg-obsidian-mid" />
+          <Progress value={progress} className="h-1 bg-gray-200" />
         </div>
       )}
     </div>

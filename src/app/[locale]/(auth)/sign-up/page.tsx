@@ -48,19 +48,21 @@ export default function SignUpPage() {
   }
 
   return (
-    <main className="bg-background text-foreground">
-      <AuthUI
-        isSignIn={false}
-        onSignUp={handleSignUp}
-        onGoogleSignIn={handleGoogleSignIn}
-        loading={loading}
-        signInContent={{
-          quote: { text: 'Welcome Back! The journey continues.', author: 'MailMind' },
-        }}
-        signUpContent={{
-          quote: { text: 'Create an account. A new chapter awaits.', author: 'MailMind' },
-        }}
-      />
-    </main>
+    <div className="dashboard-light">
+      <main className="bg-background text-foreground min-h-screen">
+        <AuthUI
+          isSignIn={false}
+          onSignUp={handleSignUp}
+          onGoogleSignIn={handleGoogleSignIn}
+          loading={loading}
+          signInContent={{
+            quote: { text: 'Welcome Back! The journey continues.', author: 'MailMind' },
+          }}
+          signUpContent={{
+            quote: { text: 'Create an account. A new chapter awaits.', author: 'MailMind' },
+          }}
+        />
+      </main>
+    </div>
   )
 }

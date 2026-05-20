@@ -28,10 +28,10 @@ export function TwinProfile({ profile }: TwinProfileProps) {
     <div className="w-full h-[300px] mt-6 min-w-0">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
-          <PolarGrid stroke="rgba(193, 123, 63, 0.1)" />
+          <PolarGrid stroke="rgba(255, 95, 95, 0.1)" />
           <PolarAngleAxis 
             dataKey="subject" 
-            tick={{ fill: 'rgba(248, 247, 244, 0.3)', fontSize: 8, fontWeight: 700 }} 
+            tick={{ fill: 'rgba(0, 0, 0, 0.3)', fontSize: 8, fontWeight: 700 }} 
           />
           <Radar
             name="OCEAN"

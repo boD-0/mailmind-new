@@ -33,10 +33,10 @@ export const AgentNode = memo(({ data }: { data: { agent: AgentName; status: 'id
   
   const getStatusColor = () => {
     switch (status) {
-      case 'working': return 'border-copper shadow-[0_0_15px_rgba(193,123,63,0.5)]';
-      case 'done': return 'border-emerald-500/50';
-      case 'conflict': return 'border-red-500/50';
-      default: return 'border-white/10';
+      case 'working': return 'border-[#ff5f5f] shadow-[0_0_15px_rgba(255,95,95,0.3)]';
+      case 'done': return 'border-emerald-500';
+      case 'conflict': return 'border-red-500';
+      default: return 'border-gray-200';
     }
   };
 
@@ -44,21 +44,21 @@ export const AgentNode = memo(({ data }: { data: { agent: AgentName; status: 'id
     <motion.div 
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      className={`glass-card p-4 rounded-xl min-w-[180px] border ${getStatusColor()} transition-all duration-500`}
+      className={`bg-white/90 backdrop-blur-md p-4 rounded-xl min-w-[180px] border shadow-sm ${getStatusColor()} transition-all duration-500`}
     >
-      <Handle type="target" position={Position.Top} className="bg-copper border-none" />
+      <Handle type="target" position={Position.Top} className="bg-[#ff5f5f] border-none" />
       
       <div className="flex items-center gap-3">
-        <div className={`p-2 rounded-lg ${status === 'working' ? 'bg-copper text-obsidian animate-pulse' : 'bg-white/5 text-copper'}`}>
+        <div className={`p-2 rounded-lg ${status === 'working' ? 'bg-[#ff5f5f] text-white animate-pulse' : 'bg-gray-100 text-[#ff5f5f]'}`}>
           <Icon size={20} />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-cream">{AGENT_LABELS[agent]}</h3>
-          <p className="text-[10px] uppercase tracking-wider text-white/40">{status}</p>
+          <h3 className="text-sm font-semibold text-gray-900">{AGENT_LABELS[agent]}</h3>
+          <p className="text-[10px] uppercase tracking-wider text-gray-400">{status}</p>
         </div>
       </div>
 
-      <Handle type="source" position={Position.Bottom} className="bg-copper border-none" />
+      <Handle type="source" position={Position.Bottom} className="bg-[#ff5f5f] border-none" />
     </motion.div>
   );
 });

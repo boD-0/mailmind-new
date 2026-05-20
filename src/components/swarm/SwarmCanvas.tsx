@@ -26,9 +26,9 @@ const initialNodes: Node[] = [
 ];
 
 const initialEdges: Edge[] = [
-  { id: 'e1-2', source: 'researcher', target: 'psychologist', animated: true, style: { stroke: 'var(--copper)' } },
-  { id: 'e2-3', source: 'psychologist', target: 'strategist', animated: true, style: { stroke: 'var(--copper)' } },
-  { id: 'e3-4', source: 'strategist', target: 'copywriter', animated: true, style: { stroke: 'var(--copper)' } },
+  { id: 'e1-2', source: 'researcher', target: 'psychologist', animated: true, style: { stroke: '#ff5f5f', opacity: 0.4 } },
+  { id: 'e2-3', source: 'psychologist', target: 'strategist', animated: true, style: { stroke: '#ff5f5f', opacity: 0.4 } },
+  { id: 'e3-4', source: 'strategist', target: 'copywriter', animated: true, style: { stroke: '#ff5f5f', opacity: 0.4 } },
 ];
 
 export function SwarmCanvas() {
@@ -63,7 +63,7 @@ export function SwarmCanvas() {
   );
 
   return (
-    <div className="w-full h-[400px] glass-card rounded-2xl overflow-hidden relative">
+    <div className="w-full h-[400px] bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200 overflow-hidden relative">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -71,9 +71,9 @@ export function SwarmCanvas() {
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         fitView
-        className="bg-obsidian/50"
+        className="bg-gray-50"
       >
-        <Background color="var(--copper)" gap={20} size={1} style={{ opacity: 0.1 }} />
+        <Background color="#d4d4d4" gap={20} size={1} style={{ opacity: 0.3 }} />
         <Controls />
       </ReactFlow>
     </div>

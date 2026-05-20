@@ -14,6 +14,7 @@ export async function submitOnboarding(formData: {
   targetAudience: string;
   context?: string;
   brandValues: string[];
+  painPoints: string[];
 }) {
   const head = await headers();
   const mockReq = { headers: head } as unknown as Request;
@@ -29,6 +30,7 @@ export async function submitOnboarding(formData: {
       targetAudience: formData.targetAudience,
       context: formData.context,
       brandValues: formData.brandValues,
+      painPoints: formData.painPoints,
     });
 
     // 2. Marchez onboarding-ul ca fiind complet

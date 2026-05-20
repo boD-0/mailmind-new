@@ -4,35 +4,41 @@ import { useEffect, useRef, useCallback, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAureliusStore, AureliusMessage } from '@/stores/aureliusStore'
 import { AureliusContext } from '@/lib/aurelius/context'
+import { useSwarmStore } from '@/stores/swarmStore'
+import { getUserProjectProfile } from '@/app/actions/project'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import {
-  ImageIcon, FileInput, MonitorIcon, CircleUserRound,
-  ArrowUpIcon, Paperclip, PlusIcon, Sparkles
+  ArrowUpIcon, Paperclip, PlusIcon, Sparkles, AlertCircle
 } from 'lucide-react'
 
 interface AureliusChatProps {
   context: AureliusContext
 }
 
-interface UseAutoResizeTextareaProps {
-  minHeight: number
-  maxHeight?: number
+interface BrandProfile {
+  name: string
+  industry: string
+  toneOfVoice: string
+  targetAudience: string
+  context: string
+  brandValues: string[]
+  painPoints: string[]
 }
 
-function useAutoResizeTextarea({ minHeight, maxHeight }: UseAutoResizeTextareaProps) {
+/* ── useAutoResizeTextarea ── */
+
+function useAutoResizeTextarea({ minHeight, maxHeight }: { minHeight: number; maxHeight?: number }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const adjustHeight = useCallback(
     (reset?: boolean) => {
       const textarea = textareaRef.current
       if (!textarea) return
-
       if (reset) {
         textarea.style.height = `${minHeight}px`
         return
       }
-
       textarea.style.height = `${minHeight}px`
       const newHeight = Math.max(
         minHeight,
@@ -59,69 +65,228 @@ function useAutoResizeTextarea({ minHeight, maxHeight }: UseAutoResizeTextareaPr
   return { textareaRef, adjustHeight }
 }
 
-/* ── Action Buttons ── */
+/* ── Typing Dots ── */
 
-interface ActionButtonProps {
-  icon: React.ReactNode
-  label: string
-  onClick?: () => void
+function TypingDots() {
+  return (
+    <div className="flex justify-start">
+      <div className="bg-white p-4 rounded-2xl rounded-tl-none border border-gray-200 shadow-sm">
+        <div className="flex gap-1.5">
+          <span className="w-2 h-2 bg-[#ff5f5f] rounded-full animate-bounce" />
+          <span className="w-2 h-2 bg-[#ff5f5f] rounded-full animate-bounce [animation-delay:0.15s]" />
+          <span className="w-2 h-2 bg-[#ff5f5f] rounded-full animate-bounce [animation-delay:0.3s]" />
+        </div>
+      </div>
+    </div>
+  )
 }
 
-function ActionButton({ icon, label, onClick }: ActionButtonProps) {
+/* ── Empty State ── */
+
+function EmptyState({ context }: { context: AureliusContext }) {
+  const modeMessages: Record<string, string> = {
+    swarm_active: 'Swarm is running. I can provide real-time updates and recommendations.',
+    approval_needed: 'Strategy is ready for review. Check the proposals and approve when satisfied.',
+    twin_insight: 'I have insights about the Digital Twin. Ask me anything about the prospect profile.',
+    onboarding: 'Configure your brand values. I can guide you through each step.',
+    idle: 'I\'m ready to assist. Ask me about campaigns, strategy, or anything about MailMind.',
+  }
+
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-full border border-white/10 text-white/50 hover:text-white/80 transition-colors text-[11px]"
+    <div className="flex flex-col items-center justify-center h-full text-center px-6">
+      <div className="w-14 h-14 rounded-2xl bg-[#ff5f5f]/10 flex items-center justify-center mb-5">
+        <Sparkles className="w-7 h-7 text-[#ff5f5f]" />
+      </div>
+      <h3 className="text-gray-900 text-lg font-bold mb-2 tracking-tight">
+        How can I help you today?
+      </h3>
+      <p className="text-gray-400 text-sm max-w-xs leading-relaxed">
+        {modeMessages[context.mode] || modeMessages.idle}
+      </p>
+
+      {context.mode !== 'idle' && (
+        <div className="mt-4 px-3 py-1.5 bg-[#ff5f5f]/5 rounded-lg border border-[#ff5f5f]/15">
+          <span className="text-[10px] font-semibold text-[#ff5f5f] uppercase tracking-widest">
+            ● {context.mode === 'swarm_active' ? 'Swarm Active' :
+               context.mode === 'approval_needed' ? 'Approval Needed' :
+               context.mode === 'twin_insight' ? 'Digital Twin Insight' :
+               'Onboarding'}
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ── Streaming Message ── */
+
+function StreamingMessage({ content }: { content: string }) {
+  return (
+    <div className="flex justify-start">
+      <div className="max-w-[85%] p-3.5 rounded-2xl bg-white text-gray-700 border border-gray-200 rounded-tl-none shadow-sm">
+        <div className="flex items-center gap-2 mb-1.5">
+          <Sparkles size={12} className="text-[#ff5f5f]" />
+          <span className="text-[9px] font-bold uppercase tracking-widest opacity-40">
+            Aurelius
+          </span>
+        </div>
+        <p className="text-sm leading-relaxed whitespace-pre-wrap">{content}</p>
+        <span className="inline-block w-1.5 h-4 bg-[#ff5f5f] ml-0.5 animate-pulse align-text-bottom" />
+      </div>
+    </div>
+  )
+}
+
+/* ── Error Banner ── */
+
+function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex items-center gap-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 mx-1"
     >
-      {icon}
-      <span>{label}</span>
-    </button>
+      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+      <span className="flex-1">{message}</span>
+      <button onClick={onDismiss} className="text-red-400 hover:text-red-600">✕</button>
+    </motion.div>
   )
 }
 
 /* ── AureliusChat Component ── */
 
 export function AureliusChat({ context }: AureliusChatProps) {
-  const { history, addMessage, isThinking, setThinking } = useAureliusStore()
+  const {
+    history, addMessage, isThinking, setThinking,
+    streamingContent, setStreamingContent, appendStreamingContent,
+    error, setError, clearHistory
+  } = useAureliusStore()
+  const swarm = useSwarmStore()
   const [input, setInput] = useState('')
+  const [isStreaming, setIsStreaming] = useState(false)
+  const [brandProfile, setBrandProfile] = useState<BrandProfile | null>(null)
+  const abortRef = useRef<AbortController | null>(null)
+  const brandFetchedRef = useRef(false)
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 44, maxHeight: 120 })
   const scrollRef = useRef<HTMLDivElement>(null)
-  const [showActions, setShowActions] = useState(true)
 
+  // Fetch brand profile once on mount
+  useEffect(() => {
+    if (brandFetchedRef.current) return
+    brandFetchedRef.current = true
+
+    getUserProjectProfile().then(profile => {
+      if (profile) setBrandProfile(profile)
+    }).catch(() => {
+      // Silently fail — brand profile is optional for the API
+    })
+  }, [])
+
+  // Auto-scroll on new content
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
-  }, [history])
+  }, [history, streamingContent])
+
+  // Send message to the API
+  const sendMessage = useCallback(async (userMsg: AureliusMessage) => {
+    // Build the conversation history for the API
+    const apiMessages = [
+      ...history,
+      userMsg,
+    ].map(msg => ({
+      role: msg.role,
+      content: msg.content,
+    }))
+
+    // Build current context for the system prompt
+    const apiContext: Record<string, unknown> = {
+      pathname: window.location.pathname,
+      swarmStatus: swarm.status,
+      confidenceScore: swarm.confidenceScore,
+      activeAgent: swarm.activeAgent,
+    }
+
+    // Attach brand profile if available
+    if (brandProfile) {
+      apiContext.brand = brandProfile
+    }
+
+    // Cancel any previous request
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+
+    setIsStreaming(true)
+    setThinking(true)
+    setStreamingContent('')
+    setError(null)
+
+    try {
+      const response = await fetch('/api/aurelius/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: apiMessages,
+          context: apiContext,
+        }),
+        signal: controller.signal,
+      })
+
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => null)
+        throw new Error(errBody?.error || `Request failed (${response.status})`)
+      }
+
+      const reader = response.body?.getReader()
+      if (!reader) throw new Error('No response stream available')
+
+      const decoder = new TextDecoder()
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const chunk = decoder.decode(value, { stream: true })
+        appendStreamingContent(chunk)
+      }
+
+      // Streaming complete — add the full message to history
+      const finalContent = useAureliusStore.getState().streamingContent
+      if (finalContent.trim()) {
+        addMessage({ role: 'assistant', content: finalContent })
+      }
+      setStreamingContent('')
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        // User cancelled — keep partial content if any
+        const partialContent = useAureliusStore.getState().streamingContent
+        if (partialContent.trim()) {
+          addMessage({ role: 'assistant', content: partialContent })
+        }
+        setStreamingContent('')
+        return
+      }
+      const message = err instanceof Error ? err.message : 'An unexpected error occurred'
+      setError(message)
+    } finally {
+      setThinking(false)
+      setIsStreaming(false)
+      abortRef.current = null
+    }
+  }, [history, swarm.status, swarm.confidenceScore, swarm.activeAgent, brandProfile, addMessage, setThinking, setStreamingContent, appendStreamingContent, setError])
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault()
-    if (!input.trim() || isThinking) return
+    if (!input.trim() || isThinking || isStreaming) return
 
     const userMsg: AureliusMessage = { role: 'user', content: input }
     addMessage(userMsg)
     setInput('')
     adjustHeight(true)
-    setThinking(true)
-    setShowActions(false)
 
-    // Simulate AI response with context-aware reply
-    setTimeout(() => {
-      const responseMap: Record<string, string> = {
-        swarm_active: `Swarm-ul rulează cu încredere ${context.hint.split(':')[1]?.trim() || 'ridicată'}. Recomand să aștepți finalizarea înainte de a trece la pasul următor.`,
-        approval_needed: 'Strategia este gata de revizuire. Verifică propunerile agenților și apasă Approve când ești mulțumit.',
-        twin_insight: `Pe baza profilului Digital Twin: ${context.hint}. Acest insight va ghida tonul și unghiul campaniei.`,
-        onboarding: 'Configurează valorile brandului tău — acestea vor defini personalitatea întregului Swarm în campaniile viitoare.',
-        idle: 'Sunt pregătit să te asist. Pot optimiza sesiunile Swarm, analiza profiluri Digital Twin sau oferi recomandări strategice. Cu ce începem?',
-      }
-      const assistantMsg: AureliusMessage = {
-        role: 'assistant',
-        content: (responseMap[context.mode] || responseMap.idle) as string
-      }
-      addMessage(assistantMsg)
-      setThinking(false)
-    }, 1200)
+    await sendMessage(userMsg)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -131,69 +296,82 @@ export function AureliusChat({ context }: AureliusChatProps) {
     }
   }
 
-  return (
-    <div className="flex flex-col h-[420px]">
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto mb-3 space-y-3 pr-1 custom-scrollbar" ref={scrollRef}>
-        <AnimatePresence initial={false}>
-          {history.map((msg, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25 }}
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div className={cn(
-                "max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed",
-                msg.role === 'user'
-                  ? 'bg-[#ff5f5f] text-white rounded-tr-none'
-                  : 'bg-white/5 text-white/80 border border-white/10 rounded-tl-none'
-              )}>
-                <div className="flex items-center gap-2 mb-1">
-                  {msg.role === 'assistant' && (
-                    <Sparkles size={12} className="text-[#ff5f5f]" />
-                  )}
-                  <span className="text-[10px] font-semibold uppercase tracking-wider opacity-50">
-                    {msg.role === 'user' ? 'You' : 'Aurelius'}
-                  </span>
-                </div>
-                {msg.content}
-              </div>
-            </motion.div>
-          ))}
-          {isThinking && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex justify-start"
-            >
-              <div className="bg-white/5 p-3 rounded-2xl rounded-tl-none border border-white/10">
-                <div className="flex gap-1.5">
-                  <span className="w-2 h-2 bg-[#ff5f5f] rounded-full animate-bounce" />
-                  <span className="w-2 h-2 bg-[#ff5f5f] rounded-full animate-bounce [animation-delay:0.15s]" />
-                  <span className="w-2 h-2 bg-[#ff5f5f] rounded-full animate-bounce [animation-delay:0.3s]" />
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+  const hasMessages = history.length > 1 || (history.length === 1 && history[0]?.role === 'user')
+  const showStreaming = isStreaming && streamingContent.length > 0
 
-      {/* Context indicator */}
-      {context.mode !== 'idle' && (
-        <div className="mb-2 px-3 py-1.5 bg-[#ff5f5f]/10 rounded-lg border border-[#ff5f5f]/20">
-          <span className="text-[10px] font-medium text-[#ff5f5f] uppercase tracking-wider">
-            ● {context.mode === 'swarm_active' ? 'Swarm Active' :
-               context.mode === 'approval_needed' ? 'Approval Needed' :
-               context.mode === 'twin_insight' ? 'Digital Twin Insight' :
-               context.mode === 'onboarding' ? 'Onboarding' : ''}
+  return (
+    <div className="flex flex-col h-[480px]">
+      {/* Brand Profile Indicator */}
+      {brandProfile && !hasMessages && (
+        <div className="mb-2 px-3 py-1.5 bg-[#ff5f5f]/5 rounded-lg border border-[#ff5f5f]/15 text-center">
+          <span className="text-[10px] font-medium text-[#ff5f5f]">
+            ● {brandProfile.name} · {brandProfile.industry}
           </span>
         </div>
       )}
 
-      {/* Input Area - v0-ai-chat style */}
-      <div className="relative bg-white/5 rounded-xl border border-white/10">
+      {/* Error Banner */}
+      {error && (
+        <div className="mb-2">
+          <ErrorBanner message={error} onDismiss={() => setError(null)} />
+        </div>
+      )}
+
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto mb-3 custom-scrollbar" ref={scrollRef}>
+        {!hasMessages && !showStreaming ? (
+          <EmptyState context={context} />
+        ) : (
+          <div className="space-y-4 px-1">
+            <AnimatePresence initial={false}>
+              {history.map((msg, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25, ease: 'easeOut' }}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={cn(
+                    "max-w-[85%] p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm",
+                    msg.role === 'user'
+                      ? 'bg-[#ff5f5f] text-white rounded-tr-none'
+                      : 'bg-white text-gray-700 border border-gray-200 rounded-tl-none'
+                  )}>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      {msg.role === 'assistant' && (
+                        <Sparkles size={12} className="text-[#ff5f5f]" />
+                      )}
+                      <span className="text-[9px] font-bold uppercase tracking-widest opacity-40">
+                        {msg.role === 'user' ? 'You' : 'Aurelius'}
+                      </span>
+                    </div>
+                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                  </div>
+                </motion.div>
+              ))}
+
+              {/* Streaming message */}
+              {showStreaming && (
+                <motion.div
+                  key="streaming"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <StreamingMessage content={streamingContent} />
+                </motion.div>
+              )}
+
+              {/* Thinking dots */}
+              {isThinking && !showStreaming && <TypingDots />}
+            </AnimatePresence>
+          </div>
+        )}
+      </div>
+
+      {/* Input Area */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
         <div className="overflow-y-auto">
           <Textarea
             ref={textareaRef}
@@ -209,75 +387,64 @@ export function AureliusChat({ context }: AureliusChatProps) {
               "resize-none",
               "bg-transparent",
               "border-none",
-              "text-white text-sm",
+              "text-gray-800 text-sm",
               "focus:outline-none",
               "focus-visible:ring-0 focus-visible:ring-offset-0",
-              "placeholder:text-white/30 placeholder:text-sm",
+              "placeholder:text-gray-400",
               "min-h-[44px]"
             )}
             style={{ overflow: 'hidden' }}
+            disabled={isStreaming}
           />
         </div>
 
-        <div className="flex items-center justify-between p-2.5">
+        <div className="flex items-center justify-between p-2 border-t border-gray-100">
           <div className="flex items-center gap-1">
             <button
               type="button"
-              className="group p-1.5 hover:bg-white/5 rounded-lg transition-colors flex items-center gap-1"
+              className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+              title="Attach file"
             >
-              <Paperclip className="w-3.5 h-3.5 text-white/40" />
-              <span className="text-[10px] text-white/30 hidden group-hover:inline transition-opacity">
-                Attach
-              </span>
+              <Paperclip className="w-3.5 h-3.5 text-gray-400" />
             </button>
-          </div>
-          <div className="flex items-center gap-2">
             <button
               type="button"
-              className="px-2 py-1 rounded-lg text-[10px] text-white/40 transition-colors border border-dashed border-white/10 hover:border-white/20 hover:bg-white/5 flex items-center justify-between gap-1"
+              className="px-2 py-1 rounded-lg text-[10px] text-gray-400 transition-colors border border-dashed border-gray-300 hover:border-gray-400 hover:bg-gray-50 flex items-center gap-1"
             >
               <PlusIcon className="w-3 h-3" />
               Context
             </button>
+          </div>
+          <div className="flex items-center gap-1.5">
+            {isStreaming && (
+              <button
+                type="button"
+                onClick={() => {
+                  abortRef.current?.abort()
+                  setIsStreaming(false)
+                  setThinking(false)
+                }}
+                className="px-2 py-1 text-[10px] font-medium text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+              >
+                Stop
+              </button>
+            )}
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={!input.trim() || isThinking}
+              disabled={!input.trim() || isThinking || isStreaming}
               className={cn(
-                "px-1.5 py-1.5 rounded-lg text-sm transition-colors border border-white/10 flex items-center justify-between gap-1",
-                input.trim()
-                  ? "bg-[#ff5f5f] text-white border-[#ff5f5f] hover:bg-red-500"
-                  : "text-white/40"
+                "p-2 rounded-lg transition-all flex items-center justify-center",
+                input.trim() && !isStreaming
+                  ? "bg-[#ff5f5f] text-white hover:bg-red-500 shadow-sm"
+                  : "text-gray-400"
               )}
             >
-              <ArrowUpIcon className={cn("w-4 h-4", input.trim() ? "text-white" : "text-white/40")} />
-              <span className="sr-only">Send</span>
+              <ArrowUpIcon className="w-4 h-4" />
             </button>
           </div>
         </div>
       </div>
-
-      {/* Quick action buttons */}
-      {showActions && history.length <= 1 && (
-        <div className="flex items-center gap-2 mt-2.5 flex-wrap">
-          <ActionButton
-            icon={<ImageIcon className="w-3 h-3" />}
-            label="Analyze Screenshot"
-          />
-          <ActionButton
-            icon={<FileInput className="w-3 h-3" />}
-            label="Import Strategy"
-          />
-          <ActionButton
-            icon={<MonitorIcon className="w-3 h-3" />}
-            label="Optimize Campaign"
-          />
-          <ActionButton
-            icon={<CircleUserRound className="w-3 h-3" />}
-            label="Twin Insights"
-          />
-        </div>
-      )}
     </div>
   )
 }

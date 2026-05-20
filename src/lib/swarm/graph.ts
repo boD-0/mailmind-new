@@ -94,7 +94,7 @@ const { email_draft, twin_profile, campaign_id } = state;
   };
   await broadcastAgentUpdate(campaign_id, update);
 
-  const reaction_map = await simulateReaction(email_draft, twin_profile);
+  const reaction_map = await simulateReaction(email_draft, twin_profile, state.brand_context);
   
   const doneUpdate = {
     agent: 'consensus' as const,

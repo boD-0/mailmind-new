@@ -46,18 +46,20 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="bg-background text-foreground">
-      <AuthUI
-        onSignIn={handleSignIn}
-        onGoogleSignIn={handleGoogleSignIn}
-        loading={loading}
-        signInContent={{
-          quote: { text: 'Welcome Back! The journey continues.', author: 'MailMind' },
-        }}
-        signUpContent={{
-          quote: { text: 'Create an account. A new chapter awaits.', author: 'MailMind' },
-        }}
-      />
-    </main>
+    <div className="dashboard-light">
+      <main className="bg-background text-foreground min-h-screen">
+        <AuthUI
+          onSignIn={handleSignIn}
+          onGoogleSignIn={handleGoogleSignIn}
+          loading={loading}
+          signInContent={{
+            quote: { text: 'Welcome Back! The journey continues.', author: 'MailMind' },
+          }}
+          signUpContent={{
+            quote: { text: 'Create an account. A new chapter awaits.', author: 'MailMind' },
+          }}
+        />
+      </main>
+    </div>
   )
 }

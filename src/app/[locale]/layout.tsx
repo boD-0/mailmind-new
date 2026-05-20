@@ -8,6 +8,7 @@ import { I18nProvider } from '@/components/I18nProvider';
 import { PostHogProvider } from '@/components/PostHogProvider';
 import { PostHogPageView } from '@/components/PostHogPageView';
 import { Suspense } from 'react';
+import { CookieConsent } from '@/components/ui/cookie-consent';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,6 +50,7 @@ export default async function RootLayout({
           <I18nProvider messages={messages}>
             <BlueprintBg />
             {children}
+            <CookieConsent />
           </I18nProvider>
         </PostHogProvider>
       </body>
