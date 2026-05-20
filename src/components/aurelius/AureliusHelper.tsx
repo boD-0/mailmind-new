@@ -16,7 +16,17 @@ export function AureliusHelper() {
   const pathname = usePathname()
 
   // Generează contextul dinamic
-  const context = buildContext({ swarm, twin, pathname })
+  const context = buildContext({ 
+    swarm: { 
+      status: swarm.status as 'running' | 'awaiting_approval' | 'idle' | 'success' | 'error',
+      confidenceScore: swarm.confidenceScore,
+      activeAgent: swarm.activeAgent ?? undefined,
+    }, 
+    twin: { 
+      profile: twin.profile ?? undefined,
+    }, 
+    pathname 
+  })
 
   const isActive = swarm.status === 'swarm_running'
 

@@ -25,9 +25,13 @@ export const getMessages = cache(async (locale: string) => {
 export function createT(messages: Record<string, unknown>) {
   return (key: string, variables?: Record<string, string | number>) => {
     const keys = key.split('.');
-    let value = messages;
+    let value: unknown = messages;
     for (const k of keys) {
-      value = value?.[k];
+      if (value && typeof value === 'object') {
+        value = (value as Record<string, unknown>)[k];
+      } else {
+        value = undefined;
+      }
     }
     if (typeof value !== 'string') return key;
     
