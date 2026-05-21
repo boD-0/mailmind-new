@@ -3,6 +3,7 @@ import { db } from "@/db/drizzle";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
+import { NextResponse } from "next/server";
 
 export type Plan = "FREE" | "STARTER" | "PROFESSIONAL";
 
@@ -41,13 +42,19 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
 export async function getUserWithPlan(request: Request) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
-    if (!session) return null;
+    if (!session) {
+      console.warn(`[Auth] No session found for request to ${new URL(request.url).pathname}`);
+      return null;
+    }
 
     // Use db to get the user with plan to fix unused imports and avoid 'any'
     const result = await db.select().from(users).where(eq(users.id, session.user.id)).limit(1);
     const user = result[0];
 
-    if (!user) return null;
+    if (!user) {
+      console.warn(`[Auth] Session valid but user not found: ${session.user.id}`);
+      return null;
+    }
 
     return {
       ...session.user,
@@ -55,7 +62,7 @@ export async function getUserWithPlan(request: Request) {
       plan: user.plan as Plan || "FREE",
     };
   } catch (error) {
-    console.error("Auth session error:", error);
+    console.error("[Auth] Session error:", error);
     return null;
   }
 }
@@ -85,4 +92,43 @@ export function checkFeatureAccess(
   feature: keyof Omit<PlanLimits, "maxAgents" | "aiModel">
 ): boolean {
   return PLAN_LIMITS[plan][feature];
+}
+
+// ─── API Route Auth Helpers ─────────────────────────────────────────────────
+// These return NextResponse for use in API routes (instead of redirecting).
+
+/**
+ * Require authentication for an API route.
+ * Returns the authenticated user, or a 401 NextResponse.
+ * Usage:
+ *   const user = await apiRequireAuth(request);
+ *   if (user instanceof NextResponse) return user;
+ *   // user is now safely typed as NonNullable authenticated user
+ */
+export async function apiRequireAuth(request: Request): Promise<
+  | NonNullable<Awaited<ReturnType<typeof getUserWithPlan>>>
+  | NextResponse
+> {
+  const user = await getUserWithPlan(request);
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  return user;
+}
+
+/**
+ * Verify that a resource belongs to the authenticated user.
+ * Returns a 403 NextResponse if ownership check fails, or null if ok.
+ * Usage:
+ *   const err = verifyOwnership(resourceOwnerId, user.id);
+ *   if (err) return err;
+ */
+export function verifyOwnership(
+  resourceOwnerId: string,
+  userId: string,
+): NextResponse | null {
+  if (resourceOwnerId !== userId) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  return null;
 }

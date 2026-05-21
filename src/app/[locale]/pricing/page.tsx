@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
 import { useTranslation } from '@/components/I18nProvider'
+import { Footer } from "@/components/ui/footer"
 
 /* ════════════════════════════════════════════════════════════
    ANIMATION VARIANTS
@@ -43,7 +44,18 @@ const stagger: Variants = {
    PLAN DATA — matches gatekeeper PLAN_LIMITS
    ════════════════════════════════════════════════════════════ */
 
-const TIERS = [
+interface Tier {
+  id: "FREE" | "STARTER" | "PROFESSIONAL"
+  tierKey: "free" | "starter" | "professional"
+  price: string
+  originalPrice?: string
+  badge: string | null
+  features: { key: string; included: boolean }[]
+  ctaHref: string
+  highlight: boolean
+}
+
+const TIERS: Tier[] = [
   {
     id: "FREE" as const,
     tierKey: "free" as const,
@@ -63,8 +75,9 @@ const TIERS = [
   {
     id: "STARTER" as const,
     tierKey: "starter" as const,
-    price: "$49",
-    badge: "POPULAR",
+    price: "$29",
+    originalPrice: "$49",
+    badge: "MOST POPULAR",
     features: [
       { key: "vault", included: true },
       { key: "warroom", included: false },
@@ -413,12 +426,12 @@ function PricingCards({ locale }: { locale: string }) {
             >
               {tier.badge && (
                 <motion.span
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 bg-[#ff5f5f] text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg"
+                  className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 bg-gradient-to-r from-[#ff5f5f] to-rose-500 text-white text-xs font-bold px-5 py-1.5 rounded-full shadow-lg shadow-red-200/50"
                   initial={{ y: -10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.5 + i * 0.1, type: "spring", stiffness: 300 }}
                 >
-                  <Crown size={10} />
+                  <Crown size={11} />
                   {tier.badge}
                 </motion.span>
               )}
@@ -429,6 +442,11 @@ function PricingCards({ locale }: { locale: string }) {
               </div>
 
               <div className="flex items-baseline gap-1 my-6">
+                {tier.originalPrice && (
+                  <span className="text-2xl text-gray-300 line-through font-semibold tracking-tighter mr-0.5">
+                    {tier.originalPrice}
+                  </span>
+                )}
                 <motion.span
                   className="text-5xl font-extrabold tracking-tighter text-[#1a1a1a]"
                   initial={{ scale: 0.5 }}
@@ -439,6 +457,11 @@ function PricingCards({ locale }: { locale: string }) {
                   {getPrice(tier.price, tier.id)}
                 </motion.span>
                 <span className="text-gray-400 text-sm">{getPeriod(tier.id)}</span>
+                {tier.originalPrice && billing === "annual" && (
+                  <span className="ml-1.5 text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">
+                    {t('pricing.yearly_save')}
+                  </span>
+                )}
               </div>
 
               {/* Agent & Model */}
@@ -947,81 +970,21 @@ const FOOTER_COLUMNS = [
   {
     titleKey: "footer.company",
     links: [
-      { href: () => "#", labelKey: "footer.company_about" },
-      { href: () => "#", labelKey: "footer.company_blog" },
-      { href: () => "#", labelKey: "footer.company_careers" },
+      { href: "#", labelKey: "footer.company_about" },
+      { href: "#", labelKey: "footer.company_blog" },
+      { href: "#", labelKey: "footer.company_careers" },
     ],
   },
   {
     titleKey: "footer.legal",
     links: [
-      { href: () => "#", labelKey: "footer.legal_privacy" },
-      { href: () => "#", labelKey: "footer.legal_terms" },
+      { href: "#", labelKey: "footer.legal_privacy" },
+      { href: "#", labelKey: "footer.legal_terms" },
     ],
   },
 ]
 
 const SOCIAL_LINKS = ["footer.social_twitter", "footer.social_linkedin", "footer.social_github"]
-
-function Footer({ locale }: { locale: string }) {
-  const { t } = useTranslation()
-
-  return (
-    <footer className="bg-[#fdfbf7] border-t border-gray-200 py-16 px-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
-          <div className="col-span-2 md:col-span-1">
-            <Link href={`/${locale}`} className="flex items-center gap-2.5 group">
-              <motion.div
-                className="w-8 h-8 bg-[#ff5f5f] rounded-xl flex items-center justify-center shadow-sm"
-                whileHover={{ rotate: -10, scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                <span className="text-white text-xs font-extrabold">M</span>
-              </motion.div>
-              <span className="font-bold text-lg text-[#1a1a1a] tracking-tight">MailMind</span>
-            </Link>
-            <p className="mt-4 text-sm text-gray-500 leading-relaxed max-w-[200px]">
-              {t('footer.tagline')}
-            </p>
-          </div>
-          {FOOTER_COLUMNS.map((col) => (
-            <div key={col.titleKey}>
-              <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-4">{t(col.titleKey)}</p>
-              <ul className="space-y-2 text-sm text-gray-500">
-                {col.links.map((link) => (
-                  <li key={link.labelKey}>
-                    <Link href={link.href(locale)} className="hover:text-[#1a1a1a] transition-colors relative inline-block group/link">
-                      {t(link.labelKey)}
-                      <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-[#ff5f5f] transition-all duration-300 group-hover/link:w-full" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <motion.div
-          className="mt-12 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <span>{t('footer.copyright')}</span>
-          <div className="flex gap-6">
-            {SOCIAL_LINKS.map((social) => (
-              <a key={social} href="#" className="hover:text-gray-600 transition-colors relative group/social">
-                {t(social)}
-                <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-gray-400 transition-all duration-300 group-hover/social:w-full" />
-              </a>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-    </footer>
-  )
-}
 
 /* ════════════════════════════════════════════════════════════
    MAIN PAGE
@@ -1039,7 +1002,7 @@ export default function PricingPage() {
       <ComparisonTable locale={l} />
       <PricingFAQ />
       <PricingCTA locale={l} />
-      <Footer locale={l} />
+      <Footer locale={l} columns={FOOTER_COLUMNS} socialLinks={SOCIAL_LINKS} />
     </main>
   )
 }

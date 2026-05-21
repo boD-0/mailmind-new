@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useMemo } from "react"
 import { motion, AnimatePresence, useScroll, useTransform, type Variants } from "framer-motion"
 import { useParams } from "next/navigation"
 import Link from "next/link"
@@ -12,11 +12,13 @@ import {
 } from "@/components/ui/accordion"
 import {
   Menu, X, ArrowRight, Check, Search, Brain, Target, PenTool,
-  Play, Send, Mail, Sparkles, Globe, Heart, Shield,
-  Zap,
+  Send, Mail, Sparkles, Globe, Heart, Shield,
+  Zap, Crown,
 } from "lucide-react"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
 import { useTranslation } from '@/components/I18nProvider'
+import { Hero } from "@/components/ui/animated-hero"
+import { Footer } from "@/components/ui/footer"
 
 /* ════════════════════════════════════════════════════════════
    ANIMATION VARIANT PRESETS
@@ -140,10 +142,11 @@ const plans = [
   },
   {
     nameKey: 'home.pricing.pro.name',
-    price: "$49",
+    price: "$29",
+    originalPrice: "$49",
     period: '/month',
     periodKey: 'home.pricing.pro.period',
-    badge: 'POPULAR',
+    badge: 'MOST POPULAR',
     badgeKey: 'home.pricing.pro.badge',
     features: [
       'home.pricing.pro.features.0',
@@ -219,54 +222,6 @@ function FloatingOrbs() {
         }}
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
       />
-    </div>
-  )
-}
-
-/** Floating tiny dots/circles in the hero */function FloatingParticles() {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  const particles = useMemo(() =>
-    Array.from({ length: 12 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 4 + 2,
-      delay: Math.random() * 5,
-      duration: Math.random() * 6 + 4,
-    })),
-  [])
-
-  if (!mounted) return null
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map((p) => (
-        <motion.div
-          key={p.id}
-          className="absolute rounded-full bg-[#ff5f5f]/20"
-          style={{
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            width: p.size,
-            height: p.size,
-          }}
-          animate={{
-            y: [0, -20, 0],
-            opacity: [0.2, 0.6, 0.2],
-          }}
-          transition={{
-            duration: p.duration,
-            repeat: Infinity,
-            delay: p.delay,
-            ease: "easeInOut",
-          }}
-        />
-      ))}
     </div>
   )
 }
@@ -458,177 +413,7 @@ function Header({ locale }: { locale: string }) {
   )
 }
 
-/* ── 2. HERO ── */
-
-function HeroSection({ locale }: { locale: string }) {
-  const { t } = useTranslation()
-  return (
-    <section className="relative pt-24 pb-20 px-6 text-center bg-[#fdfbf7] overflow-hidden">
-      <FloatingOrbs />
-      <FloatingParticles />
-
-      <div className="max-w-5xl mx-auto relative z-10">        <motion.h1
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter leading-[1.1] mb-6 text-[#1a1a1a]"
-        >
-          {t('home.hero.headline_1')}{" "}
-          <span className="relative inline-block">
-            <motion.span
-              className="relative z-10 bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent bg-[length:200%_100%] animate-gradient-x"
-            >
-              {t('home.hero.headline_knows')}
-            </motion.span>
-            <motion.span
-              className="absolute -inset-1 bg-[#ff5f5f]/10 rounded-lg -z-10"
-              initial={{ scaleX: 0, opacity: 0 }}
-              animate={{ scaleX: 1, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
-              style={{ transformOrigin: "left" }}
-            />
-          </span>{" "}
-          {t('home.hero.headline_2')}
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.35 }}
-          className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed"
-        >
-          {t('home.hero.subheadline')}
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
-        >
-          <motion.div
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <Link
-              href={`/${locale}/sign-up`}
-              className="bg-[#ff5f5f] text-white px-8 py-3.5 rounded-full font-semibold hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-200/50 inline-flex items-center gap-2 group relative overflow-hidden"
-            >
-              <motion.span
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-                initial={{ x: "-100%" }}
-                animate={{ x: "200%" }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              />
-              <span className="relative z-10 flex items-center gap-2">
-                {t('home.hero.cta_get_started')}
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </span>
-            </Link>
-          </motion.div>
-          <motion.div
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <Link
-              href={`/${locale}/demo`}
-              className="border border-gray-300 text-gray-600 px-8 py-3.5 rounded-full font-semibold hover:border-gray-400 hover:text-[#1a1a1a] transition-all inline-flex items-center gap-2"
-            >
-              <Play size={16} />
-              {t('home.hero.cta_live_demo')}
-            </Link>
-          </motion.div>
-        </motion.div>
-
-        {/* Hero Image Placeholder */}
-        <motion.div
-          initial={{ opacity: 0, y: 40, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.65, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="mt-16"
-        >
-          <motion.div
-            className="aspect-video bg-gray-100 rounded-2xl border border-gray-200 shadow-sm overflow-hidden relative"
-            whileHover={{ y: -4, boxShadow: "0 20px 40px rgba(0,0,0,0.08)" }}
-            transition={{ duration: 0.3 }}
-          >
-            {/* Mock browser chrome */}
-            <div className="flex items-center gap-1.5 px-5 py-3 bg-white border-b border-gray-100">
-              <motion.div
-                className="w-3 h-3 rounded-full bg-red-400"
-                animate={{ opacity: [1, 0.4, 1] }}
-                transition={{ duration: 3, repeat: Infinity, delay: 0 }}
-              />
-              <motion.div
-                className="w-3 h-3 rounded-full bg-yellow-400"
-                animate={{ opacity: [1, 0.4, 1] }}
-                transition={{ duration: 3, repeat: Infinity, delay: 0.3 }}
-              />
-              <motion.div
-                className="w-3 h-3 rounded-full bg-green-400"
-                animate={{ opacity: [1, 0.4, 1] }}
-                transition={{ duration: 3, repeat: Infinity, delay: 0.6 }}
-              />
-              <div className="flex-1 max-w-[50%] mx-auto h-7 bg-gray-50 rounded-lg flex items-center px-3 border border-gray-100">
-                <span className="text-[10px] text-gray-400 font-medium">{t('home.hero.app_url')}</span>
-              </div>
-            </div>
-            {/* Mock dashboard content */}
-            <div className="p-6 md:p-8 bg-white">
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                {[Search, Brain, PenTool].map((Icon, i) => (
-                  <motion.div
-                    key={i}
-                    className={`h-16 rounded-xl border p-3 flex items-center gap-3 ${
-                      i === 0 ? "bg-emerald-50 border-emerald-100" :
-                      i === 1 ? "bg-amber-50 border-amber-100" :
-                      "bg-rose-50 border-rose-100"
-                    }`}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1 + i * 0.15, duration: 0.4 }}
-                  >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      i === 0 ? "bg-emerald-200" : i === 1 ? "bg-amber-200" : "bg-rose-200"
-                    }`}>
-                      <Icon size={14} className={
-                        i === 0 ? "text-emerald-600" : i === 1 ? "text-amber-600" : "text-rose-600"
-                      } />
-                    </div>
-                    <div>
-                      <motion.div
-                        className={`h-2 w-12 rounded-full mb-1 ${
-                          i === 0 ? "bg-emerald-200" : i === 1 ? "bg-amber-200" : "bg-rose-200"
-                        }`}
-                        animate={{ opacity: [0.4, 1, 0.4] }}
-                        transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
-                      />
-                      <div className={`h-1.5 w-8 rounded-full ${
-                        i === 0 ? "bg-emerald-100" : i === 1 ? "bg-amber-100" : "bg-rose-100"
-                      }`} />
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-              <div className="flex items-center justify-center">
-                <div className="w-full max-w-md h-3 bg-gray-100 rounded-full overflow-hidden">
-                  <motion.div
-                    className="h-full bg-gradient-to-r from-[#ff5f5f] to-rose-400 rounded-full"
-                    initial={{ width: "0%" }}
-                    animate={{ width: "65%" }}
-                    transition={{ duration: 1.5, delay: 1.5, ease: "easeOut" }}
-                  />
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      </div>
-    </section>
-  )
-}
-
-/* ── 3. FEATURES — 4 SPECIALISTS ── */
+/* ── 2. FEATURES — 4 SPECIALISTS ── */
 
 function FeaturesSection() {
   const { t } = useTranslation()
@@ -1079,19 +864,25 @@ function PricingSection() {
             >
               {plan.badge && (
                 <motion.span
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 inline-block bg-[#ff5f5f] text-white text-xs font-bold px-4 py-1 rounded-full shadow-sm"
+                  className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 bg-gradient-to-r from-[#ff5f5f] to-rose-500 text-white text-xs font-bold px-5 py-1.5 rounded-full shadow-lg shadow-red-200/50"
                   initial={{ y: -10, opacity: 0 }}
                   whileInView={{ y: 0, opacity: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.3 + i * 0.1, type: "spring", stiffness: 300 }}
                 >
-                  {t(plan.badgeKey || plan.nameKey)}
+                  <Crown size={11} />
+                  {plan.badge}
                 </motion.span>
               )}
               <h3 className={`font-bold text-lg mb-1 text-[#1a1a1a] ${plan.highlight ? "mt-2" : ""}`}>
                 {t(plan.nameKey)}
               </h3>
               <div className="flex items-baseline gap-1 mb-6">
+                {(plan as any).originalPrice && (
+                  <span className="text-xl text-gray-300 line-through font-semibold tracking-tighter mr-0.5">
+                    {(plan as any).originalPrice}
+                  </span>
+                )}
                 <motion.span
                   className="text-4xl font-extrabold tracking-tighter text-[#1a1a1a]"
                   initial={{ scale: 0.5 }}
@@ -1377,98 +1168,33 @@ function FinalCTASection() {
 
 /* ── 9. FOOTER ── */
 
-function Footer({ locale }: { locale: string }) {
-  const { t } = useTranslation()
-  const footerColumns = [
-    {
-      titleKey: 'footer.product',
-      links: [
-        { href: "#features", labelKey: 'footer.product_features' },
-        { href: "#how-it-works", labelKey: 'footer.product_how' },
-        { href: "#pricing", labelKey: 'footer.product_pricing' },
-      ]
-    },
-    {
-      titleKey: 'footer.company',
-      links: [
-        { href: "#", labelKey: 'footer.company_about' },
-        { href: "#", labelKey: 'footer.company_blog' },
-        { href: "#", labelKey: 'footer.company_careers' },
-      ]
-    },
-    {
-      titleKey: 'footer.legal',
-      links: [
-        { href: "#", labelKey: 'footer.legal_privacy' },
-        { href: "#", labelKey: 'footer.legal_terms' },
-      ]
-    },
-  ]
+const LANDING_FOOTER_COLUMNS = [
+  {
+    titleKey: "footer.product",
+    links: [
+      { href: (locale: string) => `/${locale}/#features`, labelKey: "footer.product_features" },
+      { href: (locale: string) => `/${locale}/#how-it-works`, labelKey: "footer.product_how" },
+      { href: (locale: string) => `/${locale}/#pricing`, labelKey: "footer.product_pricing" },
+    ],
+  },
+  {
+    titleKey: "footer.company",
+    links: [
+      { href: "#", labelKey: "footer.company_about" },
+      { href: "#", labelKey: "footer.company_blog" },
+      { href: "#", labelKey: "footer.company_careers" },
+    ],
+  },
+  {
+    titleKey: "footer.legal",
+    links: [
+      { href: "#", labelKey: "footer.legal_privacy" },
+      { href: "#", labelKey: "footer.legal_terms" },
+    ],
+  },
+]
 
-  return (
-    <footer className="bg-[#fdfbf7] border-t border-gray-200 py-16 px-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
-          <div className="col-span-2 md:col-span-1">
-            <Link href={`/${locale}`} className="flex items-center gap-2.5 group">
-              <motion.div
-                className="w-8 h-8 bg-[#ff5f5f] rounded-xl flex items-center justify-center shadow-sm"
-                whileHover={{ rotate: -10, scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                <span className="text-white text-xs font-extrabold">M</span>
-              </motion.div>
-              <span className="font-bold text-lg text-[#1a1a1a] tracking-tight">MailMind</span>
-            </Link>
-            <p className="mt-4 text-sm text-gray-500 leading-relaxed max-w-[200px]">
-              {t('footer.tagline')}
-            </p>
-          </div>
-          {footerColumns.map((col) => (
-            <div key={col.titleKey}>
-              <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-4">{t(col.titleKey)}</p>
-              <ul className="space-y-2 text-sm text-gray-500">
-                {col.links.map((link) => (
-                  <li key={link.labelKey}>
-                    <a href={link.href} className="hover:text-[#1a1a1a] transition-colors relative inline-block group/link">
-                      {t(link.labelKey)}
-                      <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-[#ff5f5f] transition-all duration-300 group-hover/link:w-full" />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <motion.div
-          className="mt-12 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-400"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <span>{t('footer.copyright')}</span>
-          <div className="flex gap-6">
-            {[
-              { href: "#", labelKey: 'footer.social_twitter' },
-              { href: "#", labelKey: 'footer.social_linkedin' },
-              { href: "#", labelKey: 'footer.social_github' },
-            ].map((social) => (
-              <a
-                key={social.labelKey}
-                href={social.href}
-                className="hover:text-gray-600 transition-colors relative group/social"
-              >
-                {t(social.labelKey)}
-                <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-gray-400 transition-all duration-300 group-hover/social:w-full" />
-              </a>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-    </footer>
-  )
-}
+const LANDING_SOCIAL_LINKS = ["footer.social_twitter", "footer.social_linkedin", "footer.social_github"]
 
 /* ════════════════════════════════════════════════════════════
    MAIN PAGE
@@ -1481,14 +1207,14 @@ export default function HomePage() {
   return (
     <main className="bg-[#fdfbf7] text-[#1a1a1a] font-sans antialiased selection:bg-[#ff5f5f]/20 selection:text-[#1a1a1a]">
       <Header locale={l} />
-      <HeroSection locale={l} />
+      <Hero locale={l} />
       <FeaturesSection />
       <InteractiveDemoSection />
       <DifferentiationSection />
       <PricingSection />
       <FAQSection />
       <FinalCTASection />
-      <Footer locale={l} />
+      <Footer locale={l} columns={LANDING_FOOTER_COLUMNS} socialLinks={LANDING_SOCIAL_LINKS} />
     </main>
   )
 }

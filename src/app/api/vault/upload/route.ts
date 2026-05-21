@@ -7,9 +7,27 @@ import { db } from "@/db/drizzle";
 import { vaultDocuments } from "@/db/schema";
 import { randomUUID } from "crypto";
 import { safeJsonParse } from "@/lib/utils";
+import { uploadRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const user = await requireOnboarding(req);
+
+  // Rate limit uploads: 5 requests/min per user
+  const rateLimitResult = await uploadRateLimit(user.id);
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: "Upload limit reached. Please try again later." },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateLimitResult.retryAfterSeconds),
+          "X-RateLimit-Limit": String(rateLimitResult.limit),
+          "X-RateLimit-Remaining": String(rateLimitResult.remaining),
+          "X-RateLimit-Reset": String(rateLimitResult.reset),
+        },
+      },
+    );
+  }
 
   if (!checkFeatureAccess(user.plan, "hasVault")) {
     return NextResponse.json(

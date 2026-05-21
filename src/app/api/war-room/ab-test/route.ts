@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { apiRequireAuth } from "@/lib/auth/gatekeeper";
+import { aiGenerationRateLimit } from '@/lib/rate-limit';
 
 export const maxDuration = 30
 
-function getClient(apiKeyOverride?: string, provider?: string) {
-  const apiKey = apiKeyOverride || process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY
+function getClient() {
+  const apiKey = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY
 
   if (!apiKey) {
     throw new Error('Missing API key. Set OPENROUTER_API_KEY or OPENAI_API_KEY in .env')
   }
 
-  const isOpenRouter = provider === 'openrouter' || (!apiKeyOverride && !!process.env.OPENROUTER_API_KEY)
+  const isOpenRouter = !!process.env.OPENROUTER_API_KEY
   const baseURL = isOpenRouter ? 'https://openrouter.ai/api/v1' : 'https://api.openai.com/v1'
 
   const defaultHeaders: Record<string, string> = {}
@@ -22,10 +24,41 @@ function getClient(apiKeyOverride?: string, provider?: string) {
   return new OpenAI({ apiKey, baseURL, defaultHeaders })
 }
 
+// Allowed models (prevent users from requesting expensive/unsupported models)
+const ALLOWED_MODELS = ["gpt-4o-mini", "gpt-4o", "openai/gpt-4o-mini", "openai/gpt-4o"];
+
 export async function POST(request: Request) {
-  try {
-    const body = await request.json()
-    const { topic, count = 5, context, apiKey, provider, model } = body
+  // Require authentication
+  const user = await apiRequireAuth(request);
+  if (user instanceof NextResponse) return user;
+
+  // Rate limit AI generation: 10 requests/min per user
+  const rateLimitResult = await aiGenerationRateLimit(user.id);
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'AI generation limit reached. Please try again later.' },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(rateLimitResult.retryAfterSeconds),
+          'X-RateLimit-Limit': String(rateLimitResult.limit),
+          'X-RateLimit-Remaining': String(rateLimitResult.remaining),
+          'X-RateLimit-Reset': String(rateLimitResult.reset),
+        },
+      },
+    );
+  }
+
+  try {    const body = await request.json()
+    const { topic, count = 5, context, model } = body
+
+    // Input size limits
+    if (topic && typeof topic === 'string' && topic.length > 500) {
+      return NextResponse.json({ error: 'Topic too long (max 500 characters)' }, { status: 400 });
+    }
+    if (context && typeof context === 'string' && context.length > 5000) {
+      return NextResponse.json({ error: 'Context too long (max 5000 characters)' }, { status: 400 });
+    }
 
     if (!topic || typeof topic !== 'string' || topic.trim().length === 0) {
       return NextResponse.json(
@@ -34,8 +67,11 @@ export async function POST(request: Request) {
       )
     }
 
-    const client = getClient(apiKey, provider)
-    const selectedModel = model || (provider === 'openrouter' ? 'openai/gpt-4o-mini' : 'gpt-4o-mini')
+    const client = getClient()
+    // Validate model against allowlist; fall back to default if invalid
+    const selectedModel = (model && typeof model === 'string' && ALLOWED_MODELS.includes(model))
+      ? model
+      : (process.env.OPENROUTER_API_KEY ? 'openai/gpt-4o-mini' : 'gpt-4o-mini');
 
     const systemPrompt = `You are an expert copywriter specializing in email marketing subject lines.
 Generate ${Math.min(Math.max(count, 1), 10)} compelling subject line variants for the given topic.

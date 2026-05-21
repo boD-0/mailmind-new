@@ -1,5 +1,160 @@
 # Changelog
 
+## [Unreleased] — 2026-05-18
+
+### 🔒 Security Hardening — Full Infrastructure Audit
+
+#### `src/lib/rate-limit.ts` *(NEW)*
+Redis sliding-window rate limiter cu pipeline-uri atomice și fail-open pattern:
+- Pre-configured limiters: login (5/min), signup (3/min), password reset (3/10min), API (100/min), AI (10/min), upload (5/min)
+- Atomic operations via Redis sorted sets + pipelines, auto-expiry
+
+#### `src/middleware.ts` *(NEW)*
+API gateway middleware:
+- Rate limiting aplicat pe auth endpoints (login, signup, password reset)
+- Security headers: CSP strict, HSTS (production), X-Content-Type-Options, X-Frame-Options
+- X-Request-Id injection pentru request tracing
+
+#### `src/lib/auth/auth.ts` *(MODIFIED)*
+- Email verification activat cu Resend sender
+- Sesiuni: 7 zile expiry, 1 zi updateAge, max 5 sesiuni active
+- Built-in rate limiting: 100 req/60s
+- Migration comment pentru userii existenți (`email_verified`)
+
+#### `src/lib/auth/gatekeeper.ts` *(MODIFIED)*
+- Adăugat `apiRequireAuth` și `verifyOwnership` helpers
+- Audit logging pe auth failures (session missing, user not found)
+- `checkFeatureAccess` și `getPlanLimits` pentru verificări de plan
+
+#### `supabase/migrations/20260508000004_api_usage_rls.sql` *(NEW)*
+Row-Level Security pe API usage:
+- Tabel `api_usage` — tracking per request (user_id, endpoint, method, tokens_used, status_code, ip_address)
+- Tabel `api_usage_daily` — agregări zilnice pre-calculate
+- RLS policies SELECT-only (`user_id = auth.uid()`) — aplicația scrie via service role
+- Indexes: user_id + created_at, user_id + date, endpoint + date
+
+#### API Routes securizate *(7 fișiere)*
+Rute care erau fără auth — acum folosesc `apiRequireAuth` + ownership checks:
+- `swarm/approve/route.ts`, `swarm/resume/route.ts`, `swarm/launch/route.ts`
+- `war-room/sequence/route.ts`, `war-room/ab-test/route.ts`
+- `rag/ingest/route.ts`, `aurelius/chat/route.ts`
+- Input size limits adăugate (topic max 500, context max 5000)
+
+**TypeScript: 0 erori**
+
+---
+
+### 💰 Pricing — Discount + Most Popular Badge
+
+#### `src/app/[locale]/pricing/page.tsx` *(MODIFIED)*
+- Starer tier: preț $29 cu `originalPrice: "$49"` tăiat (line-through) — efect de reducere
+- Badge "MOST POPULAR" cu iconiță `Crown` 👑 pe tier-ul din mijloc
+- Interfață `Tier` TypeScript (fără `any` casts)
+- `originalPrice` salvat și în i18n keys
+
+#### `src/app/[locale]/page.tsx` *(MODIFIED)*
+- Aceeași logică de discount aplicată în secțiunea Pricing de pe landing page
+- Badge "MOST POPULAR" + `Crown` icon
+
+#### `src/messages/{en,ro,de,fr}.json` *(MODIFIED)*
+- Adăugat `original_price: "$49"` în `pricing.tier_starter` și `home.pricing.pro`
+
+**TypeScript: 0 erori**
+
+---
+
+### 🎬 Animated Hero Component
+
+#### `src/components/ui/animated-hero.tsx` *(NEW)*
+Componentă hero cu cuvinte rotative animate:
+- 5 cuvinte: "personalized", "researched", "calibrated", "converting", "team-written"
+- Animație spring framer-motion (sus/jos, fade in/out)
+- Brand styling: gradient `#ff5f5f` → purple, butoane către demo + sign-up
+- Acceptă `locale` prop opțional pentru link-uri corecte
+
+#### `src/app/[locale]/page.tsx` *(MODIFIED)*
+- Hero-ul vechi `HeroSection` + `FloatingParticles` eliminate (cod mort)
+- Înlocuite cu `<Hero locale={l} />` din animated-hero
+- Importuri nefolosite curățate (`useEffect`, `Play`)
+
+**TypeScript: 0 erori**
+
+---
+
+### 🦶 Reusable Footer Component
+
+#### `src/components/ui/footer.tsx` *(NEW)*
+Footer reutilizabil cu i18n, acceptă:
+- `columns` — array de `FooterColumn` (titleKey + links cu href/labelKey)
+- `socialLinks` — array de string-uri (i18n keys)
+- `brandName` — opțional, default "MailMind"
+- Logo animat cu hover rotation (spring), link-uri cu underline animat
+
+#### `src/app/[locale]/page.tsx` *(MODIFIED)*
+- Footer-ul inline eliminat, înlocuit cu `<Footer locale={l} columns={LANDING_FOOTER_COLUMNS} socialLinks={LANDING_SOCIAL_LINKS} />`
+
+#### `src/app/[locale]/pricing/page.tsx` *(MODIFIED)*
+- Footer-ul inline eliminat, înlocuit cu `<Footer locale={l} columns={FOOTER_COLUMNS} socialLinks={SOCIAL_LINKS} />`
+
+**TypeScript: 0 erori**
+
+---
+
+### 📊 Dashboard Redesign — Campaign Writing Studio
+
+#### `src/app/[locale]/dashboard/page.tsx` *(COMPLETE REWRITE)*
+
+Dashboard transformat din CRM/outlook în studio de campanii AI:
+
+**Pipeline Stages** — 4 carduri animate:
+- Research (emerald), Draft (amber), Review (indigo), Send (rose)
+- Fiecare cu icon, count, progress bar, hover lift + box shadow
+- Stage mapping corect: draft/active/review/complete → pipeline keys
+
+**Active Campaigns** — listă în loc de "Your roster":
+- Nume campanie + companie + dată + status dot + confidence bar
+- Link către War Room per campanie
+- Status dots colorate (active=roșu, review=amber, draft=gri, complete=verde)
+- Empty state cu icon Target
+
+**Swarm Activity Feed** — conectat la `useSwarmStore.traceLogs`:
+- Agent-specific icons (Search/Brain/Target/PenTool) + culori
+- Timestamp formatat, nume agent, mesaj
+- Scroll personalizat, max 8 mesaje, reverse chronological
+
+**Dynamic Greeting** — `authClient.useSession()`:
+- Salut bazat pe ora zilei (morning/afternoon/evening)
+- Nume user din session (nu hardcodat "Bogdan")
+- Agent count bazat pe plan (FREE=1, STARTER=2, PRO=4)
+
+**Metrics Row** — derivat din date:
+- Emails drafted, avg confidence, active agents, total campaigns
+- 4 coloane cu iconițe colorate
+
+**Păstrat:**
+- Weekly chart (recharts AreaChart cu gradient)
+- EventScheduler pentru deadlines
+- NewProjectDialog integrat
+
+**TypeScript: 0 erori** — `counts` cu null coalescing, `User` cast eliminat
+
+---
+
+### 🌐 Dashboard i18n — 4 Limbi
+
+#### `src/messages/{en,ro,de,fr}.json` *(MODIFIED)*
+Adăugate ~30 de chei noi în namespace-ul `dashboard`:
+- `greeting_morning/afternoon/evening`, `agents_awake/asleep`, `new_campaign`
+- `pipeline_label/title/highlight` + 4 stage names + descriptions
+- `campaigns_*` (label, title, highlight, view_all, empty, status_*)
+- `activity_*` (label, title, highlight, empty)
+- `chart_title/insight/attribution`, `deadlines_label/title`
+- `metrics_emails/confidence/agents/campaigns`
+
+**TypeScript: 0 erori**
+
+---
+
 ## [Unreleased] — 2026-05-17
 
 ### 🌐 Internationalization — Full i18n Migration

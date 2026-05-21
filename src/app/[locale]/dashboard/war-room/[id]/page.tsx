@@ -16,9 +16,7 @@ import { AureliusChat } from "@/components/aurelius/AureliusChat";
 import { buildContext, type AureliusContext } from "@/lib/aurelius/context";
 import {
   Database, FileText, Layout, Activity, Crown,
-  MessageSquare, Wrench, Settings2, Gauge,
-  CheckCircle2,
-  Eye, EyeOff, Save, Copy,
+  MessageSquare, Wrench, Gauge,
   Brain,
 } from "lucide-react";
 import { authClient } from "@/lib/auth/auth-client";
@@ -31,12 +29,7 @@ import { SpecialTools } from "@/components/tools/SpecialTools";
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
-const API_KEY_STORAGE = "mailmind-custom-api-key";
-const API_PROVIDER_STORAGE = "mailmind-api-provider";
-const API_MODEL_STORAGE = "mailmind-api-model";
-
-type RightTab = "twin" | "chat" | "tools" | "api";
-type ApiProvider = "openai" | "openrouter";
+type RightTab = "twin" | "chat" | "tools";
 
 // ─── UPGRADE GATE ─────────────────────────────────────────────────────────────
 
@@ -66,7 +59,6 @@ function UpgradeGate({ plan }: { plan: string }) {
           <ul className="space-y-1.5 text-xs text-amber-700">
             <li className="flex items-center gap-2">✗ War Room access</li>
             <li className="flex items-center gap-2">✗ Advanced Digital Twin</li>
-            <li className="flex items-center gap-2">✗ Custom API configuration</li>
             <li className="flex items-center gap-2">✗ Special tools & analytics</li>
           </ul>
         </div>
@@ -77,7 +69,7 @@ function UpgradeGate({ plan }: { plan: string }) {
           <Crown size={18} /> Upgrade to PROFESSIONAL
         </Link>
         <p className="text-[10px] text-gray-400 mt-4">
-          Unlock all agents, tools, API customization, and priority support.
+          Unlock all agents, tools, and priority support.
         </p>
       </motion.div>
     </div>
@@ -133,144 +125,12 @@ function ApiUsageGauge() {
   );
 }
 
-// ─── API SETTINGS PANEL ───────────────────────────────────────────────────────
-
-function ApiSettingsPanel() {
-  const [apiKey, setApiKey] = useState("");
-  const [provider, setProvider] = useState<ApiProvider>("openrouter");
-  const [model, setModel] = useState("gpt-4o");
-  const [showKey, setShowKey] = useState(false);
-  const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    setApiKey(localStorage.getItem(API_KEY_STORAGE) || "");
-    setProvider((localStorage.getItem(API_PROVIDER_STORAGE) as ApiProvider) || "openrouter");
-    setModel(localStorage.getItem(API_MODEL_STORAGE) || "gpt-4o");
-  }, []);
-
-  const handleSave = () => {
-    if (apiKey.trim()) {
-      localStorage.setItem(API_KEY_STORAGE, apiKey.trim());
-    } else {
-      localStorage.removeItem(API_KEY_STORAGE);
-    }
-    localStorage.setItem(API_PROVIDER_STORAGE, provider);
-    localStorage.setItem(API_MODEL_STORAGE, model);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  };
-
-  const handleClear = () => {
-    localStorage.removeItem(API_KEY_STORAGE);
-    setApiKey("");
-    setSaved(false);
-  };
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-1">
-        <Settings2 size={14} className="text-gray-400" />
-        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-          API Configuration
-        </span>
-      </div>
-
-      {/* Provider Select */}
-      <div>
-        <label className="text-[10px] text-gray-400 font-semibold mb-1.5 block">Provider</label>
-        <div className="flex gap-2">
-          {(["openrouter", "openai"] as ApiProvider[]).map((p) => (
-            <button
-              key={p}
-              onClick={() => setProvider(p)}
-              className={`flex-1 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider border transition-all ${
-                provider === p
-                  ? "bg-[#ff5f5f]/10 border-[#ff5f5f] text-[#ff5f5f]"
-                  : "bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100"
-              }`}
-            >
-              {p === "openrouter" ? "OpenRouter" : "OpenAI"}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Model Select */}
-      <div>
-        <label className="text-[10px] text-gray-400 font-semibold mb-1.5 block">Model</label>
-        <select
-          value={model}
-          onChange={(e) => setModel(e.target.value)}
-          className="w-full px-3 py-2 rounded-lg bg-white border border-gray-200 text-gray-800 text-xs outline-none focus:border-[#ff5f5f] transition-all"
-        >
-          <option value="gpt-4o">GPT-4o</option>
-          <option value="gpt-4o-mini">GPT-4o Mini</option>
-          <option value="gpt-4-turbo">GPT-4 Turbo</option>
-          <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-          <option value="claude-3-opus">Claude 3 Opus</option>
-          <option value="claude-3-sonnet">Claude 3 Sonnet</option>
-        </select>
-      </div>
-
-      {/* API Key */}
-      <div>
-        <label className="text-[10px] text-gray-400 font-semibold mb-1.5 block">API Key {apiKey ? "(overriding default)" : "(using default)"}</label>
-        <div className="relative">
-          <input
-            type={showKey ? "text" : "password"}
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            placeholder="sk-..."
-            className="w-full px-3 py-2 pr-16 rounded-lg bg-white border border-gray-200 text-gray-800 text-xs outline-none focus:border-[#ff5f5f] transition-all placeholder:text-gray-300"
-          />
-          <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
-            <button
-              onClick={() => setShowKey(!showKey)}
-              className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              {showKey ? <EyeOff size={14} className="text-gray-400" /> : <Eye size={14} className="text-gray-400" />}
-            </button>
-            {apiKey && (
-              <button
-                onClick={() => navigator.clipboard.writeText(apiKey)}
-                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <Copy size={14} className="text-gray-400" />
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex gap-2 pt-1">
-        <button
-          onClick={handleSave}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-[#ff5f5f] text-white text-[10px] font-bold uppercase tracking-wider hover:bg-red-500 transition-all"
-        >
-          {saved ? <CheckCircle2 size={12} /> : <Save size={12} />}
-          {saved ? "Saved" : "Save"}
-        </button>
-        {apiKey && (
-          <button
-            onClick={handleClear}
-            className="px-3 py-2 rounded-lg bg-gray-100 text-gray-500 text-[10px] font-bold uppercase tracking-wider hover:bg-gray-200 transition-all"
-          >
-            Clear
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // ─── RIGHT PANEL TABS ─────────────────────────────────────────────────────────
 
 const TABS: { id: RightTab; label: string; icon: React.ElementType }[] = [
   { id: "twin", label: "Twin", icon: Brain },
   { id: "chat", label: "Chat", icon: MessageSquare },
   { id: "tools", label: "Tools", icon: Wrench },
-  { id: "api", label: "API", icon: Settings2 },
 ];
 
 function RightPanel({
@@ -351,11 +211,6 @@ function RightPanel({
             </div>
           )}
 
-          {activeTab === "api" && (
-            <div className="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm">
-              <ApiSettingsPanel />
-            </div>
-          )}
         </div>
       </div>
     </section>

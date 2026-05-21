@@ -15,6 +15,58 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    // Require email verification before allowing login.
+    // IMPORTANT: If enabling this on an existing app with users who haven't verified,
+    // run a migration to set emailVerified=true for existing users first.
+    //   UPDATE users SET email_verified = true;
+    // FIXME: Re-enable after email provider is configured
+    requireEmailVerification: false,
+  },
+  emailVerification: {
+    enabled: false,
+    // Verification disabled for local testing. Re-enable when Resend is configured.
+    // tokenTTL: 3600,
+    sendOnSignUp: false,
+    // Custom email sender — logs to console in dev, sends via Resend in prod
+    sendVerificationEmail: async (data) => {
+      const { user, url, token } = data;
+      console.log(`[Auth] Verification email for ${user.email}: ${url}`);
+
+      // In production, use Resend or similar email service
+      if (process.env.NODE_ENV === "production" && process.env.RESEND_API_KEY) {
+        try {
+          await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+            },
+            body: JSON.stringify({
+              from: "MailMind <noreply@mailmind.ai>",
+              to: user.email,
+              subject: "Verify your email address",
+              html: `<p>Click <a href="${url}">here</a> to verify your email. This link expires in 1 hour.</p>`,
+            }),
+          });
+        } catch (error) {
+          console.error("[Auth] Failed to send verification email:", error);
+        }
+      }
+    },
+  },
+  session: {
+    // Session expires after 7 days of inactivity
+    expiresIn: 60 * 60 * 24 * 7, // 604800 seconds
+    // Refresh session expiry if user is active within 1 day of expiry
+    updateAge: 60 * 60 * 24, // 86400 seconds
+    // Max 5 concurrent sessions per user
+    maxSessions: 5,
+  },
+  rateLimit: {
+    enabled: true,
+    // 100 requests per 60 seconds per endpoint
+    window: 60,
+    max: 100,
   },
   user: {
     additionalFields: {
@@ -28,7 +80,6 @@ export const auth = betterAuth({
       },
     },
   },
-  // 🚀 ADAUGĂ ASTA: Spunem aplicației unde e pagina de Login
   pages: {
     signIn: "/login",
     signUp: "/sign-up",
@@ -42,9 +93,9 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET!,
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
   trustedOrigins: [
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
     "http://localhost:3000",
-    "http://26.188.219.186:3000",
-  ],
+  ].filter(Boolean),
 });
 
 export type Session = typeof auth.$Infer.Session;

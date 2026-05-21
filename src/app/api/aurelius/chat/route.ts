@@ -3,20 +3,11 @@ import OpenAI from 'openai'
 import { buildAureliusSystemPrompt } from '@/lib/aurelius/prompt'
 import { getToolDefinitions } from '@/lib/aurelius/tools/definitions'
 import { executeToolCall } from '@/lib/aurelius/tools/runner'
-import { auth } from '@/lib/auth/auth'
+import { apiRequireAuth } from '@/lib/auth/gatekeeper'
+import { aiGenerationRateLimit } from '@/lib/rate-limit'
 
 // Allow streaming responses up to 120 seconds (tools may take time)
 export const maxDuration = 120
-
-/** Get the authenticated user ID from the request headers */
-async function getUserId(request: Request): Promise<string | null> {
-  try {
-    const session = await auth.api.getSession({ headers: request.headers })
-    return session?.user?.id || null
-  } catch {
-    return null
-  }
-}
 
 // ── OpenAI-compatible client (OpenRouter / any OpenAI-compatible endpoint) ──
 
@@ -98,12 +89,32 @@ function createStreamFromOpenAI(stream: AsyncIterable<OpenAI.Chat.Completions.Ch
 // ── POST handler ──
 
 export async function POST(request: Request) {
+  // Authenticate the user (required for DB tool scoping)
+  const user = await apiRequireAuth(request);
+  if (user instanceof NextResponse) return user;
+
+  // Rate limit AI generation: 10 requests/min per user
+  const rateLimitResult = await aiGenerationRateLimit(user.id);
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'AI generation limit reached. Please try again later.' },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(rateLimitResult.retryAfterSeconds),
+          'X-RateLimit-Limit': String(rateLimitResult.limit),
+          'X-RateLimit-Remaining': String(rateLimitResult.remaining),
+          'X-RateLimit-Reset': String(rateLimitResult.reset),
+        },
+      },
+    );
+  }
+
   try {
     const body = await request.json()
     const { messages, context } = body
 
-    // Get the authenticated user for DB tool scoping
-    const userId = await getUserId(request)
+    const userId = user.id
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json(
@@ -163,7 +174,7 @@ export async function POST(request: Request) {
               tc.type === 'function'
           )
           for (const toolCall of functionCalls) {
-            const toolResult = await executeToolCall(toolCall, { userId: userId || undefined })
+            const toolResult = await executeToolCall(toolCall, { userId })
             toolResults.push({
               role: 'tool',
               tool_call_id: toolCall.id,
@@ -256,6 +267,7 @@ export async function POST(request: Request) {
       },
     })
   } catch (error) {
+    if (error instanceof NextResponse) return error;
     console.error('Aurelius API error:', error)
     const message = error instanceof Error ? error.message : 'Internal server error'
     return NextResponse.json({ error: message }, { status: 500 })

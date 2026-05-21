@@ -3,10 +3,14 @@ import { swarmGraph } from '@/lib/swarm/graph'
 import { createClient } from '@/lib/supabase/server'
 import { getPostHogClient } from '@/lib/posthog-server'
 import { safeJsonParse } from '@/lib/utils'
+import { apiRequireAuth, verifyOwnership } from "@/lib/auth/gatekeeper";
 
 export async function POST(request: Request) {
-  try {
-    const text = await request.text();
+  // Require authentication via better-auth
+  const user = await apiRequireAuth(request);
+  if (user instanceof NextResponse) return user;
+
+  try {    const text = await request.text();
     const body = safeJsonParse<{ campaignId?: string }>(text, {});
     const { campaignId } = body;
 
@@ -26,6 +30,10 @@ export async function POST(request: Request) {
     if (error || !campaign) {
       return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
     }
+
+    // Verify ownership: the authenticated user must own this campaign
+    const ownershipError = verifyOwnership(campaign.user_id, user.id);
+    if (ownershipError) return ownershipError;
 
     // Preluăm datele de onboarding și subscripție
     const { data: profile } = await supabase
@@ -50,8 +58,6 @@ export async function POST(request: Request) {
     }
 
     // Rulăm graful
-    // Notă: invoke() este blocant. Pentru un flux real, am putea folosi stream()
-    // sau am putea rula asincron și returna imediat un status.
     swarmGraph.invoke(initialState).then(async (finalState) => {
       // Salvăm rezultatul final în baza de date
       await supabase
@@ -69,7 +75,7 @@ export async function POST(request: Request) {
 
     const posthog = getPostHogClient()
     posthog.capture({
-      distinctId: campaign.user_id,
+      distinctId: user.id,
       event: 'swarm_launched',
       properties: {
         campaign_id: campaignId,
