@@ -1,24 +1,26 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowRight, Sparkles, Clock } from 'lucide-react'
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Sparkles, Clock } from "lucide-react";
+import { useParams } from "next/navigation";
 
-const TARGET_DATE = new Date()
-TARGET_DATE.setDate(TARGET_DATE.getDate() + 3)
-TARGET_DATE.setHours(0, 0, 0, 0)
+function getTargetDate() {
+  const now = new Date();
+  const target = new Date(now);
+  target.setDate(target.getDate() + 2);
+  target.setHours(3, 0, 0, 0);
+  return target;
+}
 
-function getTimeLeft() {
-  const diff = TARGET_DATE.getTime() - Date.now()
-
-  if (diff <= 0) {
-    return { hours: 0, minutes: 0, seconds: 0 }
-  }
-
-  const hours = Math.floor(diff / (1000 * 60 * 60))
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-  const seconds = Math.floor((diff % (1000 * 60)) / 1000)
-  return { hours, minutes, seconds }
+function getTimeLeft(target: Date) {
+  const diff = target.getTime() - Date.now();
+  if (diff <= 0) return { hours: 0, minutes: 0, seconds: 0 };
+  return {
+    hours: Math.floor(diff / (1000 * 60 * 60)),
+    minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+    seconds: Math.floor((diff % (1000 * 60)) / 1000),
+  };
 }
 
 function AnimatedDigit({ value }: { value: number }) {
@@ -27,17 +29,17 @@ function AnimatedDigit({ value }: { value: number }) {
       <AnimatePresence mode="popLayout">
         <motion.span
           key={value}
-          initial={{ y: '100%', opacity: 0 }}
-          animate={{ y: '0%', opacity: 1 }}
-          exit={{ y: '-100%', opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          initial={{ y: "100%", opacity: 0 }}
+          animate={{ y: "0%", opacity: 1 }}
+          exit={{ y: "-100%", opacity: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="absolute inset-0 flex items-center justify-center"
         >
-          {String(value).padStart(2, '0')}
+          {String(value).padStart(2, "0")}
         </motion.span>
       </AnimatePresence>
     </div>
-  )
+  );
 }
 
 function TimeUnit({ value, label }: { value: number; label: string }) {
@@ -53,21 +55,25 @@ function TimeUnit({ value, label }: { value: number; label: string }) {
         {label}
       </span>
     </div>
-  )
+  );
 }
 
-export function CountdownBanner() {
-  const [time, setTime] = useState<{ hours: number; minutes: number; seconds: number } | null>(null)
-  const [mounted, setMounted] = useState(false)
+export default function MaintenancePage() {
+  const { locale } = useParams();
+  const l = (locale as string) || "ro";
+  const [target] = useState(() => getTargetDate());
+  const [time, setTime] = useState(() => getTimeLeft(target));
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-    setTime(getTimeLeft())
-    const interval = setInterval(() => setTime(getTimeLeft()), 1000)
-    return () => clearInterval(interval)
-  }, [])
+    setMounted(true);
+    const interval = setInterval(() => setTime(getTimeLeft(target)), 1000);
+    return () => clearInterval(interval);
+  }, [target]);
 
-  if (!mounted) return null
+  if (!mounted) return null;
+
+  const isRo = l === "ro";
 
   return (
     <section className="relative w-full min-h-screen flex items-center justify-center bg-[#fdfbf7] overflow-hidden">
@@ -83,7 +89,7 @@ export function CountdownBanner() {
         className="absolute inset-0 opacity-[0.04]"
         style={{
           backgroundImage: `radial-gradient(circle at 1px 1px, #1a1a1a 1px, transparent 0)`,
-          backgroundSize: '40px 40px',
+          backgroundSize: "40px 40px",
         }}
       />
 
@@ -91,7 +97,7 @@ export function CountdownBanner() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="relative rounded-3xl border-2 border-gray-200 bg-white p-8 md:p-16 flex flex-col items-center gap-8 md:gap-12 text-center shadow-[8px_8px_0px_#1a1a1a] overflow-hidden"
         >
           {/* Subtle inner glow */}
@@ -105,31 +111,34 @@ export function CountdownBanner() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ff5f5f]/10 border border-[#ff5f5f]/20 text-sm font-semibold text-[#ff5f5f]"
             >
               <Sparkles className="w-4 h-4 animate-sparkle" />
-              <span>Under Maintenance</span>
+              <span>{isRo ? "În Mentenanță" : "Under Maintenance"}</span>
             </motion.div>
 
             <h2 className="text-3xl md:text-4xl lg:text-6xl font-extrabold tracking-tighter text-[#1a1a1a]">
-              We&apos;ll be back
+              {isRo ? "Ne întoarcem" : "We'll be back"}
               <br />
-              <span className="text-[#ff5f5f]">very soon</span>
+              <span className="text-[#ff5f5f]">
+                {isRo ? "foarte curând" : "very soon"}
+              </span>
             </h2>
 
             <p className="text-gray-500 text-base md:text-lg max-w-xl leading-relaxed">
-              We&apos;re performing scheduled upgrades to bring you an even better experience.
-              Thanks for your patience!
+              {isRo
+                ? "Facem upgrade-uri programate pentru o experiență și mai bună. Mulțumim pentru răbdare!"
+                : "We're performing scheduled upgrades to bring you an even better experience. Thanks for your patience!"}
             </p>
           </div>
 
           <div className="flex items-center gap-2 md:gap-4 relative z-10">
-            <TimeUnit value={time?.hours ?? 0} label="Hours" />
+            <TimeUnit value={time.hours} label={isRo ? "Ore" : "Hours"} />
             <div className="flex flex-col items-center justify-center pb-6">
               <span className="text-2xl md:text-4xl font-light text-gray-300 animate-pulse">:</span>
             </div>
-            <TimeUnit value={time?.minutes ?? 0} label="Minutes" />
+            <TimeUnit value={time.minutes} label={isRo ? "Minute" : "Minutes"} />
             <div className="flex flex-col items-center justify-center pb-6">
               <span className="text-2xl md:text-4xl font-light text-gray-300 animate-pulse">:</span>
             </div>
-            <TimeUnit value={time?.seconds ?? 0} label="Seconds" />
+            <TimeUnit value={time.seconds} label={isRo ? "Secunde" : "Seconds"} />
           </div>
 
           <motion.div
@@ -138,18 +147,20 @@ export function CountdownBanner() {
             transition={{ delay: 0.4, duration: 0.5 }}
             className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto relative z-10"
           >
-            <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#ff5f5f] text-white font-semibold hover:bg-red-500 transition-colors shadow-lg shadow-red-500/20 squishy">
-              <span>Notify Me When Ready</span>
+            <a
+              href={`/${l}/login`}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#ff5f5f] text-white font-semibold hover:bg-red-500 transition-colors shadow-lg shadow-red-500/20 squishy"
+            >
+              <span>{isRo ? "Autentificare Admin" : "Admin Login"}</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </a>
             <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white text-gray-600 font-medium hover:bg-gray-50 hover:text-gray-900 transition-colors border-2 border-gray-200 hover:border-gray-300 squishy">
               <Clock className="w-4 h-4 text-gray-400" />
-              <span>Add to Calendar</span>
+              <span>{isRo ? "Adaugă în Calendar" : "Add to Calendar"}</span>
             </button>
           </motion.div>
         </motion.div>
 
-        {/* Footer */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -160,5 +171,5 @@ export function CountdownBanner() {
         </motion.p>
       </div>
     </section>
-  )
+  );
 }

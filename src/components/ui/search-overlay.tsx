@@ -116,7 +116,7 @@ export function SearchOverlay({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => onOpenChange(false)}
-            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
           />
           <motion.div
             key="modal"
@@ -126,7 +126,7 @@ export function SearchOverlay({
             transition={{ duration: 0.15, ease: "easeOut" }}
             className="fixed left-1/2 top-[15%] -translate-x-1/2 z-50 w-full max-w-xl"
           >
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-2xl shadow-black/10 overflow-hidden">
               <Command
                 shouldFilter={false}
                 className="bg-transparent"
@@ -134,7 +134,7 @@ export function SearchOverlay({
               >
                 {/* Search input */}
                 <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
-                  <Search size={18} className="text-gray-400 shrink-0" />
+                  <Search size={18} className="text-gray-400 shrink-0 group-focus-within:text-[#ff5f5f] transition-colors" />
                   <Command.Input
                     ref={inputRef}
                     value={query}
@@ -200,10 +200,10 @@ export function SearchOverlay({
                       <div className="flex flex-col items-center py-8 text-center">
                         <Search size={24} className="text-gray-300 mb-3" />
                         <p className="text-[13px] text-gray-500">
-                          No results for &quot;{query}&quot;
+                          Nimic pentru &quot;{query}&quot;
                         </p>
                         <p className="text-[11px] text-gray-400 mt-1">
-                          Try a different search term
+                          Încearcă alt termen
                         </p>
                       </div>
                     </Command.Empty>
@@ -304,26 +304,26 @@ export function SearchOverlay({
                     <div className="flex flex-col items-center py-10 text-center">
                       <Search size={32} className="text-gray-200 mb-4" />
                       <p className="text-[13px] text-gray-500">
-                        Type at least 2 characters to search
+                        Scrie cel puțin 2 caractere
                       </p>
                       <div className="flex items-center gap-3 mt-4 text-[10px] text-gray-400">
                         <span className="flex items-center gap-1">
                           <kbd className="inline-flex items-center rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[9px] font-mono">
                             ↑↓
                           </kbd>{" "}
-                          Navigate
+                          Navighează
                         </span>
                         <span className="flex items-center gap-1">
                           <kbd className="inline-flex items-center rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[9px] font-mono">
                             ↵
                           </kbd>{" "}
-                          Open
+                          Deschide
                         </span>
                         <span className="flex items-center gap-1">
                           <kbd className="inline-flex items-center rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[9px] font-mono">
                             ⌘K
                           </kbd>{" "}
-                          Toggle
+                          Comută
                         </span>
                       </div>
                     </div>
@@ -334,15 +334,15 @@ export function SearchOverlay({
                 <div className="border-t border-gray-100 px-5 py-2.5 flex items-center justify-between">
                   <span className="text-[10px] text-gray-400">
                     {results.length > 0
-                      ? `${results.length} result${results.length !== 1 ? "s" : ""}`
-                      : "Search across all data"}
+                      ? `${results.length} rezultat${results.length !== 1 ? "e" : ""}`
+                      : "Caută în toate datele"}
                   </span>
                   <span className="text-[9px] text-gray-400">
-                    Press{" "}
+                    Apasă{" "}
                     <kbd className="inline-flex items-center rounded border border-gray-200 bg-gray-50 px-1 py-0.5 text-[9px] font-mono">
                       ESC
                     </kbd>{" "}
-                    to close
+                    pentru a închide
                   </span>
                 </div>
               </Command>

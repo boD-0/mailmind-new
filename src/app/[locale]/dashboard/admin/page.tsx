@@ -1,12 +1,30 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Shield, Settings, Users, Database, Zap } from "lucide-react";
+import { Shield, Settings, Users, Database, Zap, Loader2 } from "lucide-react";
 import { useFounderStore } from "@/stores/founderStore";
+import { toggleMaintenanceMode as apiToggle, getMaintenanceMode } from "@/app/actions/admin";
 
 export default function AdminPage() {
-  const { systemStats, maintenanceMode, setMaintenanceMode, swarmParams, updateSwarmParams } = useFounderStore();
+  const { systemStats, swarmParams, updateSwarmParams } = useFounderStore();
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [toggling, setToggling] = useState(false);
+
+  // Fetch real maintenance state from Redis on mount
+  useEffect(() => {
+    getMaintenanceMode().then(setMaintenanceMode).catch(() => {});
+  }, []);
+
+  const handleMaintenanceToggle = useCallback(async () => {
+    setToggling(true);
+    const next = !maintenanceMode;
+    const result = await apiToggle(next);
+    if (result.success) {
+      setMaintenanceMode(result.maintenance);
+    }
+    setToggling(false);
+  }, [maintenanceMode]);
 
   return (
     <div className="p-10 space-y-12">
@@ -52,13 +70,18 @@ export default function AdminPage() {
               <p className="text-xs text-gray-400">Restrict access to the platform</p>
             </div>
             <button 
-              onClick={() => setMaintenanceMode(!maintenanceMode)}
-              className={`w-12 h-6 rounded-full transition-colors relative ${maintenanceMode ? 'bg-red-500' : 'bg-gray-200'}`}
+              onClick={handleMaintenanceToggle}
+              disabled={toggling}
+              className={`w-12 h-6 rounded-full transition-colors relative ${maintenanceMode ? 'bg-red-500' : 'bg-gray-200'} ${toggling ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              <motion.div 
-                animate={{ x: maintenanceMode ? 26 : 4 }}
-                className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-lg"
-              />
+              {toggling ? (
+                <Loader2 size={14} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin text-white" />
+              ) : (
+                <motion.div 
+                  animate={{ x: maintenanceMode ? 26 : 4 }}
+                  className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-lg"
+                />
+              )}
             </button>
           </div>
 

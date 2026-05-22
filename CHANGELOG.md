@@ -1,5 +1,86 @@
 # Changelog
 
+## [Unreleased] — 2026-05-22
+
+### 🎨 UI Component Audit — All Remaining Components Uniformized
+
+Audited and fixed ALL remaining UI components that still used semantic CSS variables (`bg-popover`, `bg-accent`, `bg-muted`, `text-muted-foreground`, `bg-background`, `border-input`, `ring-ring`, `bg-border`). These resolved to dark theme by default (`:root`) and only worked correctly inside `.dashboard-light`.
+
+Now all components use explicit warm theme colors everywhere:
+
+#### Files changed:
+- **accordion.tsx** — `text-muted-foreground` → `text-gray-400` (chevron icon)
+- **popover.tsx** — `bg-popover text-popover-foreground` → `bg-white text-[#1a1a1a]`, `text-foreground` → `text-[#1a1a1a]`, `text-muted-foreground` → `text-gray-500`, header/footer borders → `border-gray-100`, added `border-gray-200 shadow-lg rounded-xl`
+- **select.tsx** — `border-input bg-transparent` → `border-gray-200 bg-white`, `ring-ring` → `ring-[#ff5f5f]/30`, `bg-popover text-popover-foreground` → `bg-white text-[#1a1a1a]`, items: `focus:bg-accent` → `focus:bg-[#ff5f5f]/10 focus:text-[#ff5f5f]`, separator: `bg-muted` → `bg-gray-100`
+- **dropdown-menu.tsx** — Content/SubContent: `bg-popover text-popover-foreground` → `bg-white text-[#1a1a1a] border-gray-200 rounded-xl shadow-lg`. Items/triggers: `focus:bg-accent` → `focus:bg-[#ff5f5f]/10 focus:text-[#ff5f5f]`. Separator: `bg-muted` → `bg-gray-100`. Label: added `text-xs text-gray-500`
+- **menubar.tsx** — Root: `bg-background` → `bg-white border-gray-200 rounded-lg`. All interactive items: `focus:bg-accent focus:text-accent-foreground` → `focus:bg-[#ff5f5f]/10 focus:text-[#ff5f5f]`. Content/SubContent: warm + `rounded-xl`. Separator/shortcut/label updated
+- **navigation-menu.tsx** — Trigger style: `bg-background hover:bg-accent` → `bg-white hover:bg-[#ff5f5f]/10 hover:text-[#ff5f5f]`. Viewport: `bg-popover` → `bg-white border-gray-200 rounded-xl shadow-lg`. Indicator: `bg-border` → `bg-gray-200`
+
+### 🎨 UI Component Audit — Warm Theme Uniformization (earlier)
+
+Audited and fixed ALL UI components that still used old `dark:` variants, CSS variables (`var(--border-subtle)`, `var(--obsidian-light)`), or dark glassmorphism patterns.
+
+#### Files changed:
+- `dialog.tsx` — `var(--border-subtle)`/`var(--obsidian-light)` → `border-gray-200`/`bg-white` + `shadow-2xl` + `rounded-2xl`
+- `tooltip.tsx` — Same CSS var → warm white replacement
+- `button.tsx` — Removed ALL `dark:` variants across `outline`, `ghost`, `destructive` variants. `focus-visible` ring uses `#ff5f5f`. Destructive → `bg-red-50`/`text-red-600`
+- `input.tsx` — Removed `dark:` variants. `border-gray-200`/`bg-white`, focus ring uses `#ff5f5f`
+- `toolbar.tsx` — Dark glassmorphism (`bg-black/60`, `border-white/10`, `text-white/60`) → warm light (`bg-white/90`, `border-gray-200`, `text-gray-400`)
+- `the-future-arrives-soon-cta.tsx` — Complete rewrite: dark `bg-[#1a1a1a]` → warm `bg-[#fdfbf7]`, cartoonish shadows (`shadow-[8px_8px_0px_#1a1a1a]`), time units with border-2 + hover lift
+- `alert.tsx` — Replaced `dark:border-destructive` with `border-red-300`
+- `api-limit-notification.tsx` — Removed `dark:bg-amber-950/50` and `dark:border-red-800`
+- `logo-cloud-4.tsx` — Removed `dark:brightness-0 dark:invert`
+- `NotFoundPage.tsx` — Buttons from `bg-[#1a1a1a]` → `bg-[#ff5f5f]` with warm shadows
+
+## [Unreleased] — 2026-05-22 (earlier)
+
+### 🎯 Dashboard Simplificat + Tema Cartoonish
+
+#### `src/app/[locale]/dashboard/page.tsx` *(REWRITE)*
+Dashboard complet simplificat, conectat la date reale din Supabase:
+- Salut: doar "Buna ziua/dimineata/seara, {nume}" din sesiune
+- Ceas/data in colt dreapta-sus, font mono compact
+- Statistici transformate in pastile compacte cu emoji
+- Pipeline ascuns default (collapsible) cu progress bar gradient colorat + iconite animate
+- Doar ultimele 2 campanii afisate in carduri calde cu hover animations, confidence emoji, status pulsing dot
+- Empty state pentru 0 campanii cu emoticon animat
+- Activitate + grafic eliminate complet
+- Termene colapsabile
+- Layout fara scroll: `h-[calc(100vh-65px)]`
+- Date reale din `getDashboardData()` (Supabase) in loc de mock CAMPAIGNS
+
+#### Landing Page — Tema Cartoonish
+- Hero: buton "AI-powered" gradient purple/pink, sparkles animate, badge "FREE" pe Watch Demo
+- Pricing: toggle lunar/anual cu switch animat + sparkles, badge MOST POPULAR cu plutire (motion.span wrapper separat), floating shapes animate in background
+- CTA: gradient multicolor cu emoticoane plutitoare, trust badges animate
+- Features: carduri cu hover glow, iconite se rotesc la hover
+- Demo: progress bar animata cu puncte pulsand, carduri colorate cu hover lift
+- Differentiation: radar chart OCEAN animat
+- FAQ: iconite Zap se rotesc la hover in accordion
+
+#### Search Components — Tema Calda
+- `animated-glowing-search-bar.tsx`: tema dark → light calda, accent `#ff5f5f`, glow cartoonish pe focus
+- `omni-command-palette.tsx`: HSL variables → culori statice calde, functii moarte eliminate (`useIsDarkMode`, `ThemeIndicator`)
+- `search-overlay.tsx`: backdrop + text in romana
+
+#### Sidebar + Avatar Popup
+- Founder Mode eliminat din sidebar NAV_ITEMS (vizibil doar admin in popup-ul de avatar)
+- Avatar popup in Header: Settings, Account, Founder Mode (doar admin), Sign Out
+
+#### Mentenanta + Middleware
+- `src/middleware.ts`: redirect non-admin la `/maintenance` cand modul e activ
+- `src/app/api/admin/maintenance/route.ts`: toggle mentenanta via Redis
+- `src/app/actions/admin.ts`: `isUserAdmin()` + `toggleMaintenanceMode()` server actions
+- `src/app/[locale]/maintenance/page.tsx`: pagina de mentenanta cu countdown animat
+
+#### `src/messages/{en,ro}.json` *(MODIFIED)*
+- Traduceri CTA + trust badges actualizate
+- Adaugat `no_campaigns`, `no_campaigns_hint` pentru empty state
+
+**TypeScript: 0 erori**
+
+---
+
 ## [Unreleased] — 2026-05-18
 
 ### 🔒 Security Hardening — Full Infrastructure Audit

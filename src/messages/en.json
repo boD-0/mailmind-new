@@ -138,15 +138,15 @@
       "a6": "Most users see a complete, ready-to-send email in under 90 seconds from entering a prospect name."
     },
     "cta": {
-      "title": "Ready to send emails",
-      "title_highlight": "that get replies?",
-      "subtitle": "Join thousands of founders and SDRs who already ship with MailMind.",
+      "title": "Ready to conquer",
+      "title_highlight": "the inbox? 🚀",
+      "subtitle": "Join the email revolution that actually gets replies. Thousands of founders and SDRs are already shipping with MailMind — now it's your turn.",
       "placeholder": "your@email.com",
       "button": "Get Started",
       "success": "✓ You're in! Check your inbox for next steps.",
-      "trust_soc2": "SOC 2 Compliant",
-      "trust_uptime": "99.9% Uptime",
-      "trust_nocc": "No credit card required"
+      "trust_soc2": "🔒 Your Data, Safe",
+      "trust_uptime": "⚡ Always Online",
+      "trust_nocc": "💳 No Card Needed"
     }
   },
   "footer": {
@@ -462,6 +462,8 @@
     "campaigns_title": "Your",
     "campaigns_highlight": "Workbench.",
     "campaigns_empty": "No campaigns yet. Launch your first swarm to get started.",
+    "no_campaigns": "No campaigns yet!",
+    "no_campaigns_hint": "Click the + button to create your first campaign.",
     "campaign_view_all": "View all",
     "campaign_status_draft": "DRAFT",
     "campaign_status_active": "ACTIVE",

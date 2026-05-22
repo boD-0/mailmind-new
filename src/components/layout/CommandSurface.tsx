@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname, useParams } from "next/navigation";
-import { motion } from "framer-motion";
-import { LayoutDashboard, Lightbulb, MessageSquare, Shield, Settings, LogOut, User, Loader2, FolderKanban, FileText, Wrench, Rocket, UserPlus } from "lucide-react";
+import { usePathname, useParams, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { LayoutDashboard, Lightbulb, MessageSquare, Shield, Settings, LogOut, User, Loader2, FolderKanban, FileText, Wrench, Rocket, UserPlus, ChevronRight } from "lucide-react";
 import { AureliusHelper } from "@/components/aurelius/AureliusHelper";
 import { ApiLimitNotification } from "@/components/ui/api-limit-notification";
 import { AvatarCircle } from "@/components/ui/avatar-picker";
@@ -23,7 +23,6 @@ const NAV_ITEMS = [
   { label: 'Ideas', icon: Lightbulb, href: '/dashboard/ideas' },
   { label: 'Global Chat', icon: MessageSquare, href: '/dashboard/chat' },
   { label: 'Tools', icon: Wrench, href: '/dashboard/tools' },
-  { label: 'Founder Mode', icon: Shield, href: '/dashboard/admin' },
 ];
 
 function Sidebar() {
@@ -68,13 +67,9 @@ function Sidebar() {
               : 'text-gray-400 hover:bg-gray-100 hover:text-gray-700'
           }`}
         >
-          <User size={16} />
+          <Settings size={16} />
           Settings
         </Link>
-        <button className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest text-red-400 hover:bg-red-50 hover:text-red-500 transition-all">
-          <LogOut size={16} />
-          Sign Out
-        </button>
       </div>
     </aside>
   );
@@ -237,6 +232,115 @@ const COMMANDS_SOURCE: OmniSource = {
 
 const HEADER_SOURCES: OmniSource[] = [COMMANDS_SOURCE, PAGES_SOURCE, SEARCH_SOURCE];
 
+function AvatarMenu() {
+  const { locale } = useParams()
+  const router = useRouter()
+  const { data: session } = authClient.useSession()
+  const [open, setOpen] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  const userName = (session?.user as { name?: string } | undefined)?.name || "Founder"
+  const userEmail = (session?.user as { email?: string } | undefined)?.email || ""
+
+  // Check admin status
+  useEffect(() => {
+    import("@/app/actions/admin").then((m) =>
+      m.isCurrentUserAdmin().then(setIsAdmin).catch(() => setIsAdmin(false))
+    )
+  }, [session])
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [open])
+
+  const handleSignOut = async () => {
+    await authClient.signOut()
+    router.push(`/${locale}/login`)
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-3 pl-6 border-l border-gray-200 hover:opacity-80 transition-opacity"
+      >
+        <div className="text-right hidden sm:block">
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+            {userName.split(" ")[0]}
+          </p>
+          <p className="text-xs font-bold text-gray-800 truncate max-w-[120px]">{userEmail}</p>
+        </div>
+        <AvatarCircle />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.96 }}
+            transition={{ duration: 0.15 }}
+            className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl border border-gray-200 shadow-xl shadow-black/5 overflow-hidden z-50"
+          >
+            {/* User info header */}
+            <div className="px-4 py-3 border-b border-gray-100">
+              <p className="text-sm font-bold text-gray-900 truncate">{userName}</p>
+              <p className="text-[11px] text-gray-400 truncate">{userEmail}</p>
+            </div>
+
+            <div className="py-1">
+              <button
+                onClick={() => { setOpen(false); router.push(`/${locale}/dashboard/settings`) }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <Settings size={15} className="text-gray-400" />
+                Settings
+              </button>
+              <button
+                onClick={() => { setOpen(false); router.push(`/${locale}/dashboard/settings`) }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <User size={15} className="text-gray-400" />
+                Account
+              </button>
+
+              {/* Founder Mode — admin only */}
+              {isAdmin && (
+                <>
+                  <div className="my-1 border-t border-gray-100" />
+                  <button
+                    onClick={() => { setOpen(false); router.push(`/${locale}/dashboard/admin`) }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-[#ff5f5f] hover:bg-red-50 transition-colors"
+                  >
+                    <Shield size={15} />
+                    Founder Mode
+                  </button>
+                </>
+              )}
+
+              <div className="my-1 border-t border-gray-100" />
+              <button
+                onClick={handleSignOut}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+              >
+                <LogOut size={15} />
+                Sign Out
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 function Header() {
   const { locale } = useParams()
   const { data: session, isPending } = authClient.useSession()
@@ -298,14 +402,7 @@ function Header() {
 
       <div className="flex items-center gap-6">
         <NotificationsPopover />
-        
-        <div className="flex items-center gap-3 pl-6 border-l border-gray-200">
-          <div className="text-right">
-            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Founder</p>
-            <p className="text-xs font-bold text-gray-800">Alex Iancu</p>
-          </div>
-          <AvatarCircle />
-        </div>
+        <AvatarMenu />
       </div>
     </header>
   );

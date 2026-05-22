@@ -11,12 +11,49 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Translate
-        uses: taahamahdi/i18n-ai-translate@master
         with:
-          json-file-path: src/messages/ro.json
-          api-key: ${{ secrets.OPENAI_API_KEY }}
-          # target-languages is inferred from the other files in the directory or can be explicit
-          # Since we have en, fr, de, we can specify them or let it auto-detect.
-          # The action docs say it can translate to multiple locales.
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Save the current (new) version and restore the previous version from HEAD~1
+      - name: Fetch previous translation
+        shell: bash
+        run: |
+          mv "src/messages/ro.json" "src/messages/ro.json-latest"
+          # Restore the old version from the previous commit for diffing
+          if git checkout HEAD~1 -- "src/messages/ro.json" 2>/dev/null; then
+            echo "Restored previous version for diff"
+          else
+            # No previous version (first commit) — create empty JSON so all keys are new
+            echo '{}' > "src/messages/ro.json"
+            echo "No previous version found; translating all keys as new"
+          fi
+
+      - name: Translate the diff
+        shell: bash
+        run: |
+          npx --yes i18n-ai-translate@latest diff \
+            -b "src/messages/ro.json" \
+            -a "src/messages/ro.json-latest" \
+            -l "ro" \
+            --verbose \
+            --engine "chatgpt" \
+            --model "gpt-5.2" \
+            -p "{{" \
+            -s "}}" \
+            -k "${{ secrets.OPENAI_API_KEY }}"
+
+      - name: Commit translations
+        shell: bash
+        run: |
+          # Restore the latest source file
+          rm -f "src/messages/ro.json"
+          mv "src/messages/ro.json-latest" "src/messages/ro.json"
+          git config --global user.email "i18n-bot@mailmind.app"
+          git config --global user.name "i18n-bot"
+          git add --all
+          git commit -m "🌐 Auto-translate i18n from Romanian" || echo "No changes to commit"
+          git push || echo "Push failed (may need repo write permissions)"

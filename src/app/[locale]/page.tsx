@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { motion, AnimatePresence, useScroll, useTransform, type Variants } from "framer-motion"
 import { useParams } from "next/navigation"
 import Link from "next/link"
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/accordion"
 import {
   Menu, X, ArrowRight, Check, Search, Brain, Target, PenTool,
-  Send, Mail, Sparkles, Globe, Heart, Shield,
+  Send, Mail, Sparkles,
   Zap, Crown,
 } from "lucide-react"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
@@ -827,8 +827,44 @@ function DifferentiationSection() {
 
 function PricingSection() {
   const { t } = useTranslation()
+  const [billing, setBilling] = useState<"monthly" | "annual">("monthly")
+
   return (
     <section id="pricing" className="relative py-24 px-6 bg-[#fdfbf7] overflow-hidden">
+      {/* Cartoonish floating shapes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        {[
+          { w: 42, h: 38, left: "10%", top: "12%", bg: "#fef3c7", delay: 0 },
+          { w: 55, h: 48, left: "26%", top: "28%", bg: "#ede9fe", delay: 0.5 },
+          { w: 36, h: 40, left: "42%", top: "8%", bg: "#dbeafe", delay: 1.0 },
+          { w: 60, h: 52, left: "58%", top: "25%", bg: "#fce7f3", delay: 1.5 },
+          { w: 44, h: 35, left: "74%", top: "18%", bg: "#d1fae5", delay: 2.0 },
+          { w: 50, h: 45, left: "90%", top: "32%", bg: "#fef9c3", delay: 2.5 },
+        ].map((shape, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              width: shape.w,
+              height: shape.h,
+              left: shape.left,
+              top: shape.top,
+              background: shape.bg,
+              opacity: 0.3,
+            }}              animate={{
+                y: [0, -15 - i * 3, 0],
+                rotate: [0, i % 2 === 0 ? 20 : -20, 0],
+                scale: [1, 1.1, 1],
+              }}
+              transition={{
+                duration: 4 + i * 0.7,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: shape.delay,
+              }}
+          />
+        ))}
+      </div>
       <div className="max-w-5xl mx-auto relative z-10">
         <SectionHeading
           label={t('home.pricing.label')}
@@ -837,6 +873,58 @@ function PricingSection() {
           description={t('home.pricing.description')}
         />
 
+        {/* ── Monthly/Annual Toggle ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4 }}
+          className="flex items-center justify-center gap-4 mb-12"
+        >
+          <button
+            onClick={() => setBilling("monthly")}
+            className={`text-sm font-semibold transition-all duration-300 ${billing === "monthly" ? "text-[#1a1a1a] scale-105" : "text-gray-400 hover:text-gray-600"}`}
+          >
+            {t('pricing.toggle_monthly')}
+          </button>
+          <motion.button
+            onClick={() => setBilling(billing === "monthly" ? "annual" : "monthly")}
+            className={`relative inline-flex h-8 w-16 items-center rounded-full transition-all duration-500 ${billing === "annual" ? "bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg shadow-purple-300/50" : "bg-gray-300"}`}
+            whileTap={{ scale: 0.9 }}
+          >
+            <motion.span
+              className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-md"
+              animate={{ x: billing === "annual" ? 34 : 4 }}
+              transition={{ type: "spring", stiffness: 500, damping: 25 }}
+            >
+              {billing === "annual" && (
+                <motion.span
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                  className="text-xs"
+                >
+                  ✨
+                </motion.span>
+              )}
+            </motion.span>
+          </motion.button>
+          <button
+            onClick={() => setBilling("annual")}
+            className={`text-sm font-semibold transition-all duration-300 relative ${billing === "annual" ? "text-[#1a1a1a] scale-105" : "text-gray-400 hover:text-gray-600"}`}
+          >
+            {t('pricing.toggle_yearly')}
+            <motion.span
+              className="ml-2 text-[10px] text-white font-bold bg-gradient-to-r from-emerald-400 to-emerald-500 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1"
+              animate={{ scale: billing === "annual" ? [1, 1.1, 1] : 1 }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Sparkles size={10} />
+              {t('pricing.yearly_save')}
+            </motion.span>
+          </button>
+        </motion.div>
+
         <motion.div
           variants={stagger}
           initial="hidden"
@@ -844,55 +932,77 @@ function PricingSection() {
           viewport={{ once: true, margin: "-40px" }}
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
-          {plans.map((plan, i) => (
+          {plans.map((plan, i) => {
+            const isAnnual = billing === "annual"
+            const basePrice = parseInt(plan.price.replace("$", ""))
+            const displayPrice = isAnnual && basePrice > 0 ? `$${Math.round(basePrice * 10)}` : plan.price
+            const displayOriginal = isAnnual && (plan as any).originalPrice ? (plan as any).originalPrice : null
+            const displayPeriod = isAnnual && basePrice > 0 ? "/year" : plan.period
+            return (
             <motion.div
               key={plan.nameKey}
               variants={fadeUpScale}
               custom={i * 0.1}
-              className={`rounded-2xl p-8 border bg-white relative flex flex-col ${
+              className={`rounded-2xl p-8 border bg-white relative flex flex-col transition-all duration-500 ${
                 plan.highlight
-                  ? "border-[#ff5f5f] border-2 shadow-lg shadow-red-100/50"
-                  : "border-gray-200 shadow-sm"
+                  ? "border-purple-400 border-2 shadow-xl shadow-purple-100/60 scale-[1.02] md:scale-105"
+                  : "border-gray-200 shadow-sm hover:border-purple-200"
               }`}
               whileHover={{
-                y: plan.highlight ? -8 : -6,
+                y: plan.highlight ? -10 : -6,
                 boxShadow: plan.highlight
-                  ? "0 20px 40px rgba(255, 95, 95, 0.15)"
+                  ? "0 24px 48px rgba(168,85,247,0.2)"
                   : "0 12px 30px rgba(0,0,0,0.08)",
                 transition: { duration: 0.3 },
               }}
             >
               {plan.badge && (
                 <motion.span
-                  className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 bg-gradient-to-r from-[#ff5f5f] to-rose-500 text-white text-xs font-bold px-5 py-1.5 rounded-full shadow-lg shadow-red-200/50"
-                  initial={{ y: -10, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.3 + i * 0.1, type: "spring", stiffness: 300 }}
+                  className="absolute -top-3.5 left-1/2 -translate-x-1/2"
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }}
                 >
-                  <Crown size={11} />
-                  {plan.badge}
+                  <motion.span
+                    className="inline-flex items-center gap-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-5 py-1.5 rounded-full shadow-lg shadow-purple-200/50"
+                    initial={{ y: -10, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3 + i * 0.1, type: "spring", stiffness: 300 }}
+                  >
+                    <Crown size={11} />
+                    {plan.badge}
+                  </motion.span>
                 </motion.span>
               )}
               <h3 className={`font-bold text-lg mb-1 text-[#1a1a1a] ${plan.highlight ? "mt-2" : ""}`}>
                 {t(plan.nameKey)}
               </h3>
               <div className="flex items-baseline gap-1 mb-6">
-                {(plan as any).originalPrice && (
+                {displayOriginal && (
                   <span className="text-xl text-gray-300 line-through font-semibold tracking-tighter mr-0.5">
-                    {(plan as any).originalPrice}
+                    {displayOriginal}
                   </span>
                 )}
                 <motion.span
-                  className="text-4xl font-extrabold tracking-tighter text-[#1a1a1a]"
+                  className={`text-4xl font-extrabold tracking-tighter ${plan.highlight ? "bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent" : "text-[#1a1a1a]"}`}
                   initial={{ scale: 0.5 }}
                   whileInView={{ scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 + i * 0.1, type: "spring", stiffness: 400, damping: 10 }}
+                  key={`${billing}-${plan.nameKey}`}
                 >
-                  {plan.price}
+                  {displayPrice}
                 </motion.span>
-                <span className="text-gray-400 text-sm">{plan.period}</span>
+                <span className="text-gray-400 text-sm">{displayPeriod}</span>
+                {isAnnual && basePrice > 0 && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="ml-1 text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full"
+                  >
+                    -17%
+                  </motion.span>
+                )}
               </div>
               <ul className="space-y-3 mb-8 flex-1">
                 {plan.features.map((fKey) => (
@@ -904,7 +1014,12 @@ function PricingSection() {
                     viewport={{ once: true }}
                     transition={{ delay: 0.4 + i * 0.1 }}
                   >
-                    <Check size={14} className="text-emerald-500 shrink-0" />
+                    <motion.div
+                      className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0"
+                      whileHover={{ scale: 1.2, rotate: 10 }}
+                    >
+                      <Check size={12} className="text-emerald-500" />
+                    </motion.div>
                     <span>{t(fKey)}</span>
                   </motion.li>
                 ))}
@@ -912,16 +1027,16 @@ function PricingSection() {
               <motion.button
                 className={`w-full py-3 rounded-full font-semibold text-sm transition-all ${
                   plan.highlight
-                    ? "bg-[#ff5f5f] text-white hover:bg-red-500 hover:shadow-lg hover:shadow-red-200/50"
-                    : "border border-gray-300 text-gray-600 hover:border-gray-400 hover:text-[#1a1a1a]"
+                    ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 hover:shadow-lg hover:shadow-purple-200/50"
+                    : "border-2 border-gray-200 text-gray-600 hover:border-purple-300 hover:text-purple-600"
                 }`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
                 {t(plan.ctaKey)}
               </motion.button>
             </motion.div>
-          ))}
+          )})}
         </motion.div>
       </div>
     </section>
@@ -1011,67 +1126,81 @@ function FinalCTASection() {
   }
 
   return (
-    <section className="relative bg-gradient-to-br from-[#ff5f5f] to-purple-600 py-24 px-6 text-center overflow-hidden">
+    <section className="relative bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 py-24 px-6 text-center overflow-hidden">
       {/* Animated gradient overlay */}
       <motion.div
         className="absolute inset-0 opacity-20"
         style={{
-          background: "linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)",
+          background: "linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)",
           backgroundSize: "200% 200%",
         }}
-        animate={{
-          backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+        animate={{ backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
       />
 
-      {/* Floating shapes */}
+      {/* Cartoonish floating shapes */}
       {[
-        { top: "10%", left: "5%", size: 60, delay: 0 },
-        { top: "70%", right: "10%", size: 40, delay: 1 },
-        { top: "20%", right: "15%", size: 30, delay: 2 },
-        { bottom: "15%", left: "10%", size: 50, delay: 0.5 },
+        { top: "5%", left: "5%", size: 70, delay: 0, emoji: "✨" },
+        { top: "15%", right: "10%", size: 50, delay: 0.8, emoji: "💌" },
+        { top: "60%", right: "8%", size: 55, delay: 1.5, emoji: "🚀" },
+        { bottom: "20%", left: "8%", size: 65, delay: 2.2, emoji: "⭐" },
+        { top: "40%", left: "15%", size: 45, delay: 1, emoji: "💬" },
+        { bottom: "30%", right: "20%", size: 40, delay: 2.8, emoji: "🔥" },
       ].map((shape, i) => (
         <motion.div
           key={i}
-          className="absolute bg-white/5 rounded-full"
+          className="absolute rounded-full flex items-center justify-center text-2xl select-none"
           style={{
-            top: shape.top,
-            left: shape.left,
-            right: (shape as any).right,
-            bottom: (shape as any).bottom,
-            width: shape.size,
-            height: shape.size,
+            top: shape.top, left: shape.left,
+            right: (shape as any).right, bottom: (shape as any).bottom,
+            width: shape.size, height: shape.size,
           }}
           animate={{
-            y: [0, -15, 0],
-            opacity: [0.3, 0.6, 0.3],
-            scale: [1, 1.1, 1],
+            y: [0, -20, 0],
+            rotate: [0, i % 2 === 0 ? 15 : -15, 0],
+            scale: [1, 1.15, 1],
           }}
           transition={{
-            duration: 4 + i,
+            duration: 3.5 + i * 0.5,
             repeat: Infinity,
             delay: shape.delay,
             ease: "easeInOut",
           }}
-        />
+        >
+          {shape.emoji}
+        </motion.div>
       ))}
 
       <div className="max-w-2xl mx-auto relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="mb-8"
+        >
+          <motion.span
+            className="inline-flex items-center gap-1.5 bg-white/20 text-white text-xs font-bold tracking-wider px-4 py-1.5 rounded-full mb-6 backdrop-blur-sm border border-white/20"
+            animate={{ y: [0, -3, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <Sparkles size={12} className="text-yellow-300" />
+            FREE FOREVER PLAN
+          </motion.span>
+        </motion.div>
+
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="text-4xl md:text-5xl font-extrabold tracking-tighter text-white mb-4 leading-[1.1]"
+          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.1 }}
+          className="text-4xl md:text-6xl font-extrabold tracking-tighter text-white mb-4 leading-[1.1]"
         >
           {t('home.cta.title')}{" "}
           <motion.span
-            className="italic font-bold inline-block"
-            animate={{
-              scale: [1, 1.02, 1],
-            }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="italic inline-block"
+            animate={{ scale: [1, 1.03, 1] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
           >
             {t('home.cta.title_highlight')}
           </motion.span>
@@ -1080,7 +1209,7 @@ function FinalCTASection() {
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
           className="text-white/80 text-lg mb-10 leading-relaxed max-w-lg mx-auto"
         >
           {t('home.cta.subtitle')}
@@ -1090,7 +1219,7 @@ function FinalCTASection() {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="max-w-md mx-auto px-6 py-4 rounded-full bg-white/15 text-white text-sm font-medium"
+            className="max-w-md mx-auto px-6 py-4 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm font-medium border border-white/30"
           >
             <motion.span
               initial={{ opacity: 0 }}
@@ -1105,11 +1234,15 @@ function FinalCTASection() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
             onSubmit={handleSubmit}
             className="flex flex-col sm:flex-row items-center gap-3 max-w-md mx-auto"
           >
-            <div className="relative flex-1 w-full">
+            <motion.div
+              className="relative flex-1 w-full"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
               <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="email"
@@ -1117,49 +1250,57 @@ function FinalCTASection() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('home.cta.placeholder')}
                 required
-                className="w-full pl-11 pr-5 py-3.5 rounded-full text-sm outline-none text-[#1a1a1a] placeholder:text-gray-400 bg-white border-0 focus:ring-2 focus:ring-white/30 transition-shadow"
+                className="w-full pl-11 pr-5 py-4 rounded-full text-sm outline-none text-[#1a1a1a] placeholder:text-gray-400 bg-white border-2 border-white/50 focus:border-purple-300 focus:ring-4 focus:ring-purple-200/30 transition-all shadow-lg shadow-black/5"
               />
-            </div>
+            </motion.div>
             <motion.button
               type="submit"
-              className="w-full sm:w-auto bg-[#1a1a1a] text-white px-7 py-3.5 rounded-full font-semibold text-sm hover:bg-gray-800 transition-all hover:shadow-lg hover:shadow-black/20 inline-flex items-center gap-2 group whitespace-nowrap"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
+              className="w-full sm:w-auto bg-[#1a1a1a] text-white px-8 py-4 rounded-full font-bold text-sm hover:bg-gray-800 transition-all hover:shadow-xl hover:shadow-black/30 inline-flex items-center gap-2 group whitespace-nowrap"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
             >
               {t('home.cta.button')}
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              <motion.span
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <ArrowRight size={16} />
+              </motion.span>
             </motion.button>
           </motion.form>
         )}
 
-        {/* Trust indicators */}
+        {/* Trust indicators - cartoonish */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-10 pt-10 border-t border-white/15 flex flex-wrap justify-center gap-6 text-xs text-white/60"
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="mt-10 pt-10 border-t border-white/20 flex flex-wrap justify-center gap-8 text-sm text-white/80 font-medium"
         >
           {[
-            { icon: Shield, textKey: 'home.cta.trust_soc2' },
-            { icon: Globe, textKey: 'home.cta.trust_uptime' },
-            { icon: Heart, textKey: 'home.cta.trust_nocc' },
-          ].map((item, i) => {
-            const Icon = item.icon
-            return (
+            { emoji: "🔒", textKey: 'home.cta.trust_soc2', delay: 0 },
+            { emoji: "⚡", textKey: 'home.cta.trust_uptime', delay: 0.1 },
+            { emoji: "💳", textKey: 'home.cta.trust_nocc', delay: 0.2 },
+          ].map((item, i) => (
+            <motion.span
+              key={item.textKey}
+              className="flex items-center gap-2"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 + item.delay }}
+              whileHover={{ scale: 1.1 }}
+            >
               <motion.span
-                key={item.textKey}
-                className="flex items-center gap-1.5"
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.5 + i * 0.1 }}
+                animate={{ y: [0, -3, 0] }}
+                transition={{ duration: 2, repeat: Infinity, delay: i * 0.4, ease: "easeInOut" }}
               >
-                <Icon size={12} />
-                {t(item.textKey)}
+                {item.emoji}
               </motion.span>
-            )
-          })}
+              {t(item.textKey)}
+            </motion.span>
+          ))}
         </motion.div>
       </div>
     </section>

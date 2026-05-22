@@ -3,6 +3,77 @@ import { randomUUID } from "crypto";
 import { loginRateLimit, signupRateLimit, passwordResetRateLimit } from "@/lib/rate-limit";
 import { defaultLocale, locales } from "@/lib/i18n";
 
+// ── Maintenance mode utilities ────────────────────────────────────────────────
+
+const MAINTENANCE_KEY = "mailmind:maintenance";
+const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL;
+const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+/** Check if maintenance mode is active via Upstash Redis REST API (fail-open). */
+async function isMaintenanceActive(): Promise<boolean> {
+  if (!REDIS_URL || !REDIS_TOKEN) return false;
+  try {
+    const res = await fetch(`${REDIS_URL}/get/${MAINTENANCE_KEY}`, {
+      headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
+      signal: AbortSignal.timeout(2000),
+    });
+    if (!res.ok) return false;
+    const data = await res.json() as { result: string | null };
+    return data.result === "true" || data.result === "1";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Check if the request comes from an admin user by decoding the better-auth session JWT.
+ * Uses Web APIs only (no Node Buffer) for edge compatibility.
+ */
+function isAdmin(request: NextRequest): boolean {
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (!adminEmail) return false;
+
+  try {
+    const sessionCookie = request.cookies.get("better-auth.session_token")?.value;
+    if (!sessionCookie) return false;
+
+    // Decode JWT payload (second segment) — base64url → JSON
+    const payload = sessionCookie.split(".")[1];
+    if (!payload) return false;
+
+    // Convert base64url to base64, then decode with atob (Web API)
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const json = atob(base64);
+    const decoded = JSON.parse(json);
+
+    const email: string | undefined = decoded?.email;
+    if (!email) return false;
+
+    return email.toLowerCase() === adminEmail.toLowerCase();
+  } catch {
+    return false;
+  }
+}
+
+/** Paths that are always accessible (never blocked by maintenance mode).
+ * Uses regex to handle locale-prefixed paths since the locale redirect (Step 0)
+ * runs before this check. e.g., /ro/login, /en/sign-up, /ro/maintenance. */
+const MAINTENANCE_ALLOWED = [
+  /^\/[a-z]{2}\/maintenance/,
+  /^\/api\//,
+  /^\/[a-z]{2}\/login/,
+  /^\/[a-z]{2}\/sign-up/,
+  /^\/[a-z]{2}\/onboarding/,
+  /^\/[a-z]{2}\/callback/,
+  /^\/_next\//,
+  /^\/static\//,
+];
+
+function isMaintenanceAllowed(pathname: string): boolean {
+  if (pathname.includes(".")) return true; // static files
+  return MAINTENANCE_ALLOWED.some((re) => re.test(pathname));
+}
+
 /**
  * Extract the client IP address from the request.
  * Checks common headers for proxied environments (Vercel, Cloudflare, etc.).
@@ -85,6 +156,19 @@ export async function proxy(request: NextRequest) {
       const url = request.nextUrl.clone();
       url.pathname = `/${defaultLocale}${pathname}`;
       return NextResponse.redirect(url);
+    }
+  }
+
+  // ── Step 0.5: Maintenance mode check ──────────────────────────────────────
+  if (!isMaintenanceAllowed(pathname)) {
+    const active = await isMaintenanceActive();
+    if (active && !isAdmin(request)) {
+      // Extract locale from pathname (e.g., /ro/dashboard → ro)
+      const localeMatch = pathname.match(/^\/([a-z]{2})\//);
+      const locale = localeMatch ? localeMatch[1] : defaultLocale;
+      const maintenanceUrl = new URL(`/${locale}/maintenance`, request.url);
+      maintenanceUrl.searchParams.set("reason", "maintenance");
+      return NextResponse.redirect(maintenanceUrl);
     }
   }
 

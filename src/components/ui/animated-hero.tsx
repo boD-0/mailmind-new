@@ -37,14 +37,25 @@ function Hero({ locale = "" }: HeroProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2 text-sm font-medium rounded-full border-[#ff5f5f]/20 bg-[#ff5f5f]/5 text-[#ff5f5f] hover:bg-[#ff5f5f]/10 transition-colors"
+            <motion.div
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              AI-powered email campaigns
-            </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 text-sm font-semibold rounded-full border-2 border-purple-300/60 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-600 hover:from-purple-100 hover:to-pink-100 hover:border-purple-400/80 transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-purple-200/50"
+              >
+                <motion.span
+                  animate={{ rotate: [0, 15, -15, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                </motion.span>
+                AI-powered email campaigns
+              </Button>
+            </motion.div>
           </motion.div>
 
           <div className="flex gap-4 flex-col">
@@ -94,10 +105,28 @@ function Hero({ locale = "" }: HeroProps) {
             className="flex flex-row gap-3"
           >
             <Link href={`/${locale}/demo`}>
-              <Button size="lg" variant="outline" className="gap-3 rounded-full text-base font-semibold px-7 py-6 h-auto">
-                <Users className="w-4 h-4" />
-                Watch Demo
-              </Button>
+              <motion.div
+                whileHover={{ scale: 1.08, y: -3 }}
+                whileTap={{ scale: 0.93 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <Button size="lg" variant="outline" className="gap-3 rounded-full text-base font-semibold px-7 py-6 h-auto border-2 border-violet-300/70 bg-gradient-to-r from-violet-50 to-blue-50 text-violet-700 hover:from-violet-100 hover:to-blue-100 hover:border-violet-400 hover:shadow-lg hover:shadow-violet-200/50 transition-all duration-300 group">
+                  <motion.span
+                    animate={{ y: [0, -3, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <Users className="w-4 h-4" />
+                  </motion.span>
+                  Watch Demo
+                  <motion.span
+                    className="inline-block ml-1 text-[10px] bg-violet-200 text-violet-700 px-2 py-0.5 rounded-full font-bold"
+                    animate={{ scale: [1, 1.15, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    FREE
+                  </motion.span>
+                </Button>
+              </motion.div>
             </Link>
             <Link href={`/${locale}/sign-up`}>
               <Button

@@ -138,15 +138,15 @@
       "a6": "Majoritatea utilizatorilor văd un email complet, gata de trimis, în sub 90 de secunde de la introducerea numelui prospectului."
     },
     "cta": {
-      "title": "Gata să trimiți emailuri",
-      "title_highlight": "care primesc răspunsuri?",
-      "subtitle": "Alătură-te miilor de fondatori și SDR-i care deja livrează cu MailMind.",
+      "title": "Gata să cucerești",
+      "title_highlight": "inbox-ul? 🚀",
+      "subtitle": "Alătură-te revoluției emailurilor care chiar primesc răspunsuri. Mii de fondatori și SDR-i deja livrează cu MailMind — acum e rândul tău.",
       "placeholder": "emailul@tău.com",
       "button": "Începe Acum",
       "success": "✓ Ești înscris! Verifică inbox-ul pentru următorii pași.",
-      "trust_soc2": "Conform SOC 2",
-      "trust_uptime": "Uptime 99.9%",
-      "trust_nocc": "Fără card de credit"
+      "trust_soc2": "🔒 Date în siguranță",
+      "trust_uptime": "⚡ Mereu Online",
+      "trust_nocc": "💳 Fără Card"
     }
   },
   "footer": {
@@ -455,6 +455,8 @@
     "campaigns_title": "Atelierul",
     "campaigns_highlight": "Tău.",
     "campaigns_empty": "Nicio campanie încă. Lansează primul swarm pentru a începe.",
+    "no_campaigns": "Nicio campanie încă!",
+    "no_campaigns_hint": "Apasă butonul + pentru a crea prima campanie.",
     "campaign_view_all": "Vezi toate",
     "campaign_status_draft": "DRAFT",
     "campaign_status_active": "ACTIV",

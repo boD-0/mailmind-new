@@ -30,7 +30,7 @@ function PopoverContent({
         align={align}
         sideOffset={sideOffset}
         className={cn(
-          'bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border shadow-md outline-hidden',
+          'bg-white text-[#1a1a1a] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-xl border border-gray-200 shadow-lg outline-hidden',
           className,
         )}
         {...props}
@@ -43,7 +43,7 @@ function PopoverHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'flex w-full flex-col gap-1 rounded-t-md border-b px-3 py-2',
+        'flex w-full flex-col gap-1 rounded-t-md border-b border-gray-100 px-3 py-2',
         className,
       )}
       {...props}
@@ -53,7 +53,7 @@ function PopoverHeader({ className, ...props }: React.ComponentProps<'div'>) {
 
 function PopoverTitle({ className, ...props }: React.ComponentProps<'p'>) {
   return (
-    <p className={cn('text-foreground font-medium', className)} {...props} />
+    <p className={cn('text-[#1a1a1a] font-medium', className)} {...props} />
   );
 }
 
@@ -62,7 +62,7 @@ function PopoverDescription({
   ...props
 }: React.ComponentProps<'p'>) {
   return (
-    <p className={cn('text-muted-foreground text-sm', className)} {...props} />
+    <p className={cn('text-gray-500 text-sm', className)} {...props} />
   );
 }
 
@@ -70,7 +70,7 @@ function PopoverFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'mt-auto grid w-full gap-2 rounded-b-md border-t px-3 py-2',
+        'mt-auto grid w-full gap-2 rounded-b-md border-t border-gray-100 px-3 py-2',
         className,
       )}
       {...props}

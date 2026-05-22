@@ -77,7 +77,7 @@ export function ApiLimitNotification({
           variant={isExceeded || usagePercent >= 100 ? 'destructive' : 'default'}
           className={cn(
             'shadow-lg',
-            !isExceeded && usagePercent < 100 && 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/50'
+            !isExceeded && usagePercent < 100 && 'border-amber-200 bg-amber-50'
           )}
         >
           <Icon className={cn(
@@ -136,7 +136,7 @@ export function ApiLimitNotification({
 
             {/* Exceeded state - persistent */}
             {isExceeded && (
-              <div className="mt-2 pt-2 border-t border-red-200 dark:border-red-800">
+              <div className="mt-2 pt-2 border-t border-red-200">
                 <p className="text-[10px] text-red-600 flex items-center gap-1">
                   <AlertTriangle className="size-3" />
                   Some features are disabled until you upgrade

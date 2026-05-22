@@ -375,28 +375,45 @@ function PricingCards({ locale }: { locale: string }) {
         >
           <button
             onClick={() => setBilling("monthly")}
-            className={`text-sm font-medium transition-colors ${billing === "monthly" ? "text-[#1a1a1a]" : "text-gray-400"}`}
+            className={`text-sm font-semibold transition-all duration-300 ${billing === "monthly" ? "text-[#1a1a1a] scale-105" : "text-gray-400 hover:text-gray-600"}`}
           >
             {t('pricing.toggle_monthly')}
           </button>
-          <button
-            onClick={() => setBilling("annual")}
-            className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${billing === "annual" ? "bg-[#ff5f5f]" : "bg-gray-200"}`}
+          <motion.button
+            onClick={() => setBilling(billing === "monthly" ? "annual" : "monthly")}
+            className={`relative inline-flex h-8 w-16 items-center rounded-full transition-all duration-500 ${billing === "annual" ? "bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg shadow-purple-300/50" : "bg-gray-300"}`}
+            whileTap={{ scale: 0.9 }}
           >
             <motion.span
-              className="inline-block h-5 w-5 rounded-full bg-white shadow-sm"
-              animate={{ x: billing === "annual" ? 26 : 4 }}
-              transition={{ type: "spring", stiffness: 500, damping: 30 }}
-            />
-          </button>
+              className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-md"
+              animate={{ x: billing === "annual" ? 34 : 4 }}
+              transition={{ type: "spring", stiffness: 500, damping: 25 }}
+            >
+              {billing === "annual" && (
+                <motion.span
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                  className="text-xs"
+                >
+                  ✨
+                </motion.span>
+              )}
+            </motion.span>
+          </motion.button>
           <button
             onClick={() => setBilling("annual")}
-            className={`text-sm font-medium transition-colors ${billing === "annual" ? "text-[#1a1a1a]" : "text-gray-400"}`}
+            className={`text-sm font-semibold transition-all duration-300 relative ${billing === "annual" ? "text-[#1a1a1a] scale-105" : "text-gray-400 hover:text-gray-600"}`}
           >
             {t('pricing.toggle_yearly')}
-            <span className="ml-1.5 text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">
+            <motion.span
+              className="ml-2 text-[10px] text-white font-bold bg-gradient-to-r from-emerald-400 to-emerald-500 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1"
+              animate={{ scale: billing === "annual" ? [1, 1.1, 1] : 1 }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Sparkles size={10} />
               {t('pricing.yearly_save')}
-            </span>
+            </motion.span>
           </button>
         </motion.div>
 
@@ -411,28 +428,34 @@ function PricingCards({ locale }: { locale: string }) {
               key={tier.id}
               variants={fadeUpScale}
               custom={i * 0.12}
-              className={`rounded-2xl p-8 border bg-white relative flex flex-col ${
+              className={`rounded-2xl p-8 border bg-white relative flex flex-col transition-all duration-500 ${
                 tier.highlight
-                  ? "border-[#ff5f5f] border-2 shadow-xl shadow-red-100/60 scale-[1.02] lg:scale-105"
-                  : "border-gray-200 shadow-sm"
+                  ? "border-purple-400 border-2 shadow-xl shadow-purple-100/60 scale-[1.02] lg:scale-105"
+                  : "border-gray-200 shadow-sm hover:border-purple-200"
               }`}
               whileHover={{
-                y: tier.highlight ? -8 : -6,
+                y: tier.highlight ? -10 : -6,
                 boxShadow: tier.highlight
-                  ? "0 24px 48px rgba(255, 95, 95, 0.18)"
+                  ? "0 24px 48px rgba(168,85,247,0.22)"
                   : "0 12px 30px rgba(0,0,0,0.08)",
                 transition: { duration: 0.3 },
               }}
             >
               {tier.badge && (
                 <motion.span
-                  className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 bg-gradient-to-r from-[#ff5f5f] to-rose-500 text-white text-xs font-bold px-5 py-1.5 rounded-full shadow-lg shadow-red-200/50"
-                  initial={{ y: -10, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.5 + i * 0.1, type: "spring", stiffness: 300 }}
+                  className="absolute -top-3.5 left-1/2 -translate-x-1/2"
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }}
                 >
-                  <Crown size={11} />
-                  {tier.badge}
+                  <motion.span
+                    className="inline-flex items-center gap-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-5 py-1.5 rounded-full shadow-lg shadow-purple-200/50"
+                    initial={{ y: -10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.5 + i * 0.1, type: "spring", stiffness: 300 }}
+                  >
+                    <Crown size={11} />
+                    {tier.badge}
+                  </motion.span>
                 </motion.span>
               )}
 
@@ -516,9 +539,9 @@ function PricingCards({ locale }: { locale: string }) {
                 href={`/${locale}/${tier.ctaHref}`}
                 className={`w-full py-3.5 rounded-full font-semibold text-sm text-center transition-all inline-flex items-center justify-center gap-2 group ${
                   tier.highlight
-                    ? "bg-[#ff5f5f] text-white hover:bg-red-500 hover:shadow-lg hover:shadow-red-200/50"
+                    ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 hover:shadow-lg hover:shadow-purple-200/50"
                     : tier.id === "PROFESSIONAL"
-                    ? "bg-gradient-to-r from-[#ff5f5f] to-purple-600 text-white hover:shadow-lg hover:shadow-purple-200/50"
+                    ? "bg-gradient-to-r from-purple-500 to-indigo-600 text-white hover:shadow-lg hover:shadow-purple-200/50"
                     : "border border-gray-300 text-gray-600 hover:border-gray-400 hover:text-[#1a1a1a]"
                 }`}
               >
@@ -835,34 +858,47 @@ function PricingCTA({ locale }: { locale: string }) {
   }
 
   return (
-    <section className="relative bg-gradient-to-br from-[#ff5f5f] to-purple-600 py-24 px-6 text-center overflow-hidden">
+    <section className="relative bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 py-24 px-6 text-center overflow-hidden">
       <motion.div
         className="absolute inset-0 opacity-20"
         style={{
-          background: "linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)",
+          background: "linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)",
           backgroundSize: "200% 200%",
         }}
         animate={{ backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
       />
 
       {[
-        { top: "10%", left: "5%", size: 60, delay: 0 },
-        { top: "70%", right: "10%", size: 40, delay: 1 },
-        { top: "20%", right: "15%", size: 30, delay: 2 },
-        { bottom: "15%", left: "10%", size: 50, delay: 0.5 },
+        { top: "5%", left: "5%", size: 70, delay: 0, emoji: "✨" },
+        { top: "15%", right: "10%", size: 50, delay: 0.8, emoji: "💌" },
+        { top: "60%", right: "8%", size: 55, delay: 1.5, emoji: "🚀" },
+        { bottom: "20%", left: "8%", size: 65, delay: 2.2, emoji: "⭐" },
+        { top: "40%", left: "15%", size: 45, delay: 1, emoji: "💬" },
+        { bottom: "30%", right: "20%", size: 40, delay: 2.8, emoji: "🔥" },
       ].map((shape, i) => (
         <motion.div
           key={i}
-          className="absolute bg-white/5 rounded-full"
+          className="absolute rounded-full flex items-center justify-center text-2xl select-none"
           style={{
             top: shape.top, left: shape.left,
             right: (shape as any).right, bottom: (shape as any).bottom,
             width: shape.size, height: shape.size,
           }}
-          animate={{ y: [0, -15, 0], opacity: [0.3, 0.6, 0.3], scale: [1, 1.1, 1] }}
-          transition={{ duration: 4 + i, repeat: Infinity, delay: shape.delay, ease: "easeInOut" }}
-        />
+          animate={{
+            y: [0, -20, 0],
+            rotate: [0, i % 2 === 0 ? 15 : -15, 0],
+            scale: [1, 1.15, 1],
+          }}
+          transition={{
+            duration: 3.5 + i * 0.5,
+            repeat: Infinity,
+            delay: shape.delay,
+            ease: "easeInOut",
+          }}
+        >
+          {shape.emoji}
+        </motion.div>
       ))}
 
       <div className="max-w-2xl mx-auto relative z-10">
@@ -874,6 +910,13 @@ function PricingCTA({ locale }: { locale: string }) {
           className="text-4xl md:text-5xl font-extrabold tracking-tighter text-white mb-4 leading-[1.1]"
         >
           {t('pricing.cta.title')}
+          <motion.span
+            className="inline-block ml-2"
+            animate={{ rotate: [0, 10, -10, 0] }}
+            transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+          >
+            🚀
+          </motion.span>
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 12 }}
@@ -930,20 +973,26 @@ function PricingCTA({ locale }: { locale: string }) {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-10 pt-10 border-t border-white/15 flex flex-wrap justify-center gap-6 text-xs text-white/60"
+          className="mt-10 pt-10 border-t border-white/20 flex flex-wrap justify-center gap-8 text-sm text-white/80 font-medium"
         >
           {TRUST_ITEMS.map((item, i) => {
             const Icon = item.icon
             return (
               <motion.span
                 key={item.textKey}
-                className="flex items-center gap-1.5"
+                className="flex items-center gap-2"
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.5 + i * 0.1 }}
+                whileHover={{ scale: 1.1 }}
               >
-                <Icon size={12} />
+                <motion.span
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: i * 0.4, ease: "easeInOut" }}
+                >
+                  <Icon size={14} />
+                </motion.span>
                 {t(`home.${item.textKey}`)}
               </motion.span>
             )

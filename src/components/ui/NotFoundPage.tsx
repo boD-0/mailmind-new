@@ -192,7 +192,7 @@ export function NotFoundPage({ isError, errorMessage, onRetry }: NotFoundPagePro
               >
                 <button
                   onClick={onRetry}
-                  className="inline-block bg-[#1a1a1a] text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-black transition-colors select-none"
+                  className="inline-block bg-[#ff5f5f] text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-red-500 transition-colors shadow-lg shadow-red-500/20 select-none"
                 >
                   {t('not_found.try_again')}
                 </button>
@@ -206,7 +206,7 @@ export function NotFoundPage({ isError, errorMessage, onRetry }: NotFoundPagePro
             >
               <Link
                 href={homeUrl}
-                className={`inline-block bg-[#1a1a1a] text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-black transition-colors select-none ${
+                className={`inline-block bg-[#ff5f5f] text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-red-500 transition-colors shadow-lg shadow-red-500/20 select-none ${
                   isError ? 'sm:order-first' : ''
                 }`}
               >

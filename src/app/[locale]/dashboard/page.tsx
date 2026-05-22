@@ -1,425 +1,102 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
-import { Plus, ArrowUpRight, Activity, Search, Brain, Target, PenTool, Send as SendIcon, Sparkles } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, ChevronRight, Clock, Sparkles, Target, Send as SendIcon, Loader2 } from "lucide-react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { NewProjectDialog, type NewProjectData } from "@/components/dashboard/NewProjectDialog";
 import { authClient } from "@/lib/auth/auth-client";
 import { Plan } from "@/lib/auth/gatekeeper";
-
 import { EventScheduler, type ScheduledEvent } from "@/components/ui/event-scheduler";
-import { useSwarmStore } from "@/stores/swarmStore";
 import { useTranslation } from "@/components/I18nProvider";
 import { useParams } from "next/navigation";
-
-// Dynamic chart imports
-const ResponsiveContainer = dynamic(() => import("recharts").then(mod => mod.ResponsiveContainer), { ssr: false });
-const AreaChart = dynamic(() => import("recharts").then(mod => mod.AreaChart), { ssr: false });
-const Area = dynamic(() => import("recharts").then(mod => mod.Area), { ssr: false });
-const XAxis = dynamic(() => import("recharts").then(mod => mod.XAxis), { ssr: false });
-const YAxis = dynamic(() => import("recharts").then(mod => mod.YAxis), { ssr: false });
-const Tooltip = dynamic(() => import("recharts").then(mod => mod.Tooltip), { ssr: false });
-
-/* ════════════════════════════════════════════════════════════
-   ANIMATION VARIANTS
-   ════════════════════════════════════════════════════════════ */
-
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.07 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 },
-};
-
-const fadeUpScale = {
-  hidden: { opacity: 0, y: 18, scale: 0.95 },
-  show: (delay = 0) => ({
-    opacity: 1, y: 0, scale: 1,
-    transition: { duration: 0.45, delay },
-  }),
-} as const;
+import { getDashboardData, type DashboardCampaign } from "@/app/actions/dashboard";
 
 /* ════════════════════════════════════════════════════════════
    DATA
    ════════════════════════════════════════════════════════════ */
 
-const CHART = [
-  { d: "Sat", v: 3 }, { d: "Sun", v: 1 }, { d: "Mon", v: 6 },
-  { d: "Tue", v: 11 }, { d: "Wed", v: 7 }, { d: "Thu", v: 9 }, { d: "Fri", v: 8 },
-];
-
-const PIPELINE_STAGES = [
-  { key: "research", icon: Search, color: "emerald", labelKey: "dashboard.pipeline_research", descKey: "dashboard.pipeline_research_desc" },
-  { key: "draft", icon: PenTool, color: "amber", labelKey: "dashboard.pipeline_draft", descKey: "dashboard.pipeline_draft_desc" },
-  { key: "review", icon: Brain, color: "indigo", labelKey: "dashboard.pipeline_review", descKey: "dashboard.pipeline_review_desc" },
-  { key: "send", icon: SendIcon, color: "rose", labelKey: "dashboard.pipeline_send", descKey: "dashboard.pipeline_send_desc" },
-] as const;
-
-// Mock campaigns — will be replaced by DB data
-const CAMPAIGNS = [
-  { id: "arcadia-q2", name: "Q2 Product Launch", company: "Arcadia Finance", stage: "review", confidence: 93, date: "May 6" },
-  { id: "northstack-onboard", name: "Onboarding Sequence", company: "NorthStack", stage: "draft", confidence: 71, date: "May 4" },
-  { id: "helix-reengagement", name: "Re-engagement Flow", company: "Helix Capital", stage: "complete", confidence: 88, date: "Apr 30" },
-  { id: "bioforge-webinar", name: "Webinar Follow-up", company: "BioForge", stage: "active", confidence: 84, date: "Apr 28" },
-  { id: "tundra-investor", name: "Investor Update", company: "Tundra VC", stage: "complete", confidence: 91, date: "Apr 26" },
-  { id: "solera-promo", name: "Spring Promo", company: "Solera Retail", stage: "draft", confidence: 62, date: "Apr 24" },
-];
+const STATUS_MAP: Record<string, { color: string; label: string }> = {
+  active: { color: "#ff5f5f", label: "Active" },
+  swarm_running: { color: "#ff5f5f", label: "Active" },
+  review: { color: "#f59e0b", label: "Review" },
+  draft: { color: "#c0bdb5", label: "Draft" },
+  complete: { color: "#4CAF50", label: "Done" },
+  exported: { color: "#4CAF50", label: "Sent" },
+};
 
 /* ════════════════════════════════════════════════════════════
-   STATUS DOT
+   COMPACT STAT PILL
    ════════════════════════════════════════════════════════════ */
 
-const STATUS_MAP: Record<string, { color: string; labelKey: string }> = {
-  active: { color: "#ff5f5f", labelKey: "dashboard.campaign_status_active" },
-  review: { color: "#f59e0b", labelKey: "dashboard.campaign_status_review" },
-  draft: { color: "#c0bdb5", labelKey: "dashboard.campaign_status_draft" },
-  complete: { color: "#4CAF50", labelKey: "dashboard.campaign_status_complete" },
-};
-
-function StatusDot({ stage }: { stage: string }) {
-  const { t } = useTranslation();
-  const s = STATUS_MAP[stage] ?? STATUS_MAP.draft!;
-  return (
-    <span className="text-[10px] tracking-widest text-gray-400 flex items-center gap-1.5 uppercase">
-      <span className="w-1.5 h-1.5 rounded-full" style={{ background: s.color, boxShadow: stage === "active" ? `0 0 8px ${s.color}` : "none" }} />
-      {t(s.labelKey)}
-    </span>
-  );
-}
-
-/* ════════════════════════════════════════════════════════════
-   PIPELINE STAGE CARD
-   ════════════════════════════════════════════════════════════ */
-
-const STAGE_COLORS: Record<string, { bg: string; iconBg: string; border: string }> = {
-  emerald: { bg: "bg-emerald-50", iconBg: "bg-emerald-100 text-emerald-600", border: "border-emerald-200" },
-  amber: { bg: "bg-amber-50", iconBg: "bg-amber-100 text-amber-600", border: "border-amber-200" },
-  indigo: { bg: "bg-indigo-50", iconBg: "bg-indigo-100 text-indigo-600", border: "border-indigo-200" },
-  rose: { bg: "bg-rose-50", iconBg: "bg-rose-100 text-rose-600", border: "border-rose-200" },
-};
-
-const STAGE_BARS: Record<string, string> = {
-  emerald: "#34d399",
-  amber: "#fbbf24",
-  indigo: "#6366f1",
-  rose: "#f43f5e",
-};
-
-function PipelineCard({
-  stage, index, count, total,
-}: {
-  stage: (typeof PIPELINE_STAGES)[number];
-  index: number;
-  count: number;
-  total: number;
-}) {
-  const { t } = useTranslation();
-  const Icon = stage.icon;
-  const c = STAGE_COLORS[stage.color] ?? STAGE_COLORS.emerald!;
+function StatPill({ emoji, value, sub }: { emoji: string; value: string; sub: string }) {
   return (
     <motion.div
-      variants={fadeUpScale}
-      custom={index * 0.08}
-      className={`${c.bg} border ${c.border} rounded-2xl p-5 flex flex-col items-center text-center gap-3 relative overflow-hidden group cursor-default shadow-sm`}
-      whileHover={{ y: -5, boxShadow: "0 12px 28px rgba(0,0,0,0.06)", transition: { duration: 0.25 } }}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 shadow-sm"
+      whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}
+      transition={{ duration: 0.2 }}
     >
-      <motion.div
-        className={`w-11 h-11 rounded-xl ${c.iconBg} flex items-center justify-center`}
-        whileHover={{ rotate: [0, -12, 12, 0], scale: 1.1 }}
-        transition={{ duration: 0.4 }}
-      >
-        <Icon size={20} />
-      </motion.div>
-      <div>
-        <span className="text-xs font-bold tracking-wide text-gray-800">{t(stage.labelKey)}</span>
-        <p className="text-[10px] text-gray-400 mt-0.5">{t(stage.descKey)}</p>
-      </div>
-      <div className="mt-1">
-        <span className="text-2xl font-extrabold text-gray-900">{count}</span>
-        <span className="text-[10px] text-gray-400 ml-1">campaigns</span>
-      </div>
-      {/* Progress bar */}
-      <div className="w-full h-1 bg-gray-200/60 rounded-full overflow-hidden mt-1">
-        <motion.div
-          className="h-full rounded-full"
-          style={{ background: STAGE_BARS[stage.color] ?? "#34d399" }}
-          initial={{ width: 0 }}
-          animate={{ width: total > 0 ? `${Math.round((count / Math.max(total, 1)) * 100)}%` : "0%" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        />
+      <span className="text-base">{emoji}</span>
+      <div className="flex items-baseline gap-1.5">
+        <span className="text-lg font-bold text-gray-900 tracking-tight">{value}</span>
+        <span className="text-[11px] text-gray-400">{sub}</span>
       </div>
     </motion.div>
   );
 }
 
 /* ════════════════════════════════════════════════════════════
-   HERO
+   COLLAPSIBLE SECTION (reusable)
    ════════════════════════════════════════════════════════════ */
 
-function Hero({
-  userName, onNewCampaign, agentCount,
+function CollapsibleSection({
+  label,
+  count,
+  defaultOpen = false,
+  children,
 }: {
-  userName: string;
-  onNewCampaign: () => void;
-  agentCount: number;
+  label: string;
+  count?: number;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
 }) {
-  const { t } = useTranslation();
-  const [greeting, setGreeting] = useState("");
-  const [dateStr, setDateStr] = useState("");
-
-  useEffect(() => {
-    const now = new Date();
-    const h = now.getHours();
-    if (h < 12) setGreeting(t("dashboard.greeting_morning"));
-    else if (h < 18) setGreeting(t("dashboard.greeting_afternoon"));
-    else setGreeting(t("dashboard.greeting_evening"));
-
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    setDateStr(`${days[now.getDay()]} · ${months[now.getMonth()]} ${now.getDate()} · ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`);
-  }, [t]);
+  const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <div className="grid md:grid-cols-[1.4fr_1fr] gap-8 items-end">
-      <motion.div variants={item}>
-        <div className="text-[11px] tracking-[0.25em] text-[#ff5f5f] uppercase mb-3 font-mono">{dateStr}</div>
-        <h1 className="font-display text-[44px] leading-[1.05] text-gray-900">
-          {greeting}, {userName || "Founder"}.<br />
-          <span className="text-gray-400 italic">
-            {agentCount > 0 ? `${agentCount} ${t("dashboard.agents_awake")}` : t("dashboard.agents_asleep")}
-          </span>
-        </h1>
-      </motion.div>
-      <motion.button
-        variants={item}
-        onClick={onNewCampaign}
-        className="group relative overflow-hidden self-end px-6 py-4 border border-[#ff5f5f] text-[#ff5f5f] rounded-md text-[13px] tracking-wider uppercase flex items-center justify-between gap-3 hover:bg-[#ff5f5f]/10 transition-colors"
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors group"
       >
-        <span className="flex items-center gap-2"><Plus size={15} /> {t("dashboard.new_campaign")}</span>
-        <ArrowUpRight size={15} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-      </motion.button>
+        <motion.span
+          animate={{ rotate: open ? 90 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ChevronRight size={16} className="text-gray-400 group-hover:text-gray-600" />
+        </motion.span>
+        {label}
+        {count !== undefined && (
+          <span className="text-[11px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{count}</span>
+        )}
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="pt-3">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
-  );
-}
-
-/* ════════════════════════════════════════════════════════════
-   METRICS ROW
-   ════════════════════════════════════════════════════════════ */
-
-function MetricsRow({ emailsDrafted, avgConfidence, agentCount, campaignCount }: {
-  emailsDrafted: number;
-  avgConfidence: number;
-  agentCount: number;
-  campaignCount: number;
-}) {
-  const { t } = useTranslation();
-  const metrics = [
-    { label: t("dashboard.metrics_emails"), value: `${emailsDrafted}`, sub: "this week", icon: <Sparkles size={14} className="text-[#ff5f5f]" /> },
-    { label: t("dashboard.metrics_confidence"), value: `${avgConfidence}%`, sub: "agent average", color: "#f59e0b" },
-    { label: t("dashboard.metrics_agents"), value: `${agentCount}`, sub: "active", color: "#6366f1" },
-    { label: t("dashboard.metrics_campaigns"), value: `${campaignCount}`, sub: "total", color: "#4CAF50" },
-  ];
-
-  return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#ff5f5f]/10 rounded-md overflow-hidden">
-      {metrics.map((m) => (
-        <div key={m.label} className="bg-white p-6">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] tracking-[0.2em] text-gray-400 uppercase">{m.label}</span>
-            {m.icon}
-          </div>
-          <div className="font-display text-[40px] leading-none mt-3" style={{ color: m.color ?? "#1a1a1a" }}>
-            {m.value}
-          </div>
-          <div className="text-[11px] text-gray-400 mt-2">{m.sub}</div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* ════════════════════════════════════════════════════════════
-   PIPELINE SECTION
-   ════════════════════════════════════════════════════════════ */
-
-function PipelineSection() {
-  const { t } = useTranslation();
-
-  // Compute how many campaigns are in each stage
-  const stageCounts = useMemo(() => {
-    const counts: Record<string, number> = { research: 0, draft: 0, review: 0, send: 0 };
-    CAMPAIGNS.forEach((c) => {
-      if (c.stage === "draft") counts.draft = (counts.draft ?? 0) + 1;
-      else if (c.stage === "active" || c.stage === "review") counts.review = (counts.review ?? 0) + 1;
-      else if (c.stage === "complete") counts.send = (counts.send ?? 0) + 1;
-      else if (c.stage === "research") counts.research = (counts.research ?? 0) + 1;
-    });
-    return counts;
-  }, []);
-
-  const total = CAMPAIGNS.length;
-
-  return (
-    <motion.div variants={item}>
-      <div className="mt-10 mb-6">
-        <div className="text-[10px] tracking-[0.25em] text-[#ff5f5f] uppercase mb-1 font-mono">{t("dashboard.pipeline_label")}</div>
-        <h2 className="font-display text-[28px] text-gray-900">
-          {t("dashboard.pipeline_title")}{" "}
-          <span className="bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent">{t("dashboard.pipeline_highlight")}</span>
-        </h2>
-      </div>
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="grid grid-cols-2 md:grid-cols-4 gap-4"
-      >
-        {PIPELINE_STAGES.map((stage, i) => {
-          const count = stageCounts[stage.key] ?? 0;
-          return <PipelineCard key={stage.key} stage={stage} index={i} count={count} total={total} />;
-        })}
-      </motion.div>
-    </motion.div>
-  );
-}
-
-/* ════════════════════════════════════════════════════════════
-   ACTIVE CAMPAIGNS
-   ════════════════════════════════════════════════════════════ */
-
-function CampaignsSection({ locale }: { locale: string }) {
-  const { t } = useTranslation();
-
-  return (
-    <motion.div variants={item}>
-      <div className="mt-14 flex items-end justify-between">
-        <div>
-          <div className="text-[10px] tracking-[0.25em] text-[#ff5f5f] uppercase mb-1 font-mono">{t("dashboard.campaigns_label")}</div>
-          <h2 className="font-display text-[28px] text-gray-900">
-            {t("dashboard.campaigns_title")}{" "}
-            <span className="bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent">{t("dashboard.campaigns_highlight")}</span>
-          </h2>
-        </div>
-        <Link href={`/${locale}/dashboard/ideas`} className="text-[12px] text-gray-400 hover:text-[#ff5f5f] transition-colors">
-          {t("dashboard.campaign_view_all")} →
-        </Link>
-      </div>
-
-      {CAMPAIGNS.length === 0 ? (
-        <div className="mt-10 text-center py-16 glass-deep rounded-2xl">
-          <Target size={32} className="text-[#ff5f5f] mx-auto opacity-40" />
-          <p className="text-gray-400 text-sm mt-4">{t("dashboard.campaigns_empty")}</p>
-        </div>
-      ) : (
-        <div className="mt-6 border-t border-gray-200">
-          {CAMPAIGNS.map((c) => (
-            <Link
-              key={c.id}
-              href={`/${locale}/dashboard/war-room/${c.id}`}
-              className="group grid grid-cols-[1fr_1fr_100px_120px_24px] gap-6 items-center px-2 py-5 border-b border-gray-100 hover:bg-[#ff5f5f]/5 transition-colors"
-            >
-              <div>
-                <div className="font-display text-[17px] text-gray-900 group-hover:text-[#ff5f5f] transition-colors">{c.name}</div>
-                <div className="text-[12px] text-gray-400">{c.company}</div>
-              </div>
-              <div className="text-[12px] text-gray-400 font-mono">{c.date}</div>
-              <StatusDot stage={c.stage} />
-              <div className="flex items-center gap-2">
-                <div className="flex-1 h-[2px] bg-gray-200 relative">
-                  <div className="absolute left-0 top-0 bottom-0 bg-[#ff5f5f]" style={{ width: `${c.confidence}%` }} />
-                </div>
-                <span className="text-[10px] text-gray-400 font-mono w-8">{c.confidence}%</span>
-              </div>
-              <ArrowUpRight size={14} className="text-gray-300 group-hover:text-[#ff5f5f] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-            </Link>
-          ))}
-        </div>
-      )}
-    </motion.div>
-  );
-}
-
-/* ════════════════════════════════════════════════════════════
-   SWARM ACTIVITY FEED
-   ════════════════════════════════════════════════════════════ */
-
-const agentIcons: Record<string, React.FC<{ size?: number }>> = {
-  researcher: Search,
-  psychologist: Brain,
-  strategist: Target,
-  copywriter: PenTool,
-};
-
-const agentColorMap: Record<string, string> = {
-  researcher: "bg-emerald-100 text-emerald-600",
-  psychologist: "bg-amber-100 text-amber-600",
-  strategist: "bg-indigo-100 text-indigo-600",
-  copywriter: "bg-rose-100 text-rose-600",
-};
-
-const agentDisplayNames: Record<string, string> = {
-  researcher: "Researcher",
-  psychologist: "Psychologist",
-  strategist: "Strategist",
-  copywriter: "Copywriter",
-};
-
-function SwarmActivityFeed() {
-  const { t } = useTranslation();
-  const traceLogs = useSwarmStore((s) => s.traceLogs);
-
-  return (
-    <motion.div variants={item} className="glass-deep p-6 min-w-0">
-      <div className="flex items-center justify-between mb-5">
-        <div>
-          <div className="text-[10px] tracking-[0.25em] text-[#ff5f5f] uppercase mb-1 font-mono">{t("dashboard.activity_label")}</div>
-          <h3 className="font-display text-[20px] text-gray-900">
-            {t("dashboard.activity_title")}{" "}
-            <span className="bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent">{t("dashboard.activity_highlight")}</span>
-          </h3>
-        </div>
-        <Activity size={16} className="text-gray-300" />
-      </div>
-
-      {traceLogs.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-gray-400 text-sm">{t("dashboard.activity_empty")}</p>
-        </div>
-      ) : (
-        <div className="space-y-3 max-h-[240px] overflow-y-auto custom-scrollbar">
-          {traceLogs.slice(-8).reverse().map((msg, i) => {
-            const agentName = msg.agent || "Agent";
-            const Icon = agentIcons[agentName] || Sparkles;
-            const colorClass = agentColorMap[agentName] || "bg-gray-100 text-gray-500";
-            return (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="flex items-start gap-3"
-              >
-                <div className={`w-7 h-7 rounded-lg ${colorClass} flex items-center justify-center shrink-0`}>
-                  <Icon size={13} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <span className="text-[11px] font-bold text-gray-700">{agentDisplayNames[agentName] ?? agentName}</span>
-                    <span className="text-[10px] text-gray-400 font-mono">{new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
-                  </div>
-                  <p className="text-[12px] text-gray-500 leading-relaxed truncate">{msg.message}</p>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      )}
-    </motion.div>
   );
 }
 
@@ -433,28 +110,92 @@ export default function DashboardPage() {
   const { t } = useTranslation();
 
   const [newOpen, setNewOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [campaigns, setCampaigns] = useState<DashboardCampaign[]>([]);
+  const [metrics, setMetrics] = useState({ totalCampaigns: 0, avgConfidence: 0, draftsInProgress: 0, sentThisWeek: 0 });
   const [events, setEvents] = useState<ScheduledEvent[]>([
     { id: "1", title: "Arcadia Q2 Launch — final review", date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), type: "deadline" as const },
     { id: "2", title: "Team sync — Q2 campaigns", date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), type: "meeting" as const },
     { id: "3", title: "Follow-up: Helix re-engagement", date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), type: "task" as const },
   ]);
+  const [dbDeadlines, setDbDeadlines] = useState<ScheduledEvent[]>([]);
 
   const { data: session } = authClient.useSession();
   const userName = (session?.user as { name?: string } | undefined)?.name || "Founder";
   const userPlan = ((session?.user as { plan?: string } | undefined)?.plan as Plan) || "FREE";
 
-  // Compute derived metrics
+  // Fetch dashboard data from Supabase
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchData() {
+      try {
+        const data = await getDashboardData();
+        if (cancelled) return;
+        setCampaigns(data.campaigns);
+        setMetrics(data.metrics);
+        if (data.deadlines.length > 0) {
+          setDbDeadlines(data.deadlines.map((d) => ({
+            id: d.id,
+            title: d.projectName,
+            date: new Date(d.deadline),
+            type: d.type === "overdue" ? "task" as const : "deadline" as const,
+          })));
+        }
+      } catch (err) {
+        console.error("Failed to load dashboard data:", err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    fetchData();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Greeting
+  const [greeting, setGreeting] = useState("");
+  const [dateStr, setDateStr] = useState("");
+
+  useEffect(() => {
+    const now = new Date();
+    const h = now.getHours();
+    if (h < 12) setGreeting(t("dashboard.greeting_morning"));
+    else if (h < 18) setGreeting(t("dashboard.greeting_afternoon"));
+    else setGreeting(t("dashboard.greeting_evening"));
+
+    const days = ["Dum", "Lun", "Mar", "Mie", "Joi", "Vin", "Sâm"];
+    const months = ["Ian", "Feb", "Mar", "Apr", "Mai", "Iun", "Iul", "Aug", "Sep", "Oct", "Noi", "Dec"];
+    setDateStr(`${days[now.getDay()]} · ${now.getDate()} ${months[now.getMonth()]} · ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`);
+  }, [t]);
+
+  // Derived metrics from real data
   const agentCount = userPlan === "FREE" ? 1 : userPlan === "STARTER" ? 2 : 4;
-  const campaignCount = CAMPAIGNS.length;
-  const avgConfidence = Math.round(CAMPAIGNS.reduce((sum, c) => sum + c.confidence, 0) / CAMPAIGNS.length);
+  const campaignCount = campaigns.length;
+  const avgConfidence = metrics.avgConfidence || 0;
+  const emailsThisWeek = metrics.sentThisWeek || 0;
+  const recentCampaigns = campaigns.slice(0, 2);
+
+  // Pipeline counts from real data
+  const stageCounts = {
+    research: 0,
+    draft: campaigns.filter(c => c.status === "draft").length,
+    review: campaigns.filter(c => c.status === "review" || c.status === "swarm_running" || c.status === "active").length,
+    send: campaigns.filter(c => c.status === "exported" || c.status === "complete").length,
+  };
+  const pipelineTotal = stageCounts.draft + stageCounts.review + stageCounts.send;
+
+  // Format date helper
+  const formatCampaignDate = (iso: string) => {
+    const d = new Date(iso);
+    const months = ["Ian", "Feb", "Mar", "Apr", "Mai", "Iun", "Iul", "Aug", "Sep", "Oct", "Noi", "Dec"];
+    return `${months[d.getMonth()]} ${d.getDate()}`;
+  };
 
   return (
-    <div className="max-w-7xl mx-auto px-8 py-10">
+    <div className="h-[calc(100vh-65px)] flex flex-col max-w-4xl mx-auto px-6 py-6 overflow-hidden">
       <NewProjectDialog
         open={newOpen}
         onClose={() => setNewOpen(false)}
         onCreate={(data: NewProjectData) => {
-          console.log("create", data);
           const dl = data.deadline;
           if (dl) {
             setEvents((prev) => [
@@ -466,69 +207,228 @@ export default function DashboardPage() {
         userPlan={userPlan}
       />
 
-      <motion.div variants={container} initial="hidden" animate="show" className="space-y-12">
-        {/* Hero */}
-        <Hero userName={userName} onNewCampaign={() => setNewOpen(true)} agentCount={agentCount} />
-
-        <div className="copper-streak mt-10" />
-
-        {/* Metrics */}
-        <MetricsRow emailsDrafted={CAMPAIGNS.length} avgConfidence={avgConfidence} agentCount={agentCount} campaignCount={campaignCount} />
-
-        {/* Pipeline */}
-        <PipelineSection />
-
-        {/* Active Campaigns */}
-        <CampaignsSection locale={l} />
-
-        <div className="copper-streak" />
-
-        {/* Swarm Activity + Chart */}
-        <div className="grid md:grid-cols-[1fr_280px] gap-8 items-stretch mt-8">
-          {/* Activity Feed */}
-          <SwarmActivityFeed />
-
-          {/* Weekly Output Chart */}
-          <div className="glass-deep p-6">
-            <div>
-              <div className="text-[10px] tracking-[0.25em] text-[#ff5f5f] uppercase mb-1 font-mono">{t("dashboard.activity_label")}</div>
-              <h3 className="font-display text-[18px] text-gray-900">{t("dashboard.chart_title")}</h3>
-            </div>
-            <div className="h-[180px] w-full mt-4 min-w-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={CHART}>
-                  <defs>
-                    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(255,95,95,0.3)" />
-                      <stop offset="100%" stopColor="rgba(255,95,95,0)" />
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="d" stroke="rgba(0,0,0,0.15)" fontSize={10} axisLine={false} tickLine={false} />
-                  <YAxis stroke="rgba(0,0,0,0.15)" fontSize={10} axisLine={false} tickLine={false} width={24} />
-                  <Tooltip contentStyle={{ background: "#ffffff", border: "1px solid #ff5f5f", borderRadius: 8, fontSize: 12 }} labelStyle={{ color: "#1a1a1a" }} />
-                  <Area type="monotone" dataKey="v" stroke="#ff5f5f" strokeWidth={2} fill="url(#g)" dot={{ fill: "#ff5f5f", r: 3 }} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-            <p className="font-display text-[13px] leading-snug mt-4 text-gray-900">{t("dashboard.chart_insight")}</p>
-            <div className="text-[11px] text-gray-400 mt-1">{t("dashboard.chart_attribution")}</div>
-          </div>
+      {/* ── TOP BAR: Greeting + Date + New Campaign ── */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex items-start justify-between mb-6 shrink-0"
+      >
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+            {greeting}, <span className="text-[#ff5f5f]">{userName}</span>
+          </h1>
         </div>
-
-        {/* Upcoming Deadlines */}
-        <motion.div variants={item}>
-          <div className="mt-8 mb-6">
-            <div className="text-[10px] tracking-[0.25em] text-[#ff5f5f] uppercase mb-1 font-mono">{t("dashboard.deadlines_label")}</div>
-            <h2 className="font-display text-[28px] text-gray-900">{t("dashboard.deadlines_title")}</h2>
+        <div className="flex items-center gap-3">
+          <div className="text-right">
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-400 font-mono">
+              <Clock size={11} className="text-gray-300" />
+              {dateStr}
+            </div>
           </div>
-          <EventScheduler
-            events={events}
-            onAdd={(ev) => setEvents((prev) => [...prev, { ...ev, id: `evt-${Date.now()}` }])}
-            onDelete={(id) => setEvents((prev) => prev.filter((e) => e.id !== id))}
-          />
-        </motion.div>
-
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={() => setNewOpen(true)}
+            className="flex items-center gap-1.5 bg-[#ff5f5f] text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-red-500 transition-colors shadow-sm hover:shadow-md hover:shadow-red-200/50"
+          >
+            <Plus size={15} />
+            {t("dashboard.new_campaign")}
+          </motion.button>
+        </div>
       </motion.div>
+
+      {/* ── STATS PILLS ── */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="flex flex-wrap gap-3 mb-6 shrink-0"
+      >
+        <StatPill emoji="📧" value={`${emailsThisWeek}`} sub="săptămâna asta" />
+        <StatPill emoji="🎯" value={`${avgConfidence}%`} sub="încredere medie" />
+        <StatPill emoji="🤖" value={`${agentCount}`} sub={agentCount === 1 ? "agent activ" : "agenți activi"} />
+        <StatPill emoji="📬" value={`${campaignCount}`} sub="campanii" />
+      </motion.div>
+
+      {/* ── MAIN CONTENT: scrollable area ── */}
+      <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-6 h-6 animate-spin text-gray-300" />
+          </div>
+        ) : (
+          <>
+            {/* ── PIPELINE (collapsible) ── */}
+            <CollapsibleSection label="Pipeline" count={pipelineTotal}>
+              <div className="space-y-3">
+                {/* Colored progress bar */}
+                <div className="relative h-2.5 rounded-full bg-gray-100 overflow-hidden">
+                  {pipelineTotal > 0 && (
+                    <motion.div
+                      className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-emerald-400 via-amber-400 via-indigo-400 to-rose-400"
+                      initial={{ width: "0%" }}
+                      animate={{ width: `${pipelineTotal > 0 ? Math.round(((stageCounts.draft * 25) + (stageCounts.review * 50) + (stageCounts.send * 100)) / pipelineTotal) : 0}%` }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                    />
+                  )}
+                  {/* Floating sparkle on the leading edge */}
+                  {pipelineTotal > 0 && (
+                    <motion.div
+                      className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 border-purple-400 shadow-sm z-10"
+                      initial={{ left: "0%" }}
+                      animate={{
+                        left: [`0%`, `${pipelineTotal > 0 ? Math.round(((stageCounts.draft * 25) + (stageCounts.review * 50) + (stageCounts.send * 100)) / pipelineTotal) : 0}%`],
+                      }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                    >
+                      <motion.div
+                        className="absolute inset-0 rounded-full bg-purple-400"
+                        animate={{ opacity: [0.3, 0.8, 0.3] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      />
+                    </motion.div>
+                  )}
+                </div>
+                {/* Stage cards */}
+                <div className="flex gap-3">
+                  {[
+                    { key: "research", icon: Target, iconBg: "bg-emerald-100 text-emerald-600", borderHover: "hover:border-emerald-300 hover:shadow-emerald-100/50", label: "Research", count: stageCounts.research },
+                    { key: "draft", icon: SendIcon, iconBg: "bg-amber-100 text-amber-600", borderHover: "hover:border-amber-300 hover:shadow-amber-100/50", label: "Draft", count: stageCounts.draft },
+                    { key: "review", icon: Sparkles, iconBg: "bg-indigo-100 text-indigo-600", borderHover: "hover:border-indigo-300 hover:shadow-indigo-100/50", label: "Review", count: stageCounts.review },
+                    { key: "send", icon: SendIcon, iconBg: "bg-rose-100 text-rose-600", borderHover: "hover:border-rose-300 hover:shadow-rose-100/50", label: "Trimise", count: stageCounts.send },
+                  ].map((stage) => (
+                    <motion.div
+                      key={stage.key}
+                      whileHover={{ y: -4, boxShadow: "0 8px 20px rgba(0,0,0,0.06)" }}
+                      className={`flex-1 bg-white rounded-xl border border-gray-200 p-3 text-center transition-all duration-300 ${stage.borderHover} hover:shadow-md cursor-default relative overflow-hidden group`}
+                    >
+                      {/* Subtle hover gradient */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50/0 group-hover:to-gray-50/80 transition-all duration-300" />
+                      <motion.div
+                        className={`w-9 h-9 rounded-xl ${stage.iconBg} flex items-center justify-center mx-auto mb-1.5 relative z-10`}
+                        whileHover={{ rotate: [0, -10, 10, 0], scale: 1.15 }}
+                        transition={{ duration: 0.4 }}
+                      >
+                        <stage.icon size={15} />
+                      </motion.div>
+                      <div className="text-xs font-semibold text-gray-700 relative z-10">{stage.label}</div>
+                      <motion.div
+                        className="text-lg font-bold text-gray-900 relative z-10"
+                        initial={false}
+                        key={`${stage.key}-${stage.count}`}
+                        animate={{ scale: [1, 1.3, 1] }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {stage.count}
+                      </motion.div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </CollapsibleSection>
+
+            {/* ── RECENT CAMPAIGNS (only 2) ── */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-semibold text-gray-500 tracking-wide uppercase">
+                  {t("dashboard.campaigns_title")}
+                </h3>
+                <Link href={`/${l}/dashboard/ideas`} className="text-[11px] text-gray-400 hover:text-[#ff5f5f] transition-colors">
+                  {t("dashboard.campaign_view_all")} →
+                </Link>
+              </div>
+              {recentCampaigns.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="bg-gradient-to-br from-amber-50 to-rose-50 rounded-2xl border border-dashed border-amber-200 p-6 text-center"
+                >
+                  <motion.span
+                    className="text-3xl mb-2 block"
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    🚀
+                  </motion.span>
+                  <div className="text-sm font-semibold text-amber-700">{t("dashboard.no_campaigns")}</div>
+                  <div className="text-[11px] text-amber-500 mt-1">{t("dashboard.no_campaigns_hint")}</div>
+                </motion.div>
+              ) : (
+              <div className="grid grid-cols-2 gap-3">
+                {recentCampaigns.map((c) => {
+                  const s = STATUS_MAP[c.status] ?? STATUS_MAP.draft!;
+                  const confidenceEmoji = c.confidence_score >= 80 ? "🔥" : c.confidence_score >= 60 ? "✨" : c.confidence_score >= 40 ? "💪" : "🌱";
+                  return (
+                    <motion.div
+                      key={c.id}
+                      whileHover={{ y: -4, scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Link
+                        href={`/${l}/dashboard/war-room/${c.id}`}
+                        className="group block bg-white rounded-2xl border border-gray-200 p-4 hover:border-[#ff5f5f]/30 hover:shadow-lg hover:shadow-red-100/40 transition-all duration-300 relative overflow-hidden"
+                      >
+                        {/* Warm gradient hover glow */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-red-50/0 via-amber-50/0 to-rose-50/0 group-hover:from-red-50/30 group-hover:via-amber-50/20 group-hover:to-rose-50/30 transition-all duration-500" />
+                        <div className="relative z-10">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="min-w-0 flex-1">
+                              <div className="text-sm font-bold text-gray-900 truncate group-hover:text-[#ff5f5f] transition-colors">
+                                {c.title}
+                              </div>
+                              <div className="text-[11px] text-gray-400 mt-0.5">{c.prospect_name || "—"}</div>
+                            </div>
+                            <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                              <motion.span
+                                className="shrink-0 w-2.5 h-2.5 rounded-full"
+                                style={{ background: s.color }}
+                                animate={c.status === "swarm_running" || c.status === "active" ? { boxShadow: [`0 0 4px ${s.color}`, `0 0 10px ${s.color}`, `0 0 4px ${s.color}`] } : {}}
+                                transition={{ duration: 2, repeat: Infinity }}
+                              />
+                              <span className="text-[10px] font-medium text-gray-400">{s.label}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-gray-400 font-mono bg-gray-50 px-2 py-0.5 rounded-full">{formatCampaignDate(c.created_at)}</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-14 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                <motion.div
+                                  className="h-full rounded-full bg-gradient-to-r from-amber-400 to-[#ff5f5f]"
+                                  initial={{ width: "0%" }}
+                                  whileInView={{ width: `${c.confidence_score}%` }}
+                                  viewport={{ once: true }}
+                                  transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+                                />
+                              </div>
+                              <span className="text-[10px] font-mono font-semibold text-gray-500">
+                                {confidenceEmoji} {c.confidence_score}%
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </div>
+              )}
+            </div>
+
+            {/* ── DEADLINES (collapsible) ── */}
+            <CollapsibleSection label={t("dashboard.deadlines_title")} count={events.length + dbDeadlines.length}>
+              <EventScheduler
+                events={[...dbDeadlines, ...events]}
+                onAdd={(ev) => setEvents((prev) => [...prev, { ...ev, id: `evt-${Date.now()}` }])}
+                onDelete={(id) => {
+                  setEvents((prev) => prev.filter((e) => e.id !== id));
+                  setDbDeadlines((prev) => prev.filter((e) => e.id !== id));
+                }}
+              />
+            </CollapsibleSection>
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -14,8 +14,6 @@ import {
   ExternalLink,
   ChevronRight,
   Loader2,
-  Moon,
-  Sun,
 } from "lucide-react";
 
 // Utility: className merger (avoid an extra dep)
@@ -418,12 +416,12 @@ export function OmniCommandPalette({
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Portal container={portalContainer ?? undefined}>
         <Dialog.Overlay
-          className="fixed inset-0 z-[100] bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+          className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
         />
         <Dialog.Content
           aria-label="Command palette"
           className={cn(
-            "fixed z-[101] inset-x-2 top-16 mx-auto w-[min(720px,100%-16px)] rounded-xl border bg-[hsl(var(--popover))] text-[hsl(var(--foreground))] shadow-lg backdrop-blur supports-[backdrop-filter]:bg-[color-mix(in_oklab,hsl(var(--popover))_85%,transparent)]",
+            "fixed z-[101] inset-x-2 top-16 mx-auto w-[min(720px,100%-16px)] rounded-2xl border border-gray-200 bg-white text-gray-900 shadow-2xl shadow-black/10",
             "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95 data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
             "outline-none",
             contentClassName
@@ -435,9 +433,7 @@ export function OmniCommandPalette({
               renderHeader(query)
             ) : (
               <div className="flex items-center gap-2 px-3 py-2">
-                <span className="text-[hsl(var(--muted-foreground))]">
-                  <Search className="size-4" aria-hidden />
-                </span>
+                <Search className="size-4 text-gray-400" aria-hidden />
                 <input
                   ref={inputRef}
                   type="text"
@@ -460,15 +456,15 @@ export function OmniCommandPalette({
                       if (activeIndex >= 0 && flatItems[activeIndex]) execute(flatItems[activeIndex]!);
                     }
                   }}
-                  className="flex-1 bg-transparent outline-none placeholder:text-[hsl(var(--muted-foreground))] text-sm"
+                  className="flex-1 bg-transparent outline-none placeholder:text-gray-400 text-sm text-gray-800"
                 />
-                <kbd className="rounded bg-[hsl(var(--muted))] px-1.5 py-0.5 text-[10px] text-[hsl(var(--muted-foreground))]">
+                <kbd className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-400 border border-gray-200">
                   ⌘K
                 </kbd>
                 <Dialog.Close asChild>
                   <button
                     aria-label="Close"
-                    className="ml-2 rounded p-1 text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--muted))]"
+                    className="ml-2 rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
                   >
                     <X className="size-4" aria-hidden />
                   </button>
@@ -487,9 +483,9 @@ export function OmniCommandPalette({
           >
             {/* Loading bar */}
             {loadingIds.size > 0 && (
-              <div className="flex items-center gap-2 px-3 py-2 text-[hsl(var(--muted-foreground))] text-xs">
+              <div className="flex items-center gap-2 px-3 py-2 text-gray-400 text-xs">
                 <Loader2 className="size-3 animate-spin" aria-hidden />
-                Fetching results…
+                Căutăm…
               </div>
             )}
 
@@ -497,7 +493,7 @@ export function OmniCommandPalette({
             {groups.map((g) => (
               <div key={g.id} className="py-1">
                 {g.items.length > 0 && (
-                  <div className="px-3 py-1 text-[10px] uppercase tracking-wider text-[hsl(var(--muted-foreground))]">
+                  <div className="px-3 py-1 text-[10px] uppercase tracking-wider text-gray-400 font-semibold">
                     {g.label}
                   </div>
                 )}
@@ -519,8 +515,8 @@ export function OmniCommandPalette({
                         className={cn(
                           "group flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm",
                           active
-                            ? "bg-[hsl(var(--accent))]/60 text-[hsl(var(--accent-foreground))]"
-                            : "hover:bg-[hsl(var(--accent))]/40",
+                            ? "bg-[#ff5f5f]/10 text-gray-900"
+                            : "hover:bg-gray-100 text-gray-700",
                           item.disabled && "opacity-50 cursor-not-allowed"
                         )}
                       >
@@ -529,7 +525,7 @@ export function OmniCommandPalette({
                         ) : (
                           <>
                             {/* Icon */}
-                            <div className="shrink-0 text-[hsl(var(--muted-foreground))] group-aria-selected:text-[hsl(var(--accent-foreground))]">
+                            <div className={cn("shrink-0", active ? "text-[#ff5f5f]" : "text-gray-400")}>
                               {item.icon ?? <Command className="size-4" aria-hidden />}
                             </div>
 
@@ -539,7 +535,7 @@ export function OmniCommandPalette({
                                 {renderHighlighted(item.label, item._indices)}
                               </div>
                               {item.subtitle && (
-                                <div className="truncate text-xs text-[hsl(var(--muted-foreground))] group-aria-selected:text-[hsl(var(--accent-foreground))]/80">
+                                <div className={cn("truncate text-xs", active ? "text-gray-500" : "text-gray-400")}>
                                   {item.subtitle}
                                 </div>
                               )}
@@ -547,29 +543,25 @@ export function OmniCommandPalette({
 
                             {/* Shortcut / affordances */}
                             {item.pinned && (
-                              <span
-                                title="Pinned"
-                                className="text-[hsl(var(--muted-foreground))]"
-                                aria-hidden
-                              >
+                              <span title="Pinned" className="text-[#ff5f5f]" aria-hidden>
                                 <Pin className="size-3.5" />
                               </span>
                             )}
                             {item.href && (
-                              <span className="text-[hsl(var(--muted-foreground))]" aria-hidden>
+                              <span className="text-gray-400" aria-hidden>
                                 <ExternalLink className="size-3.5" />
                               </span>
                             )}
                             {item.shortcut && (
-                              <span className="ml-2 hidden items-center gap-1 text-[10px] text-[hsl(var(--muted-foreground))] sm:flex">
+                              <span className="ml-2 hidden items-center gap-1 text-[10px] text-gray-400 sm:flex">
                                 {item.shortcut.map((s, i) => (
-                                  <kbd key={i} className="rounded bg-[hsl(var(--muted))] px-1 py-0.5">
+                                  <kbd key={i} className="rounded bg-gray-100 px-1 py-0.5 border border-gray-200">
                                     {s}
                                   </kbd>
                                 ))}
                               </span>
                             )}
-                            <ChevronRight className="ml-1 size-3.5 text-[hsl(var(--muted-foreground))] opacity-0 group-hover:opacity-100" aria-hidden />
+                            <ChevronRight className="ml-1 size-3.5 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden />
                           </>
                         )}
                       </button>
@@ -578,8 +570,8 @@ export function OmniCommandPalette({
                 </div>
                 {/* Empty hint per group */}
                 {g.items.length === 0 && debouncedQuery && (
-                  <div className="px-3 py-2 text-xs text-[hsl(var(--muted-foreground))]">
-                    No matches in {g.label}.
+                  <div className="px-3 py-2 text-xs text-gray-400">
+                    Nimic în {g.label}.
                   </div>
                 )}
               </div>
@@ -587,11 +579,11 @@ export function OmniCommandPalette({
 
             {/* Global empty state */}
             {flatItems.length === 0 && (
-              <div className="px-3 py-8 text-center text-sm text-[hsl(var(--muted-foreground))]">
-                <div className="mx-auto mb-2 flex size-8 items-center justify-center rounded-full bg-[hsl(var(--muted))]">
+              <div className="px-3 py-8 text-center text-sm text-gray-400">
+                <div className="mx-auto mb-2 flex size-8 items-center justify-center rounded-full bg-gray-100">
                   <History className="size-4" aria-hidden />
                 </div>
-                Try a different query, like &ldquo;settings&rdquo; or &ldquo;invite&rdquo;.
+                Încearcă o altă căutare.
               </div>
             )}
           </div>
@@ -601,20 +593,19 @@ export function OmniCommandPalette({
             {renderFooter ? (
               renderFooter(activeIndex >= 0 && flatItems[activeIndex] ? flatItems[activeIndex] as OmniItem : null)
             ) : (
-              <div className="flex items-center justify-between px-3 py-2 text-xs text-[hsl(var(--muted-foreground))]">
+              <div className="flex items-center justify-between px-3 py-2 text-xs text-gray-400">
                 <div className="flex items-center gap-4">
                   <span className="flex items-center gap-1">
-                    <CornerDownLeft className="size-3" /> to select
+                    <CornerDownLeft className="size-3" /> selectează
                   </span>
                   <span className="flex items-center gap-1">
                     <ArrowUp className="size-3" />
-                    <ArrowDown className="size-3" /> to navigate
+                    <ArrowDown className="size-3" /> navighează
                   </span>
                   <span className="hidden items-center gap-1 sm:flex">
-                    <X className="size-3" /> to close
+                    <X className="size-3" /> închide
                   </span>
                 </div>
-                <ThemeIndicator />
               </div>
             )}
           </div>
@@ -640,10 +631,10 @@ function renderHighlighted(label: string, indices?: number[]) {
         pos++;
       }
       out.push(
-        <mark
-          key={`m-${pos}`}
-          className="rounded-[2px] bg-[hsl(var(--accent))]/60 px-0.5 text-[inherit]"
-        >
+        <          mark
+            key={`m-${pos}`}
+            className="rounded-[2px] bg-[#ff5f5f]/20 text-[#ff5f5f] px-0.5 font-medium"
+          >
           {run}
         </mark>
       );
@@ -655,56 +646,4 @@ function renderHighlighted(label: string, indices?: number[]) {
   return out;
 }
 
-/**
- * Passive theme indicator. Does not mutate the theme.
- * The palette styling itself reads CSS variables and auto-updates with your app's theme.
- */
-function useIsDarkMode() {
-  const [isDark, setIsDark] = React.useState(false);
 
-  React.useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const root = document.documentElement;
-    const body = document.body;
-    const mql = window.matchMedia?.("(prefers-color-scheme: dark)");
-
-    const compute = () => {
-      const rootAttr = root.getAttribute("data-theme");
-      const bodyAttr = body.getAttribute("data-theme");
-      if (rootAttr === "dark" || bodyAttr === "dark") return true;
-      if (rootAttr === "light" || bodyAttr === "light") return false;
-      if (root.classList.contains("dark") || body.classList.contains("dark")) return true;
-      if (root.classList.contains("light") || body.classList.contains("light")) return false;
-      return !!mql?.matches;
-    };
-
-    setIsDark(compute());
-
-    const onMql = () => setIsDark(compute());
-    const obsRoot = new MutationObserver(() => setIsDark(compute()));
-    const obsBody = new MutationObserver(() => setIsDark(compute()));
-
-    mql?.addEventListener?.("change", onMql);
-    obsRoot.observe(root, { attributes: true, attributeFilter: ["class", "data-theme"] });
-    obsBody.observe(body, { attributes: true, attributeFilter: ["class", "data-theme"] });
-
-    return () => {
-      mql?.removeEventListener?.("change", onMql);
-      obsRoot.disconnect();
-      obsBody.disconnect();
-    };
-  }, []);
-
-  return isDark;
-}
-
-function ThemeIndicator() {
-  const dark = useIsDarkMode();
-  return (
-    <div className="inline-flex items-center gap-1 rounded px-2 py-1 text-[hsl(var(--muted-foreground))]">
-      {dark ? <Moon className="size-3.5" /> : <Sun className="size-3.5" />}
-      <span>{dark ? "Dark" : "Light"}</span>
-    </div>
-  );
-}
