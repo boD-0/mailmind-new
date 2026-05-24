@@ -386,7 +386,7 @@ See MailMind in action at [`/[locale]/demo`](https://mailmind.app/demo) — pick
 ---
 
 <div align="center">
-  <p>Built with ❤️ by <strong>Alex Iancu</strong></p>
+  <p>Built with ❤️ by <strong>Bogdan Pieszczoch</strong></p>
   <p>
     <img src="https://img.shields.io/badge/TypeScript_Strict-✅-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript Strict">
     <img src="https://img.shields.io/badge/PRs_Welcome-🙌-ff5f5f?style=flat-square" alt="PRs Welcome">
