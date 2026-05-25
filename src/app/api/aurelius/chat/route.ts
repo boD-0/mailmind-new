@@ -5,6 +5,8 @@ import { getToolDefinitions } from '@/lib/aurelius/tools/definitions'
 import { executeToolCall } from '@/lib/aurelius/tools/runner'
 import { apiRequireAuth } from '@/lib/auth/gatekeeper'
 import { tieredAiRateLimit } from '@/lib/rate-limit'
+import { aureliusChatSchema, validateBody } from '@/lib/validate'
+import { sanitizeChatMessages } from '@/lib/sanitize'
 
 // Allow streaming responses up to 120 seconds (tools may take time)
 export const maxDuration = 120
@@ -111,17 +113,24 @@ export async function POST(request: Request) {
   }
 
   try {
-    const body = await request.json()
-    const { messages, context } = body
+    const body = await request.json();
+
+    // Zod validation
+    const parsed = validateBody(aureliusChatSchema, body);
+    if (parsed instanceof NextResponse) return parsed;
+    const { messages, context } = parsed;
+
+    // Prompt injection sanitization on all user messages
+    const sanitizeResult = sanitizeChatMessages(messages);
+    if (!sanitizeResult.clean) {
+      return NextResponse.json(
+        { error: `Prompt injection detected in message ${sanitizeResult.index}: ${sanitizeResult.reason}` },
+        { status: 400 },
+      );
+    }
+    const cleanMessages = sanitizeResult.messages;
 
     const userId = user.id
-
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
-      return NextResponse.json(
-        { error: 'Messages array is required and must not be empty' },
-        { status: 400 }
-      )
-    }
 
     // Build system prompt with current context + brand profile
     const systemPrompt = buildAureliusSystemPrompt({
@@ -135,7 +144,7 @@ export async function POST(request: Request) {
     // Prepare messages for the LLM
     const apiMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
       { role: 'system', content: systemPrompt } as const,
-      ...messages.map((msg: { role: string; content: string }) => ({
+      ...cleanMessages.map((msg: { role: string; content: string }) => ({
         role: msg.role === 'assistant' ? 'assistant' as const : 'user' as const,
         content: msg.content,
       })),

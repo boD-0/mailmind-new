@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { apiRequireAuth } from "@/lib/auth/gatekeeper";
 import { tieredAiRateLimit } from '@/lib/rate-limit';
+import { sequenceBuilderSchema, validateBody } from '@/lib/validate';
+import { sanitizeAiInput } from '@/lib/sanitize';
 
 export const maxDuration = 30
 
@@ -49,22 +51,27 @@ export async function POST(request: Request) {
     );
   }
 
-  try {    const body = await request.json()
-    const { topic, context, steps = 4, model } = body
+  try {    const body = await request.json();
 
-    // Input size limits
-    if (topic && typeof topic === 'string' && topic.length > 500) {
-      return NextResponse.json({ error: 'Topic too long (max 500 characters)' }, { status: 400 });
-    }
-    if (context && typeof context === 'string' && context.length > 5000) {
-      return NextResponse.json({ error: 'Context too long (max 5000 characters)' }, { status: 400 });
-    }
+    // Zod validation
+    const parsed = validateBody(sequenceBuilderSchema, body);
+    if (parsed instanceof NextResponse) return parsed;
+    const { topic, context, steps, model } = parsed;
 
-    if (!topic && !context) {
+    // Prompt injection sanitization
+    const safeTopic = topic ? sanitizeAiInput(topic) : null;
+    if (safeTopic && !safeTopic.clean) {
       return NextResponse.json(
-        { error: 'Either a topic or context is required' },
-        { status: 400 }
-      )
+        { error: `Prompt injection detected in topic: ${safeTopic.reason}` },
+        { status: 400 },
+      );
+    }
+    const safeContext = context ? sanitizeAiInput(context) : null;
+    if (safeContext && !safeContext.clean) {
+      return NextResponse.json(
+        { error: `Prompt injection detected in context: ${safeContext.reason}` },
+        { status: 400 },
+      );
     }
 
     const client = getClient()
@@ -86,9 +93,9 @@ Rules:
 - Separate steps with "---" on its own line
 - No numbering or markdown headers`
 
-    const userPrompt = context
-      ? `Campaign context:\n${context.trim()}\n\n${topic ? `Topic: ${topic.trim()}` : ''}`
-      : `Topic: ${topic?.trim() || 'General follow-up'}`
+    const userPrompt = safeContext?.clean
+      ? `Campaign context:\n${safeContext.sanitized}\n\n${safeTopic?.clean ? `Topic: ${safeTopic.sanitized}` : ''}`
+      : `Topic: ${safeTopic?.sanitized || 'General follow-up'}`
 
     const response = await client.chat.completions.create({
       model: selectedModel,

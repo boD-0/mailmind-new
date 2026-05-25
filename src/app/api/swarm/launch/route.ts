@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { swarmGraph } from '@/lib/swarm/graph'
 import { createClient } from '@/lib/supabase/server'
 import { getPostHogClient } from '@/lib/posthog-server'
-import { safeJsonParse } from '@/lib/utils'
 import { apiRequireAuth, verifyOwnership, PLAN_LIMITS, type Plan } from "@/lib/auth/gatekeeper";
 import { tieredAiRateLimit } from "@/lib/rate-limit";
 import { getMonthlyExecutionCount } from "@/lib/swarm/usage";
@@ -11,6 +10,9 @@ import { swarmExecutions } from "@/db/schema";
 import { sql, eq } from "drizzle-orm";
 import { consumeCredit } from "@/lib/swarm/credits";
 import { inngest } from "@/lib/inngest/client";
+import { swarmLaunchSchema, validateBody } from "@/lib/validate";
+import { logAuditEvent } from "@/lib/audit";
+import { getClientIp } from "@/lib/get-client-ip";
 
 export async function POST(request: Request) {
   // Require authentication via better-auth
@@ -67,13 +69,14 @@ export async function POST(request: Request) {
     }
   }
 
-  try {    const text = await request.text();
-    const body = safeJsonParse<{ campaignId?: string }>(text, {});
-    const { campaignId } = body;
+  try {
+    const text = await request.text();
+    const body = JSON.parse(text || "{}");
 
-    if (!campaignId) {
-      return NextResponse.json({ error: 'Missing campaignId' }, { status: 400 });
-    }
+    // Zod validation
+    const parsed = validateBody(swarmLaunchSchema, body);
+    if (parsed instanceof NextResponse) return parsed;
+    const { campaignId } = parsed;
     
     const supabase = await createClient()
     
@@ -164,6 +167,16 @@ export async function POST(request: Request) {
         is_first: isFirstSwarm,
       },
     })
+
+    // Audit log
+    logAuditEvent({
+      userId: user.id,
+      action: 'swarm.launch',
+      resourceType: 'campaign',
+      resourceId: campaignId,
+      metadata: { swarm_mode, plan },
+      ipAddress: getClientIp(request),
+    }).catch(() => {});
 
     return NextResponse.json({ message: 'Swarm launched', status: 'running' })
   } catch (error) {

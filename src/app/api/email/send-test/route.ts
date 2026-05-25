@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { apiRequireAuth } from "@/lib/auth/gatekeeper";
-import { safeJsonParse } from "@/lib/utils";
 import { rateLimit } from "@/lib/rate-limit";
+import { emailSendTestSchema, validateBody } from "@/lib/validate";
+import { sanitizeHtml } from "@/lib/sanitize";
+import { logAuditEvent } from "@/lib/audit";
+import { getClientIp } from "@/lib/get-client-ip";
 
 /**
  * POST /api/email/send-test
@@ -45,48 +48,20 @@ export async function POST(req: Request) {
 
   try {
     const text = await req.text();
-    const body = safeJsonParse<{ to?: string; subject?: string; html?: string }>(
-      text,
-      {}
-    );
-    const { to, subject, html } = body;
-
-    // ── Validation ──────────────────────────────────────────
-    if (!to || typeof to !== "string" || !to.includes("@")) {
-      return NextResponse.json(
-        { error: "A valid recipient email (to) is required." },
-        { status: 400 }
-      );
+    let body: unknown;
+    try {
+      body = JSON.parse(text || "{}");
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
     }
 
-    if (!subject || typeof subject !== "string" || subject.trim().length === 0) {
-      return NextResponse.json(
-        { error: "A subject line is required." },
-        { status: 400 }
-      );
-    }
+    // Zod validation
+    const parsed = validateBody(emailSendTestSchema, body);
+    if (parsed instanceof NextResponse) return parsed;
+    let { to, subject, html } = parsed;
 
-    if (!html || typeof html !== "string" || html.trim().length === 0) {
-      return NextResponse.json(
-        { error: "Email body (html) is required." },
-        { status: 400 }
-      );
-    }
-
-    // Sanity limits
-    if (subject.length > 200) {
-      return NextResponse.json(
-        { error: "Subject must be under 200 characters." },
-        { status: 400 }
-      );
-    }
-
-    if (html.length > 100_000) {
-      return NextResponse.json(
-        { error: "Email body must be under 100 KB." },
-        { status: 400 }
-      );
-    }
+    // Sanitize HTML content (strip scripts, event handlers)
+    html = sanitizeHtml(html);
 
     // ── Resend API Key ──────────────────────────────────────
     const resendApiKey = process.env.RESEND_API_KEY;
@@ -130,6 +105,14 @@ export async function POST(req: Request) {
     console.log(
       `[Email] Test email sent by user ${user.id.slice(0, 8)}… to ${to.replace(/(.{2}).*(@.*)/, "$1***$2")} — messageId: ${resendData.id}`
     );
+
+    // Audit log
+    logAuditEvent({
+      userId: user.id,
+      action: "email.send_test",
+      metadata: { messageId: resendData.id as string },
+      ipAddress: getClientIp(req),
+    }).catch(() => {});
 
     return NextResponse.json({
       success: true,

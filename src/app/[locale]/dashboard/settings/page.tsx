@@ -18,11 +18,15 @@ import {
   Crown,
   Unplug,
   ExternalLink,
+  Download,
+  Trash2,
+  Shield,
 } from "lucide-react";
 import { AvatarPicker } from "@/components/ui/avatar-picker";
 import { getUserProfile, updateProfileName, updateBrandProfile, type BrandProfile } from "@/app/actions/profile";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/components/I18nProvider";
+import { toast } from "sonner";
 
 const BRAND_VALUES = [
   "Authority", "Empathy", "Innovation", "Clarity",
@@ -144,10 +148,15 @@ export default function SettingsPage() {
   const [gmailDisconnecting, setGmailDisconnecting] = useState(false);
   const [gmailError, setGmailError] = useState<string | null>(null);
 
+  // GDPR state
+  const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
   // Load profile on mount
   useEffect(() => {
     getUserProfile().then((data) => {
-      setProfile(data as unknown as ProfileData);
+      setProfile(data as ProfileData);
       setName(data.name);
       if (data.brand) {
         setBrandName(data.brand.name);
@@ -182,6 +191,7 @@ export default function SettingsPage() {
 
   // ── Connect Gmail ──
   const handleConnectGmail = () => {
+    setGmailConnecting(true);
     // Direct browser redirect — the API route returns a 307 redirect to Google.
     // The browser handles the redirect chain natively, and errors are caught
     // by the callback param handler in useEffect.
@@ -226,6 +236,49 @@ export default function SettingsPage() {
     // Clean the URL
     window.history.replaceState({}, "", window.location.pathname);
   }, []);
+
+  // ── GDPR: Export data ──
+  const handleExportData = async () => {
+    setExporting(true);
+    try {
+      const res = await fetch("/api/account/export");
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `mailmind-export-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Data exported successfully");
+    } catch {
+      toast.error("Failed to export data. Please try again.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  // ── GDPR: Delete account ──
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/account/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirm: true }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Deletion failed");
+      }
+      // Redirect to home after deletion
+      window.location.href = "/";
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete account");
+      setDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
 
   // ── Save name ──
   const handleSaveName = async () => {
@@ -572,6 +625,80 @@ export default function SettingsPage() {
               {gmailError}
             </p>
           )}
+        </div>
+      </SectionCard>
+      {/* ── SECTION 5: Privacy & Data ── */}
+      <SectionCard
+        icon={<Shield size={18} />}
+        title="Privacy & Data"
+        subtitle="Manage your data and account — GDPR compliant"
+      >
+        <div className="space-y-5 max-w-lg">
+          {/* Export data */}
+          <div className="flex items-center justify-between p-4 bg-muted rounded-xl border border-border">
+            <div>
+              <p className="text-sm font-semibold text-foreground">Export your data</p>
+              <p className="text-[12px] text-muted-foreground mt-0.5">
+                Download all your data as a JSON file (profile, campaigns, prospects, email events).
+              </p>
+            </div>
+            <button
+              onClick={handleExportData}
+              disabled={exporting}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-border text-foreground text-xs font-semibold hover:bg-muted disabled:opacity-50 transition-all flex-shrink-0"
+            >
+              {exporting ? (
+                <Loader2 size={12} className="animate-spin" />
+              ) : (
+                <Download size={12} />
+              )}
+              {exporting ? "Exporting..." : "Export Data"}
+            </button>
+          </div>
+
+          {/* Delete account */}
+          <div className="p-4 bg-red-50 rounded-xl border border-red-200">
+            <p className="text-sm font-semibold text-red-800">Delete your account</p>
+            <p className="text-[12px] text-red-700 mt-0.5">
+              This permanently deletes your account and all associated data — projects, vault documents, swarm executions, email events, and prospects. This cannot be undone.
+            </p>
+            {!showDeleteConfirm ? (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="flex items-center gap-2 mt-3 px-4 py-2 rounded-lg bg-red-600 text-white text-xs font-bold hover:bg-red-700 transition-all"
+              >
+                <Trash2 size={12} />
+                Delete My Account
+              </button>
+            ) : (
+              <div className="mt-3 space-y-2">
+                <p className="text-[12px] font-bold text-red-900">
+                  Are you sure? This action is permanent and cannot be undone.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleDeleteAccount}
+                    disabled={deleting}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white text-xs font-bold hover:bg-red-700 disabled:opacity-50 transition-all"
+                  >
+                    {deleting ? (
+                      <Loader2 size={12} className="animate-spin" />
+                    ) : (
+                      <Trash2 size={12} />
+                    )}
+                    {deleting ? "Deleting..." : "Yes, Delete Everything"}
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    disabled={deleting}
+                    className="px-4 py-2 rounded-lg bg-white border border-border text-foreground text-xs font-semibold hover:bg-muted disabled:opacity-50 transition-all"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </SectionCard>
     </div>

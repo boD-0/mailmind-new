@@ -240,8 +240,27 @@ export const prospects = pgTable("prospects", {
   uniqueIndex("idx_prospects_user_email").on(table.userId, table.email),
 ]);
 
+// ─── AUDIT LOG ────────────────────────────────────────────────────────────────
+export const auditLog = pgTable("audit_log", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  action: text("action").notNull(),           // e.g. 'auth.login', 'swarm.launch'
+  resourceType: text("resource_type"),        // e.g. 'campaign', 'vault_document'
+  resourceId: text("resource_id"),
+  metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+  ipAddress: text("ip_address"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => [
+  index("idx_audit_log_user_id").on(table.userId),
+  index("idx_audit_log_action").on(table.action),
+  index("idx_audit_log_created_at").on(table.createdAt),
+]);
+
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 export type User = typeof users.$inferSelect;
+export type AuditLogEntry = typeof auditLog.$inferSelect;
 export type Project = typeof projects.$inferSelect;
 export type VaultDocument = typeof vaultDocuments.$inferSelect;
 export type SwarmExecution = typeof swarmExecutions.$inferSelect;

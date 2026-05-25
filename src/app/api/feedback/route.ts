@@ -25,7 +25,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const body = await safeJsonParse<{ rating?: number; comment?: string | null }>(request);
+  const raw = await request.text();
+  const body = safeJsonParse<{ rating?: number; comment?: string | null }>(raw, null);
   if (!body || typeof body.rating !== "number" || body.rating < 1 || body.rating > 5) {
     return NextResponse.json({ error: "Rating (1-5) is required." }, { status: 400 });
   }

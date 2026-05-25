@@ -80,6 +80,59 @@ Added `loading.tsx` to every route that lacked one — same set as error boundar
 
 ---
 
+### 🔐 Security Hardening — Faza 8
+
+#### Input Validation (Zod)
+
+- **`src/lib/validate.ts`** *(NEW)* — Zod schemas for all AI endpoints: `swarmLaunchSchema`, `chatSchema`, `abTestSchema`, `sequenceSchema`, `sendTestSchema`, `ragIngestSchema`, `prospectsImportSchema`. `validateBody(schema, body)` helper returns parsed data or `NextResponse` error.
+- Applied to **7 API routes**: swarm/launch, aurelius/chat, war-room/ab-test, war-room/sequence, email/send-test, vault/upload, rag/ingest — all now validate inputs before processing.
+
+#### Prompt Injection Sanitization
+
+- **`src/lib/sanitize.ts`** *(NEW)* — `sanitizeAiInput(input)` strips dangerous HTML/script patterns (hard reject), strips prompt manipulation patterns (soft strip with `[filtered]` + console warning). `sanitizeChatMessages(messages)` for Aurelius chat arrays. `sanitizeAndTruncate(input, maxLength)` for length caps.
+- Applied to **all AI input routes**: Aurelius chat, Swarm launch, A/B test, Sequence builder, RAG ingest.
+
+#### File Upload MIME Validation
+
+- **`src/app/api/vault/upload/route.ts`** *(UPDATED)* — Added `file-type` MIME detection (reads first 4100 bytes, checks magic bytes against allowed types list). Blocks executables, scripts, and archives.
+- **`src/app/api/rag/ingest/route.ts`** *(UPDATED)* — Same MIME validation added.
+
+#### Health Check Endpoint
+
+- **`src/app/api/health/route.ts`** *(NEW)* — `GET /api/health` — basic uptime (200 without key), detailed status (DB + Redis) with `?key=HEALTH_CHECK_SECRET`. 30s cache headers.
+
+#### Sentry Error Tracking
+
+- **`src/sentry.client.config.ts`**, **`src/sentry.server.config.ts`**, **`src/sentry.edge.config.ts`** *(NEW)* — Sentry SDK configs for all Next.js runtimes.
+- **`src/instrumentation.ts`** *(NEW)* — Registers Sentry instrumentation hook.
+- **`next.config.ts`** *(UPDATED)* — `withSentryConfig` wrapper: source maps upload, React component annotations, tunnel route (`/monitoring`), tree-shaking.
+- **`package.json`** *(UPDATED)* — Added `@sentry/nextjs` dependency.
+
+#### Audit Log
+
+- **`src/db/schema.ts`** *(UPDATED)* — Added `auditLog` table (userId, action, resourceType, resourceId, metadata, ipAddress, createdAt).
+- **`drizzle/0009_audit_log.sql`** *(NEW)* — Migration with indexes on userId, action, createdAt.
+- **`src/lib/audit.ts`** *(NEW)* — `logAuditEvent({ userId, action, ... })` helper — writes to DB audit_log table.
+- **`src/proxy.ts`** *(UPDATED)* — Audit logging wired in middleware for auth events (login, signup, failed attempts).
+- **`src/app/api/account/delete/route.ts`** *(UPDATED)* — Audit log entry before GDPR account deletion.
+
+#### GDPR — Account Deletion & Data Export
+
+- **`src/app/api/account/delete/route.ts`** *(NEW)* — `POST /api/account/delete` — auth-gated, requires `{ confirm: true }`. Deletes sessions, verifications, api_usage_daily explicitly, then cascades user deletion (projects, vault, swarm, email events, prospects, gmail, audit log). Privacy-safe logging (masked email).
+- **`src/app/api/account/export/route.ts`** *(NEW)* — `GET /api/account/export` — returns JSON with profile, projects, vault documents, prospects, email events, swarm executions. Auth-gated.
+- **`src/app/[locale]/dashboard/settings/page.tsx`** *(UPDATED)* — New "Privacy & Data" section: Export Data button (downloads JSON), Delete Account with two-step confirmation (red card with warning, "Are you sure?" prompt).
+
+#### Secret Scanning (Pre-commit)
+
+- **`.githooks/pre-commit`** *(NEW)* — Shell hook that scans staged files for leaked secrets (API keys, tokens, passwords) using regex patterns. Blocks commit if found.
+
+#### Infrastructure
+
+- **`src/lib/get-client-ip.ts`** *(NEW)* — `getClientIp(request)` extracts client IP from `x-forwarded-for`, `x-real-ip`, or `CF-Connecting-IP` headers.
+- **`package.json`** *(UPDATED)* — Added `zod`, `file-type` dependencies.
+
+---
+
 ### 📧 Gmail / Google Workspace OAuth Integration
 
 - **`src/lib/gmail/oauth.ts`** *(NEW)* — Google OAuth2 client using `google-auth-library`. Generates consent URLs with `prompt=consent` + `access_type=offline` to ensure refresh tokens. Exchanges codes, refreshes tokens, auto-refreshes stale access tokens (5-min buffer).

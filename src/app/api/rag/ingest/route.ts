@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { ingestDocument, parsePdfBuffer } from '@/lib/rag/ingest';
 import { apiRequireAuth, verifyOwnership, checkFeatureAccess } from "@/lib/auth/gatekeeper";
 import { tieredUploadRateLimit } from "@/lib/rate-limit";
+import { sanitizeAiInput } from '@/lib/sanitize';
 
 export async function POST(req: Request) {
   // Authenticate via better-auth (consistent auth system)
@@ -73,12 +74,22 @@ export async function POST(req: Request) {
       content = await file.text();
     }
 
-    if (!content || content.trim().length === 0) {
+    // Sanitize content for prompt injection before ingestion
+    const sanitizeCheck = sanitizeAiInput(content);
+    if (!sanitizeCheck.clean) {
+      return NextResponse.json(
+        { error: `Document contains suspicious content: ${sanitizeCheck.reason}` },
+        { status: 400 },
+      );
+    }
+    const safeContent = sanitizeCheck.sanitized;
+
+    if (!safeContent || safeContent.trim().length === 0) {
       return NextResponse.json({ error: 'Empty or unparseable document' }, { status: 400 });
     }
 
     const result = await ingestDocument(
-      content,
+      safeContent,
       fileName,
       user.id,
       campaignId

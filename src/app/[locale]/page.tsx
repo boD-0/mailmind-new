@@ -1261,16 +1261,16 @@ const LANDING_FOOTER_COLUMNS = [
   {
     titleKey: "footer.company",
     links: [
-      { href: "#", labelKey: "footer.company_about" },
-      { href: "#", labelKey: "footer.company_blog" },
+      { href: (locale: string) => `/${locale}/about`, labelKey: "footer.company_about" },
+      { href: (locale: string) => `/${locale}/blog`, labelKey: "footer.company_blog" },
       { href: "#", labelKey: "footer.company_careers" },
     ],
   },
   {
     titleKey: "footer.legal",
     links: [
-      { href: "#", labelKey: "footer.legal_privacy" },
-      { href: "#", labelKey: "footer.legal_terms" },
+      { href: (locale: string) => `/${locale}/privacy`, labelKey: "footer.legal_privacy" },
+      { href: (locale: string) => `/${locale}/terms`, labelKey: "footer.legal_terms" },
     ],
   },
 ]

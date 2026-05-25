@@ -3,6 +3,7 @@ import { randomUUID } from "crypto";
 import { loginRateLimit, signupRateLimit, passwordResetRateLimit } from "@/lib/rate-limit";
 import { defaultLocale, locales } from "@/lib/i18n";
 import { auth } from "@/lib/auth/auth";
+import { getClientIp } from "@/lib/get-client-ip";
 
 // ── Maintenance mode utilities ────────────────────────────────────────────────
 
@@ -77,24 +78,19 @@ function isMaintenanceAllowed(pathname: string): boolean {
 
 /**
  * Extract the client IP address from the request.
- * Checks common headers for proxied environments (Vercel, Cloudflare, etc.).
+ * Delegates to the shared utility in lib/get-client-ip.ts.
  */
-function getClientIp(request: NextRequest): string {
-  // Vercel / standard proxy
+function getIpFromRequest(request: NextRequest): string {
+  // Convert NextRequest to a minimal Request-like object
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) {
     const firstIp = forwarded.split(",")[0];
     if (firstIp) return firstIp.trim();
   }
-
-  // Cloudflare
   const cfIp = request.headers.get("cf-connecting-ip");
   if (cfIp) return cfIp;
-
-  // Fallback
   const realIp = request.headers.get("x-real-ip");
   if (realIp) return realIp;
-
   return "127.0.0.1";
 }
 
@@ -138,7 +134,7 @@ function getCspHeader(): string {
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const ip = getClientIp(request);
+  const ip = getIpFromRequest(request);
   let response = NextResponse.next();
 
   // ── Step -1: Fix host headers for proxied environments (Codespace, etc.) ───

@@ -1,7 +1,9 @@
 "use server";
 
 import { db } from "@/db/drizzle";
-import { emailEvents, campaigns } from "@/db/schema";
+import { emailEvents } from "@/db/schema";
+// ⚠️ `campaigns` lives in Supabase, not Drizzle. This is a known architectural hybrid.
+// TODO: Migrate campaigns to Drizzle schema or create a proper adapter.
 import { auth } from "@/lib/auth/auth";
 import { eq, and, sql } from "drizzle-orm";
 import { headers } from "next/headers";
