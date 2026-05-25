@@ -20,21 +20,16 @@ export const executeSwarm = inngest.createFunction(
     id: "swarm-execute",
     name: "Execute AI Swarm",
     retries: 3,
+    triggers: { event: "swarm/execute" },
     throttle: {
       key: "event.data.userId",
       limit: 3,      // max 3 concurrent swarms per user
       period: "60s",
     },
     // Priority: PROFESSIONAL users get higher priority in the queue
-    priority: ({ event }) => {
-      const plan = event?.data?.plan;
-      if (plan === "PROFESSIONAL") return 100;
-      if (plan === "STARTER") return 50;
-      return 10;
-    },
+    priority: { run: "event.data.plan == 'PROFESSIONAL' ? 100 : event.data.plan == 'STARTER' ? 50 : 10" },
   },
-  { event: "swarm/execute" },
-  async ({ event, step }) => {
+  async ({ event, step }: { event: Record<string, any>; step: any }) => {
     const { campaignId, prospectName, prospectUrl, brandContext, swarmMode, userId, plan } = event.data;
 
     // Step 1: Build initial state

@@ -66,7 +66,7 @@ export function CampaignAnalytics({ campaignId }: Props) {
 
   if (data.length === 0) return null;
 
-  const selected = data[selectedIndex] || data[0];
+  const selected = data[selectedIndex] ?? data[0]!;
 
   const oceanoData = [
     { trait: "O", value: selected.oceano.openness, fullMark: 100 },
@@ -150,7 +150,7 @@ export function CampaignAnalytics({ campaignId }: Props) {
               <YAxis tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} unit="%" />
               <Tooltip
                 contentStyle={{ borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 11 }}
-                formatter={(value: number) => [`${value}%`, ""]}
+                formatter={(value: unknown) => [`${value}%`, ""]}
               />
               <Bar dataKey="value" radius={[6, 6, 0, 0]} fill="#ff5f5f" />
             </BarChart>
@@ -184,7 +184,7 @@ export function CampaignAnalytics({ campaignId }: Props) {
               <YAxis type="category" dataKey="name" tick={{ fontSize: 9, fill: "#94a3b8" }} axisLine={false} tickLine={false} width={80} />
               <Tooltip
                 contentStyle={{ borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 11 }}
-                formatter={(value: number) => [`${value}%`, ""]}
+                formatter={(value: unknown) => [`${value}%`, ""]}
               />              <Bar dataKey="score" radius={[0, 6, 6, 0]}>
                 {agentData.map((_, index) => {
                   const colors = ["#ff5f5f", "#8b5cf6", "#3b82f6", "#10b981"];
@@ -206,7 +206,7 @@ export function CampaignAnalytics({ campaignId }: Props) {
               <YAxis tick={{ fontSize: 9, fill: "#94a3b8" }} axisLine={false} tickLine={false} domain={[0, 100]} />
               <Tooltip
                 contentStyle={{ borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 11 }}
-                formatter={(value: number) => [`${value}%`, "Confidence"]}
+                formatter={(value: unknown) => [`${value}%`, "Confidence"]}
               />
               <Line type="monotone" dataKey="score" stroke="#ff5f5f" strokeWidth={2} dot={{ r: 3, fill: "#ff5f5f" }} />
             </LineChart>

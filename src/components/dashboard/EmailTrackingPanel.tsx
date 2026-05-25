@@ -121,9 +121,9 @@ export function EmailTrackingPanel({ campaignId }: Props) {
                 />
                 <span className="font-medium capitalize text-foreground">{event.eventType}</span>
                 <span className="text-muted-foreground truncate">
-                  {typeof event.metadata === "object" && event.metadata
-                    ? (event.metadata as Record<string, unknown>)?.recipientEmail || event.recipientEmail
-                    : event.recipientEmail}
+                {typeof event.metadata === "object" && event.metadata
+                  ? String((event.metadata as Record<string, unknown>)?.recipientEmail ?? event.recipientEmail)
+                  : event.recipientEmail}
                 </span>
                 <span className="ml-auto text-muted-foreground/60 shrink-0">
                   {new Date(event.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}

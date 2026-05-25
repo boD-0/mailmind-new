@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Sparkles, Lock, Linkedin, Loader2 } from "lucide-react";
+import { X, Sparkles, Lock, ExternalLink, Loader2 } from "lucide-react";
 import posthog from "posthog-js";
 import { Plan, PLAN_LIMITS } from "@/lib/auth/gatekeeper";
 import Link from "next/link";
@@ -122,7 +122,7 @@ export function NewProjectDialog({ open, onClose, onCreate, userPlan }: {
               {/* LinkedIn Import */}
               <div className="bg-gradient-to-r from-blue-50 to-sky-50 rounded-lg border border-blue-200 p-3 space-y-2">
                 <div className="flex items-center gap-2">
-                  <Linkedin size={14} className="text-blue-600" />
+                  <ExternalLink size={14} className="text-blue-600" />
                   <span className="text-[11px] font-semibold text-blue-700">{t("linkedin.import_title") || "Import from LinkedIn"}</span>
                 </div>
                 <div className="flex gap-2">
@@ -142,7 +142,7 @@ export function NewProjectDialog({ open, onClose, onCreate, userPlan }: {
                     {linkedinLoading ? (
                       <Loader2 size={12} className="animate-spin" />
                     ) : (
-                      <Linkedin size={12} />
+                      <ExternalLink size={12} />
                     )}
                     {t("linkedin.import_button") || "Import"}
                   </button>

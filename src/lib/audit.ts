@@ -112,20 +112,20 @@ export async function getAdminAuditLogs(
   offset = 0,
   action?: AuditAction,
 ) {
-  const conditions = action ? [eq(auditLog.action, action)] : [];
+  const condition = action ? eq(auditLog.action, action) : undefined;
 
   const [logs, countResult] = await Promise.all([
     db
       .select()
       .from(auditLog)
-      .where(...(conditions.length ? conditions : [undefined!]))
+      .where(condition)
       .orderBy(desc(auditLog.createdAt))
       .limit(limit)
       .offset(offset),
     db
       .select({ count: sql<number>`COUNT(*)`.mapWith(Number) })
       .from(auditLog)
-      .where(...(conditions as [any])),
+      .where(condition),
   ]);
 
   return {

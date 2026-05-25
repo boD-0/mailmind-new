@@ -91,9 +91,7 @@ export const linkedinEnrichSchema = z.object({
 
 // ── GDPR Account Delete ───────────────────────────────────────────────────
 export const accountDeleteConfirmSchema = z.object({
-  confirm: z.literal(true, {
-    errorMap: () => ({ message: "Must confirm with { confirm: true }" }),
-  }),
+  confirm: z.literal(true, { message: "Must confirm with { confirm: true }" }),
 });
 
 // ── Helper: validate and return parsed data or NextResponse error ─────────

@@ -2,17 +2,15 @@
 
 import { db } from "@/db/drizzle";
 import { emailEvents } from "@/db/schema";
-// ⚠️ `campaigns` lives in Supabase, not Drizzle. This is a known architectural hybrid.
-// TODO: Migrate campaigns to Drizzle schema or create a proper adapter.
 import { auth } from "@/lib/auth/auth";
+import { createClient } from "@/lib/supabase/server";
 import { eq, and, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 import type { CampaignAnalyticsData } from "@/components/dashboard/CampaignAnalytics";
 
 /**
  * Fetch per-campaign analytics for the dashboard analytics panel.
- * Uses Drizzle ORM with real data from emailEvents + campaigns tables.
- * Falls back to reasonable defaults when no real data exists yet.
+ * Uses Supabase for campaigns + Drizzle for email events.
  */
 export async function getCampaignAnalytics(
   campaignId?: string
@@ -25,28 +23,28 @@ export async function getCampaignAnalytics(
 
   const userId = session.user.id;
 
-  // ── Fetch campaigns ──────────────────────────────────────────────────
+  // ── Fetch campaigns from Supabase ────────────────────────────────────
 
-  const campaignFilter = campaignId
-    ? and(eq(campaigns.id, campaignId), eq(campaigns.userId, userId))
-    : eq(campaigns.userId, userId);
+  const supabase = await createClient();
 
-  const userCampaigns = await db
-    .select({
-      id: campaigns.id,
-      name: campaigns.name,
-      confidenceScore: campaigns.confidenceScore,
-    })
-    .from(campaigns)
-    .where(campaignFilter)
-    .orderBy(campaigns.createdAt)
+  let campaignQuery = supabase
+    .from("campaigns")
+    .select("id, name, confidence_score")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true })
     .limit(10);
 
-  if (userCampaigns.length === 0) return [];
+  if (campaignId) {
+    campaignQuery = campaignQuery.eq("id", campaignId);
+  }
+
+  const { data: userCampaigns, error } = await campaignQuery;
+
+  if (error || !userCampaigns || userCampaigns.length === 0) return [];
 
   // ── Aggregate email events per campaign ──────────────────────────────
 
-  const campaignIds = userCampaigns.map((c) => c.id);
+  const campaignIds = userCampaigns.map((c: { id: string }) => c.id);
 
   const eventAgg = await db
     .select({
@@ -63,12 +61,12 @@ export async function getCampaignAnalytics(
   for (const row of eventAgg) {
     if (!row.campaignId) continue;
     if (!eventMap[row.campaignId]) eventMap[row.campaignId] = {};
-    eventMap[row.campaignId][row.eventType] = row.count;
+    eventMap[row.campaignId]![row.eventType] = row.count;
   }
 
   // ── Build analytics objects ──────────────────────────────────────────
 
-  return userCampaigns.map((c) => {
+  return userCampaigns.map((c: { id: string; name: string | null; confidence_score: number | null }) => {
     const evts = eventMap[c.id] || {};
     const totalSent = (evts.open || 0) + (evts.click || 0) + (evts.bounce || 0) || 1;
     const openCount = evts.open || 0;
@@ -79,7 +77,7 @@ export async function getCampaignAnalytics(
     const clickRate = Math.round((clickCount / Math.max(totalSent, 1)) * 100);
     const replyRate = Math.round((replyCount / Math.max(totalSent, 1)) * 100);
 
-    const baseScore = c.confidenceScore || 50;
+    const baseScore = c.confidence_score || 50;
 
     return {
       campaignId: c.id,
