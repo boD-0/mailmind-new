@@ -1,0 +1,357 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   MailMind Design Tokens — src/styles/tokens.css
+   
+   Single source of truth for all visual primitives.
+   Consumed by Tailwind v4 @theme and by components directly via var().
+   
+   ┌─ Layer architecture ─────────────────────────────────────────────────┐
+   │  1. Raw palette      – hex values, the "paint chips"                 │
+   │  2. Theme primitives – light/dark variable assignments               │
+   │  3. Semantic tokens   – purpose-bound (bg, text, border, accent…)   │
+   │  4. Typography        – font stacks, scale, weight, tracking         │
+   │  5. Geometry          – radius, spacing, shadows, z-index            │
+   │  6. Motion            – durations, easings                            │
+   │  7. Tailwind @theme   – registers tokens as Tailwind utility classes │
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Raw Palette ──────────────────────────────────────────────────────── */
+
+:root {
+  /* Brand accent — warm copper / coral red */
+  --palette-accent:        #c17b3f;
+  --palette-accent-light:  #d49455;
+  --palette-accent-dark:   #a86830;
+
+  /* Neutral greys */
+  --palette-white:         #fdfbf7;
+  --palette-off-white:     #f5f4f0;
+  --palette-light-grey:    #e8e5de;
+  --palette-medium-grey:   #c4c0b8;
+  --palette-warm-grey:     #8a8680;
+  --palette-charcoal:      #3d3a36;
+  --palette-deep:          #1a1a16;
+  --palette-void:          #0c0c0a;
+
+  /* Semantic colors */
+  --palette-success:       #4caf50;
+  --palette-warning:       #f5c842;
+  --palette-error:         #e53935;
+  --palette-info:          #4b7be8;
+  --palette-purple:        #9b6fe8;
+}
+
+/* ── 2. Theme Primitives ─────────────────────────────────────────────────── */
+
+/* Dark theme (default) */
+:root {
+  --theme-bg:              var(--palette-void);
+  --theme-bg-elevated:     var(--palette-deep);
+  --theme-bg-surface:      hsl(30 8% 12%);
+  --theme-bg-hover:        hsl(30 8% 16%);
+  
+  --theme-text-primary:    hsl(45 10% 92%);
+  --theme-text-secondary:  hsl(40 5% 65%);
+  --theme-text-tertiary:   hsl(40 5% 48%);
+  --theme-text-on-accent:  var(--palette-void);
+  
+  --theme-border:          hsl(30 8% 18%);
+  --theme-border-hover:    hsl(30 8% 28%);
+  --theme-border-accent:   hsl(28 45% 35% / 0.3);
+  
+  --theme-accent:          var(--palette-accent);
+  --theme-accent-hover:    var(--palette-accent-light);
+  --theme-accent-muted:    hsl(28 45% 35% / 0.12);
+  
+  --theme-success:         var(--palette-success);
+  --theme-warning:         var(--palette-warning);
+  --theme-error:           var(--palette-error);
+  --theme-info:            var(--palette-info);
+}
+
+/* Light theme */
+.light {
+  --theme-bg:              var(--palette-white);
+  --theme-bg-elevated:     #ffffff;
+  --theme-bg-surface:      var(--palette-off-white);
+  --theme-bg-hover:        hsl(45 10% 94%);
+  
+  --theme-text-primary:    #1a1a1a;
+  --theme-text-secondary:  #6b6760;
+  --theme-text-tertiary:   #9a968e;
+  --theme-text-on-accent:  #ffffff;
+  
+  --theme-border:          #e0ddd5;
+  --theme-border-hover:    #c4c0b8;
+  --theme-border-accent:   hsl(4 88% 68% / 0.25);
+  
+  --theme-accent:          #ff5f5f;
+  --theme-accent-hover:    #ff7777;
+  --theme-accent-muted:    hsl(4 88% 68% / 0.1);
+  
+  --theme-success:         var(--palette-success);
+  --theme-warning:         var(--palette-warning);
+  --theme-error:           var(--palette-error);
+  --theme-info:            var(--palette-info);
+}
+
+/* ── 3. Semantic Tokens ──────────────────────────────────────────────────── */
+
+:root {
+  /* Background surfaces */
+  --color-background:           var(--theme-bg);
+  --color-foreground:           var(--theme-text-primary);
+  --color-card:                 var(--theme-bg-elevated);
+  --color-card-foreground:      var(--theme-text-primary);
+  --color-popover:              var(--theme-bg-elevated);
+  --color-popover-foreground:   var(--theme-text-primary);
+  --color-sidebar:              var(--theme-bg);
+  --color-sidebar-foreground:   var(--theme-text-secondary);
+  --color-sidebar-accent:       var(--theme-bg-hover);
+  --color-sidebar-accent-foreground: var(--theme-text-primary);
+  --color-sidebar-border:       var(--theme-border);
+  --color-sidebar-ring:         var(--theme-accent);
+
+  /* Primary / accent */
+  --color-primary:              var(--theme-accent);
+  --color-primary-foreground:   var(--theme-text-on-accent);
+  --color-primary-hover:        var(--theme-accent-hover);
+  --color-primary-muted:        var(--theme-accent-muted);
+
+  /* Secondary surfaces */
+  --color-secondary:            var(--theme-bg-surface);
+  --color-secondary-foreground: var(--theme-text-secondary);
+
+  /* Muted / tertiary */
+  --color-muted:                var(--theme-bg-hover);
+  --color-muted-foreground:     var(--theme-text-tertiary);
+
+  /* Accent (decorative) */
+  --color-accent:               var(--theme-accent-muted);
+  --color-accent-foreground:    var(--theme-text-primary);
+
+  /* Destructive */
+  --color-destructive:          var(--theme-error);
+  --color-destructive-foreground: #ffffff;
+
+  /* Borders & inputs */
+  --color-border:               var(--theme-border);
+  --color-input:                var(--theme-border);
+  --color-ring:                 var(--theme-accent);
+
+  /* Brand-specific aliases */
+  --color-copper:               var(--theme-accent);
+  --color-copper-light:         var(--theme-accent-hover);
+  --color-copper-muted:         var(--theme-accent-muted);
+  --color-obsidian:             var(--theme-bg);
+  --color-obsidian-light:       var(--theme-bg-elevated);
+  --color-obsidian-mid:         var(--theme-bg-surface);
+  --color-cream:                var(--theme-text-primary);
+
+  /* Fixed brand colours (mailmind-specific) */
+  --color-mailmind-bg:          #FAFAF8;
+  --color-mailmind-text:        #1A1A1A;
+  --color-mailmind-muted:       #888880;
+  --color-mailmind-border:      #E0DDD5;
+  --color-mailmind-card:        #FFFFFF;
+  --color-coral:                #E84B3A;
+  --color-coral-dark:           #D43A2A;
+  --color-highlight:            #F5C842;
+  --color-highlight-blue:       #4B7BE8;
+  --color-highlight-green:      #4CAF82;
+  --color-highlight-purple:     #9B6FE8;
+  --color-consensus-green:      #4CAF50;
+  --color-conflict-red:         #E53935;
+
+  /* Charts / data viz */
+  --color-chart-1:              var(--theme-accent);
+  --color-chart-2:              var(--palette-info);
+  --color-chart-3:              var(--palette-success);
+  --color-chart-4:              var(--palette-warning);
+  --color-chart-5:              var(--palette-purple);
+}
+
+/* ── 4. Typography ───────────────────────────────────────────────────────── */
+
+:root {
+  /* Font stacks */
+  --font-sans:   'Inter', 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-serif:  'Instrument Serif', 'Playfair Display', Georgia, serif;
+  --font-mono:   'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+
+  /* Scale (major third) */
+  --text-xs:     0.6875rem;   /* 11px — labels, captions, badges */
+  --text-sm:     0.8125rem;   /* 13px — body small, tooltips */
+  --text-base:   0.9375rem;   /* 15px — body */
+  --text-lg:     1.125rem;    /* 18px — body large */
+  --text-xl:     1.375rem;    /* 22px — headings small */
+  --text-2xl:    1.625rem;    /* 26px — headings */
+  --text-3xl:    2.0rem;      /* 32px — headings large */
+  --text-4xl:    2.5rem;      /* 40px — page titles */
+  --text-5xl:    3.25rem;     /* 52px — hero */
+
+  /* Line heights */
+  --leading-tight:   1.1;
+  --leading-snug:    1.3;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.65;
+
+  /* Font weights */
+  --weight-light:    300;
+  --weight-normal:   400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+  --weight-black:    900;
+
+  /* Letter spacing */
+  --tracking-tighter: -0.03em;
+  --tracking-normal:  0;
+  --tracking-wide:    0.04em;
+  --tracking-widest:  0.12em;
+}
+
+/* ── 5. Geometry ─────────────────────────────────────────────────────────── */
+
+:root {
+  /* Border radius */
+  --radius-none: 0;
+  --radius-xs:   0.25rem;   /* 4px */
+  --radius-sm:   0.375rem;  /* 6px */
+  --radius-md:   0.5rem;    /* 8px */
+  --radius-lg:   0.75rem;   /* 12px */
+  --radius-xl:   1rem;      /* 16px */
+  --radius-2xl:  1.25rem;   /* 20px */
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-none:     0 0 #0000;
+  --shadow-xs:       0 1px 2px hsl(0 0% 0% / 0.05);
+  --shadow-sm:       0 1px 3px hsl(0 0% 0% / 0.08), 0 1px 2px hsl(0 0% 0% / 0.04);
+  --shadow-md:       0 4px 12px hsl(0 0% 0% / 0.08);
+  --shadow-lg:       0 8px 30px hsl(0 0% 0% / 0.12);
+  --shadow-xl:       0 20px 60px hsl(0 0% 0% / 0.18);
+  --shadow-glow:     0 0 20px var(--theme-accent-muted);
+  --shadow-card:     0 1px 3px hsl(0 0% 0% / 0.06), 0 1px 2px hsl(0 0% 0% / 0.04);
+
+  /* Spacing scale */
+  --space-0:  0;
+  --space-1:  0.25rem;   /* 4px */
+  --space-2:  0.5rem;    /* 8px */
+  --space-3:  0.75rem;   /* 12px */
+  --space-4:  1rem;      /* 16px */
+  --space-5:  1.25rem;   /* 20px */
+  --space-6:  1.5rem;    /* 24px */
+  --space-8:  2rem;      /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+  --space-20: 5rem;      /* 80px */
+  --space-24: 6rem;      /* 96px */
+
+  /* Z-index scale */
+  --z-dropdown:   50;
+  --z-sticky:     100;
+  --z-modal:      200;
+  --z-tooltip:    300;
+  --z-toast:      400;
+
+  /* Border widths */
+  --border-thin:  0.5px;
+  --border-base:  1px;
+  --border-thick: 2px;
+}
+
+/* ── 6. Motion ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* Durations */
+  --duration-instant:  100ms;
+  --duration-fast:     150ms;
+  --duration-normal:   250ms;
+  --duration-slow:     400ms;
+  --duration-cinematic: 700ms;
+
+  /* Easings (cubic-bezier) */
+  --ease-out-expo:     cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-back:     cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in-out:       cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-linear:       linear;
+}
+
+/* ── 7. Tailwind v4 @theme Registration ──────────────────────────────────── */
+
+@theme inline {
+  /* Colors — semantic */
+  --color-background:           var(--color-background);
+  --color-foreground:           var(--color-foreground);
+  --color-card:                 var(--color-card);
+  --color-card-foreground:      var(--color-card-foreground);
+  --color-popover:              var(--color-popover);
+  --color-popover-foreground:   var(--color-popover-foreground);
+  --color-sidebar:              var(--color-sidebar);
+  --color-sidebar-foreground:   var(--color-sidebar-foreground);
+  --color-sidebar-accent:       var(--color-sidebar-accent);
+  --color-sidebar-accent-foreground: var(--color-sidebar-accent-foreground);
+  --color-sidebar-border:       var(--color-sidebar-border);
+  --color-sidebar-ring:         var(--color-sidebar-ring);
+  --color-primary:              var(--color-primary);
+  --color-primary-foreground:   var(--color-primary-foreground);
+  --color-primary-hover:        var(--color-primary-hover);
+  --color-primary-muted:        var(--color-primary-muted);
+  --color-secondary:            var(--color-secondary);
+  --color-secondary-foreground: var(--color-secondary-foreground);
+  --color-muted:                var(--color-muted);
+  --color-muted-foreground:     var(--color-muted-foreground);
+  --color-accent:               var(--color-accent);
+  --color-accent-foreground:    var(--color-accent-foreground);
+  --color-destructive:          var(--color-destructive);
+  --color-destructive-foreground: var(--color-destructive-foreground);
+  --color-border:               var(--color-border);
+  --color-input:                var(--color-input);
+  --color-ring:                 var(--color-ring);
+
+  /* Colors — brand aliases */
+  --color-copper:               var(--color-copper);
+  --color-copper-light:         var(--color-copper-light);
+  --color-copper-muted:         var(--color-copper-muted);
+  --color-obsidian:             var(--color-obsidian);
+  --color-obsidian-light:       var(--color-obsidian-light);
+  --color-obsidian-mid:         var(--color-obsidian-mid);
+  --color-cream:                var(--color-cream);
+
+  /* Colors — fixed brand */
+  --color-mailmind-bg:          var(--color-mailmind-bg);
+  --color-mailmind-text:        var(--color-mailmind-text);
+  --color-mailmind-muted:       var(--color-mailmind-muted);
+  --color-mailmind-border:      var(--color-mailmind-border);
+  --color-mailmind-card:        var(--color-mailmind-card);
+  --color-coral:                var(--color-coral);
+  --color-coral-dark:           var(--color-coral-dark);
+  --color-highlight:            var(--color-highlight);
+  --color-highlight-blue:       var(--color-highlight-blue);
+  --color-highlight-green:      var(--color-highlight-green);
+  --color-highlight-purple:     var(--color-highlight-purple);
+  --color-consensus-green:      var(--color-consensus-green);
+  --color-conflict-red:         var(--color-conflict-red);
+
+  /* Colors — data viz */
+  --color-chart-1:              var(--color-chart-1);
+  --color-chart-2:              var(--color-chart-2);
+  --color-chart-3:              var(--color-chart-3);
+  --color-chart-4:              var(--color-chart-4);
+  --color-chart-5:              var(--color-chart-5);
+
+  /* Typography */
+  --font-sans:  var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-mono:  var(--font-mono);
+
+  /* Radius */
+  --radius-xs:   var(--radius-xs);
+  --radius-sm:   var(--radius-sm);
+  --radius-md:   var(--radius-md);
+  --radius-lg:   var(--radius-lg);
+  --radius-xl:   var(--radius-xl);
+  --radius-2xl:  var(--radius-2xl);
+  --radius-full: var(--radius-full);
+}

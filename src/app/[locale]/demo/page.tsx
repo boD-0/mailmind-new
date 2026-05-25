@@ -144,28 +144,28 @@ export default function DemoPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#fdfbf7] text-[#1a1a1a] font-sans antialiased">
+    <main className="min-h-screen bg-background text-foreground font-sans antialiased">
       {/* ── Simple Header ── */}
-      <header className="sticky top-0 z-50 bg-[#fdfbf7]/90 backdrop-blur-xl border-b border-gray-200/50 px-6 py-4">
+      <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border/50 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <Link href={`/${locale}`} className="flex items-center gap-2.5 group">
             <motion.div
-              className="w-8 h-8 bg-[#ff5f5f] rounded-xl flex items-center justify-center shadow-sm"
+              className="w-8 h-8 bg-copper rounded-xl flex items-center justify-center shadow-sm"
               whileHover={{ rotate: -10, scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 400, damping: 10 }}
             >
               <span className="text-white text-xs font-extrabold tracking-tight">M</span>
             </motion.div>
-            <span className="font-bold text-lg text-[#1a1a1a] tracking-tight">MailMind</span>
+            <span className="font-bold text-lg text-foreground tracking-tight">MailMind</span>
           </Link>
 
           <div className="flex items-center gap-4">
-            <span className="text-[10px] font-semibold tracking-widest uppercase text-[#ff5f5f] bg-[#ff5f5f]/10 px-3 py-1.5 rounded-full">
+            <span className="text-[10px] font-semibold tracking-widest uppercase text-copper bg-copper/10 px-3 py-1.5 rounded-full">
               {t('demo.header')}
             </span>
             <Link
               href={`/${locale}/sign-up`}
-              className="hidden sm:inline-flex bg-[#ff5f5f] text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-red-500 transition-all"
+              className="hidden sm:inline-flex bg-copper text-white px-5 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition-all"
             >
               {t('nav.try_free')}
             </Link>
@@ -179,26 +179,26 @@ export default function DemoPage() {
           {steps.map((s, i) => (
             <div key={s.id} className="flex items-center gap-3">
               <div className={`flex items-center gap-2 ${
-                i <= step ? 'text-[#ff5f5f]' : 'text-gray-300'
+                i <= step ? 'text-copper' : 'text-muted-foreground/50'
               }`}>
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                   i < step
-                    ? 'bg-[#ff5f5f] text-white'
+                    ? 'bg-copper text-white'
                     : i === step
-                    ? 'bg-[#ff5f5f]/10 text-[#ff5f5f] border border-[#ff5f5f]/30'
-                    : 'bg-gray-100 text-gray-400'
+                    ? 'bg-copper/10 text-copper border border-copper/30'
+                    : 'bg-muted text-muted-foreground'
                 }`}>
                   {i < step ? <Check size={12} /> : i + 1}
                 </div>
                 <span className={`text-xs font-semibold tracking-wide hidden sm:inline ${
-                  i === step ? 'text-[#1a1a1a]' : 'text-gray-400'
+                  i === step ? 'text-foreground' : 'text-muted-foreground'
                 }`}>
                   {t(s.labelKey)}
                 </span>
               </div>
               {i < steps.length - 1 && (
                 <div className={`w-8 h-px ${
-                  i < step ? 'bg-[#ff5f5f]' : 'bg-gray-200'
+                  i < step ? 'bg-copper' : 'bg-muted/50'
                 }`} />
               )}
             </div>
@@ -224,7 +224,7 @@ export default function DemoPage() {
                   className="text-3xl md:text-4xl font-extrabold tracking-tight"
                 >
                   {t('demo.title_1')}{' '}
-                  <span className="bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent">
+                  <span className="text-copper">
                     {t('demo.title_highlight')}
                   </span>
                 </motion.h1>
@@ -232,7 +232,7 @@ export default function DemoPage() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="text-gray-500 text-sm max-w-md mx-auto"
+                  className="text-muted-foreground text-sm max-w-md mx-auto"
                 >
                   {t('demo.subtitle')}
                 </motion.p>
@@ -245,7 +245,7 @@ export default function DemoPage() {
                 transition={{ delay: 0.3 }}
                 className="space-y-3"
               >
-                <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 text-center">
+                <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground text-center">
                   {t('demo.sample_prospects')}
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -262,8 +262,8 @@ export default function DemoPage() {
                       }}
                       className={`text-left p-4 rounded-xl border transition-all ${
                         selectedProspect?.name === p.name
-                          ? 'border-[#ff5f5f] bg-[#ff5f5f]/5 shadow-sm'
-                          : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
+                          ? 'border-copper bg-copper/5 shadow-sm'
+                          : 'border-border bg-card hover:border-copper/30 hover:shadow-sm'
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -276,7 +276,7 @@ export default function DemoPage() {
                         </div>
                         <div className="min-w-0">
                           <p className="text-sm font-semibold truncate">{p.name}</p>
-                          <p className="text-xs text-gray-400 truncate">{p.company}</p>
+                          <p className="text-xs text-muted-foreground truncate">{p.company}</p>
                         </div>
                       </div>
                     </motion.button>
@@ -286,9 +286,9 @@ export default function DemoPage() {
 
               {/* Divider */}
               <div className="flex items-center gap-4">
-                <div className="flex-1 h-px bg-gray-200" />
-                <span className="text-xs text-gray-400 font-medium">{t('demo.or_custom')}</span>
-                <div className="flex-1 h-px bg-gray-200" />
+                <div className="flex-1 h-px bg-border" />
+                <span className="text-xs text-muted-foreground font-medium">{t('demo.or_custom')}</span>
+                <div className="flex-1 h-px bg-border" />
               </div>
 
               {/* Custom input */}
@@ -300,23 +300,23 @@ export default function DemoPage() {
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="relative">
-                    <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                     <input
                       type="text"
                       placeholder={t('demo.placeholder_name')}
                       value={customName}
                       onChange={e => { setCustomName(e.target.value); setSelectedProspect(null) }}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-sm outline-none focus:border-[#ff5f5f] focus:ring-1 focus:ring-[#ff5f5f]/20 transition-all placeholder:text-gray-300"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-card text-sm outline-none focus:border-copper focus:ring-1 focus:ring-copper/20 transition-all placeholder:text-muted-foreground/50"
                     />
                   </div>
                   <div className="relative">
-                    <Building2 size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Building2 size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
                     <input
                       type="text"
                       placeholder={t('demo.placeholder_company')}
                       value={customCompany}
                       onChange={e => setCustomCompany(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-sm outline-none focus:border-[#ff5f5f] focus:ring-1 focus:ring-[#ff5f5f]/20 transition-all placeholder:text-gray-300"
+                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-card text-sm outline-none focus:border-copper focus:ring-1 focus:ring-copper/20 transition-all placeholder:text-muted-foreground/50"
                     />
                   </div>
                 </div>
@@ -332,21 +332,20 @@ export default function DemoPage() {
                 <motion.button
                   onClick={runDemo}
                   disabled={!prospect}
-                  whileHover={prospect ? { scale: 1.02 } : {}}
                   whileTap={prospect ? { scale: 0.98 } : {}}
                   className={`inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full text-sm font-bold transition-all ${
                     prospect
-                      ? 'bg-[#ff5f5f] text-white hover:bg-red-500 hover:shadow-lg hover:shadow-red-200/50'
-                      : 'bg-gray-100 text-gray-300 cursor-not-allowed'
+                      ? 'bg-copper text-white hover:opacity-90 hover:shadow-sm'
+                      : 'bg-muted text-muted-foreground/50 cursor-not-allowed'
                   }`}
                 >
                   <Play size={16} />
                   {t('demo.launch')}
                 </motion.button>
                 {prospect && (
-                  <p className="text-xs text-gray-400 mt-3">
-                    {t('demo.demo_for')} <span className="font-semibold text-gray-600">{prospect.name}</span>
-                    {prospect.company && <span className="text-gray-400"> · {prospect.company}</span>}
+                  <p className="text-xs text-muted-foreground mt-3">
+                    {t('demo.demo_for')} <span className="font-semibold text-muted-foreground">{prospect.name}</span>
+                    {prospect.company && <span className="text-muted-foreground"> · {prospect.company}</span>}
                   </p>
                 )}
               </motion.div>
@@ -370,7 +369,7 @@ export default function DemoPage() {
                   animate={{ opacity: [1, 0.3, 1] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 />
-                <span className="text-xs font-semibold text-gray-400 tracking-wider uppercase">
+                <span className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">
                   {activeAgent < agents.length - 1
                     ? t('demo.working_on', { agent: t(agents[activeAgent >= 0 ? activeAgent : 0]!.nameKey) })
                     : t('demo.finalizing_text')}
@@ -384,13 +383,13 @@ export default function DemoPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="text-center"
                 >
-                  <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 shadow-sm">
-                    <div className="w-7 h-7 rounded-full bg-[#ff5f5f]/10 flex items-center justify-center">
-                      <User size={12} className="text-[#ff5f5f]" />
+                  <div className="inline-flex items-center gap-2 bg-card border border-border rounded-full px-4 py-2 shadow-sm">
+                    <div className="w-7 h-7 rounded-full bg-copper/10 flex items-center justify-center">
+                      <User size={12} className="text-copper" />
                     </div>
                     <span className="text-sm font-semibold">{prospect.name}</span>
-                    <span className="text-gray-300">·</span>
-                    <span className="text-sm text-gray-500">{prospect.company}</span>
+                    <span className="text-muted-foreground/50">·</span>
+                    <span className="text-sm text-muted-foreground">{prospect.company}</span>
                   </div>
                 </motion.div>
               )}
@@ -417,8 +416,8 @@ export default function DemoPage() {
                         isDone
                           ? `${agent.bg} ${agent.border}`
                           : isCurrent
-                          ? 'bg-white border-[#ff5f5f]/30 shadow-md'
-                          : 'bg-white border-gray-100'
+                          ? 'bg-card border-copper/30 shadow-md'
+                          : 'bg-card border-border'
                       }`}
                     >
                       {/* Icon */}
@@ -427,8 +426,8 @@ export default function DemoPage() {
                           isDone
                             ? agent.iconBg
                             : isCurrent
-                            ? 'bg-gray-100 text-gray-400'
-                            : 'bg-gray-50 text-gray-300'
+                            ? 'bg-muted text-muted-foreground'
+                            : 'bg-muted text-muted-foreground/50'
                         }`}
                         animate={isCurrent ? { scale: [1, 1.15, 1] } : {}}
                         transition={{ duration: 1.5, repeat: isCurrent ? Infinity : 0 }}
@@ -440,7 +439,7 @@ export default function DemoPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className={`text-sm font-semibold ${
-                            isDone ? 'text-[#1a1a1a]' : isCurrent ? 'text-[#1a1a1a]' : 'text-gray-300'
+                            isDone ? 'text-foreground' : isCurrent ? 'text-foreground' : 'text-muted-foreground/50'
                           }`}>
                             {t(agent.nameKey)}
                           </span>
@@ -451,14 +450,14 @@ export default function DemoPage() {
                           )}
                           {isCurrent && (
                             <motion.span
-                              className="w-1.5 h-1.5 rounded-full bg-[#ff5f5f]"
+                              className="w-1.5 h-1.5 rounded-full bg-copper"
                               animate={{ opacity: [1, 0.2, 1] }}
                               transition={{ duration: 1, repeat: Infinity }}
                             />
                           )}
                         </div>
                         <p className={`text-xs mt-0.5 ${
-                          isDone ? 'text-gray-500' : isCurrent ? 'text-gray-400' : 'text-gray-200'
+                          isDone ? 'text-muted-foreground' : isCurrent ? 'text-muted-foreground' : 'text-muted-foreground/30'
                         }`}>
                           {isDone ? t(agent.doneKey) : isCurrent ? t(agent.actionKey) : t('demo.waiting')}
                         </p>
@@ -466,9 +465,9 @@ export default function DemoPage() {
 
                       {/* Progress bar */}
                       {isCurrent && (
-                        <motion.div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
+                        <motion.div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
                           <motion.div
-                            className="h-full bg-[#ff5f5f] rounded-full"
+                            className="h-full bg-copper rounded-full"
                             initial={{ width: '0%' }}
                             animate={{ width: '100%' }}
                             transition={{ duration: 2, ease: 'easeInOut' }}
@@ -485,7 +484,7 @@ export default function DemoPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1 }}
-                className="text-center text-xs text-gray-400 italic"
+                className="text-center text-xs text-muted-foreground italic"
               >
                 {activeAgent < agents.length - 1
                   ? t('demo.collaborating')
@@ -519,7 +518,7 @@ export default function DemoPage() {
                   {t('demo.result_title_1')}{' '}
                   <span className="text-emerald-500">{t('demo.result_title_highlight')}</span>
                 </h2>
-                <p className="text-sm text-gray-500 max-w-md mx-auto">
+                <p className="text-sm text-muted-foreground max-w-md mx-auto">
                   {t('demo.result_desc', { name: prospect?.name || '' })}
                 </p>
               </motion.div>
@@ -542,7 +541,7 @@ export default function DemoPage() {
                       className={`flex items-center gap-1.5 ${agent.bg} border ${agent.border} rounded-full px-3 py-1`}
                     >
                       <Icon size={10} className={agent.iconBg.split(' ').pop()!} />
-                      <span className="text-[10px] font-semibold text-gray-600">{t(agent.nameKey)}</span>
+                      <span className="text-[10px] font-semibold text-muted-foreground">{t(agent.nameKey)}</span>
                       <Check size={10} className="text-emerald-500" />
                     </motion.div>
                   )
@@ -556,32 +555,32 @@ export default function DemoPage() {
                     initial={{ opacity: 0, y: 20, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                    className="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden"
+                    className="bg-card rounded-2xl border border-border shadow-lg overflow-hidden"
                   >
                     {/* Email header */}
-                    <div className="flex items-center gap-3 px-5 py-3.5 bg-gray-50 border-b border-gray-100">
-                      <div className="w-8 h-8 rounded-full bg-[#ff5f5f]/10 flex items-center justify-center">
-                        <Mail size={14} className="text-[#ff5f5f]" />
+                    <div className="flex items-center gap-3 px-5 py-3.5 bg-muted border-b border-border">
+                      <div className="w-8 h-8 rounded-full bg-copper/10 flex items-center justify-center">
+                        <Mail size={14} className="text-copper" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold truncate">{t('demo.to', { name: prospect?.name || '' })}</p>
-                        <p className="text-xs text-gray-400 truncate">{prospect?.company}</p>
+                        <p className="text-xs text-muted-foreground truncate">{prospect?.company}</p>
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-gray-400">
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock size={11} />
                         <span>{t('demo.just_now')}</span>
                       </div>
                     </div>
 
                     {/* Email body */}
-                    <div className="p-5 md:p-6 text-sm leading-relaxed whitespace-pre-line text-gray-700 font-[system-ui]">
+                    <div className="p-5 md:p-6 text-sm leading-relaxed whitespace-pre-line text-foreground/80 font-[system-ui]">
                       {completedEmail}
                     </div>
 
                     {/* Actions bar */}
-                    <div className="flex items-center justify-between px-5 py-3.5 bg-gray-50 border-t border-gray-100">
-                      <div className="flex items-center gap-2 text-xs text-gray-400">
-                        <Sparkles size={12} className="text-[#ff5f5f]" />
+                    <div className="flex items-center justify-between px-5 py-3.5 bg-muted border-t border-border">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Sparkles size={12} className="text-copper" />
                         <span>{t('demo.written_by')}</span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -589,14 +588,14 @@ export default function DemoPage() {
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={resetDemo}
-                          className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-[#1a1a1a] bg-white border border-gray-200 px-3 py-1.5 rounded-full transition-all"
+                          className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground bg-card border border-border px-3 py-1.5 rounded-full transition-all"
                         >
                           <RefreshCw size={12} />
                           {t('demo.try_again')}
                         </motion.button>
                         <Link
                           href={`/${locale}/sign-up`}
-                          className="flex items-center gap-1.5 text-xs font-semibold text-white bg-[#ff5f5f] px-3 py-1.5 rounded-full hover:bg-red-500 transition-all"
+                          className="flex items-center gap-1.5 text-xs font-semibold text-white bg-copper px-3 py-1.5 rounded-full hover:bg-copper/80 transition-all"
                         >
                           {t('demo.try_mailmind')}
                           <ArrowRight size={12} />
@@ -624,10 +623,10 @@ export default function DemoPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 + i * 0.1 }}
-                    className="text-center p-3 bg-white rounded-xl border border-gray-100"
+                    className="text-center p-3 bg-card rounded-xl border border-border"
                   >
-                    <p className="text-lg font-extrabold text-[#ff5f5f]">{stat.value}</p>
-                    <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{t(stat.labelKey)}</p>
+                    <p className="text-lg font-extrabold text-copper">{stat.value}</p>
+                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{t(stat.labelKey)}</p>
                   </motion.div>
                 ))}
               </motion.div>
@@ -641,14 +640,14 @@ export default function DemoPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5 }}
-            className="mt-12 pt-8 border-t border-gray-200 text-center"
+            className="mt-12 pt-8 border-t border-border text-center"
           >
-            <p className="text-sm text-gray-500 mb-3">
+            <p className="text-sm text-muted-foreground mb-3">
               {t('demo.bottom_text')}
             </p>
             <Link
               href={`/${locale}/sign-up`}
-              className="inline-flex items-center gap-2 bg-[#ff5f5f] text-white px-6 py-3 rounded-full text-sm font-bold hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-200/50"
+              className="inline-flex items-center gap-2 bg-copper text-white px-6 py-3 rounded-full text-sm font-bold hover:opacity-90 transition-all hover:shadow-sm"
             >
               {t('demo.bottom_cta')}
               <ArrowRight size={15} />

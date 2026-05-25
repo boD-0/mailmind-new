@@ -119,7 +119,7 @@ export function NotFoundPage({ isError, errorMessage, onRetry }: NotFoundPagePro
   const homeUrl = `/${locale}`
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#fdfbf7] px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4">
       <AnimatePresence mode="wait">
         <motion.div
           className="text-center"
@@ -132,7 +132,7 @@ export function NotFoundPage({ isError, errorMessage, onRetry }: NotFoundPagePro
           {/* 4 Ghost 4 */}
           <div className="flex items-center justify-center gap-4 md:gap-6 mb-8 md:mb-12">
             <motion.span
-              className="text-[80px] md:text-[120px] font-bold text-[#1a1a1a] opacity-70 select-none"
+              className="text-[80px] md:text-[120px] font-bold text-foreground opacity-70 select-none"
               variants={numberVariants}
               custom={-1}
             >
@@ -154,7 +154,7 @@ export function NotFoundPage({ isError, errorMessage, onRetry }: NotFoundPagePro
               />
             </motion.div>
             <motion.span
-              className="text-[80px] md:text-[120px] font-bold text-[#1a1a1a] opacity-70 select-none"
+              className="text-[80px] md:text-[120px] font-bold text-foreground opacity-70 select-none"
               variants={numberVariants}
               custom={1}
             >
@@ -164,7 +164,7 @@ export function NotFoundPage({ isError, errorMessage, onRetry }: NotFoundPagePro
 
           {/* Title */}
           <motion.h1
-            className="text-3xl md:text-5xl font-bold text-[#1a1a1a] mb-4 md:mb-6 opacity-70 select-none"
+            className="text-3xl md:text-5xl font-bold text-foreground mb-4 md:mb-6 opacity-70 select-none"
             variants={itemVariants}
           >
             {isError ? t('not_found.error_title') : t('not_found.not_found_title')}
@@ -172,7 +172,7 @@ export function NotFoundPage({ isError, errorMessage, onRetry }: NotFoundPagePro
 
           {/* Description */}
           <motion.p
-            className="text-lg md:text-xl text-[#1a1a1a] mb-8 md:mb-12 opacity-50 select-none max-w-md mx-auto"
+            className="text-lg md:text-xl text-foreground mb-8 md:mb-12 opacity-50 select-none max-w-md mx-auto"
             variants={itemVariants}
           >
             {isError
@@ -192,7 +192,7 @@ export function NotFoundPage({ isError, errorMessage, onRetry }: NotFoundPagePro
               >
                 <button
                   onClick={onRetry}
-                  className="inline-block bg-[#ff5f5f] text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-red-500 transition-colors shadow-lg shadow-red-500/20 select-none"
+                  className="inline-block bg-copper text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-copper/80 transition-colors shadow-lg shadow-copper/20 select-none"
                 >
                   {t('not_found.try_again')}
                 </button>
@@ -206,7 +206,7 @@ export function NotFoundPage({ isError, errorMessage, onRetry }: NotFoundPagePro
             >
               <Link
                 href={homeUrl}
-                className={`inline-block bg-[#ff5f5f] text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-red-500 transition-colors shadow-lg shadow-red-500/20 select-none ${
+                className={`inline-block bg-copper text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-copper/80 transition-colors shadow-lg shadow-copper/20 select-none ${
                   isError ? 'sm:order-first' : ''
                 }`}
               >
@@ -217,7 +217,7 @@ export function NotFoundPage({ isError, errorMessage, onRetry }: NotFoundPagePro
 
           {/* Info link */}
           <motion.div className="mt-12" variants={itemVariants}>
-            <span className="text-[#1a1a1a] opacity-50 text-sm font-medium select-none">
+            <span className="text-foreground opacity-50 text-sm font-medium select-none">
               {isError ? t('not_found.error_info') : t('not_found.not_found_info')}
             </span>
           </motion.div>

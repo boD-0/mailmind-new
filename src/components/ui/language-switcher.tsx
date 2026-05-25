@@ -57,7 +57,7 @@ export function LanguageSwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 text-gray-500 hover:text-[#1a1a1a] transition-colors text-sm font-medium px-2 py-1.5 rounded-lg hover:bg-gray-100/50"
+        className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium px-2 py-1.5 rounded-lg hover:bg-muted/50"
         aria-label="Select language"
         aria-expanded={open}
       >
@@ -77,7 +77,7 @@ export function LanguageSwitcher() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.95 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute right-0 top-full mt-1.5 w-44 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50"
+            className="absolute right-0 top-full mt-1.5 w-44 bg-white border border-border rounded-xl shadow-lg overflow-hidden z-50"
           >
             {locales.map((loc) => {
               const info = localeLabels[loc]
@@ -88,14 +88,14 @@ export function LanguageSwitcher() {
                   onClick={() => switchTo(loc)}
                   className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
                     isActive
-                      ? 'bg-[#ff5f5f]/5 text-[#1a1a1a] font-semibold'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-[#1a1a1a]'
+                      ? 'bg-copper/5 text-foreground font-semibold'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                   }`}
                 >
                   <span className="text-base leading-none">{info.flag}</span>
                   <span>{info.label}</span>
                   {isActive && (
-                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#ff5f5f]" />
+                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-copper" />
                   )}
                 </button>
               )

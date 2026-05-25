@@ -13,7 +13,7 @@ export function SwarmFeed({ logs }: SwarmFeedProps) {
     <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
       <AnimatePresence initial={false}>
         {logs.length === 0 ? (
-          <div className="text-[10px] text-gray-300 italic text-center mt-10">
+          <div className="text-[10px] text-muted-foreground/50 italic text-center mt-10">
             Awaiting agent broadcast...
           </div>
         ) : (
@@ -34,7 +34,7 @@ export function SwarmFeed({ logs }: SwarmFeedProps) {
                 }`}>
                   {log.agent}
                 </span>
-                <p className="text-gray-700 leading-relaxed">{log.message}</p>
+                <p className="text-foreground/80 leading-relaxed">{log.message}</p>
               </div>
             </motion.div>
           ))

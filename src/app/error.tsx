@@ -22,7 +22,7 @@ export default function GlobalError({
 }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-      <body className="bg-[#fdfbf7] text-[#1a1a1a] font-sans min-h-screen flex flex-col items-center justify-center p-4">
+      <body className="bg-background text-foreground font-sans min-h-screen flex flex-col items-center justify-center p-4">
         <div className="text-center max-w-md">
           {/* 4 4 */}
           <div className="flex items-center justify-center gap-4 mb-8">
@@ -41,7 +41,7 @@ export default function GlobalError({
             Boo! Something broke!
           </h1>
 
-          <p className="text-lg text-gray-500 mb-8 max-w-sm mx-auto">
+          <p className="text-lg text-muted-foreground mb-8 max-w-sm mx-auto">
             Whoops! A ghost must have tangled the wires in our server room!
           </p>
 
@@ -54,7 +54,7 @@ export default function GlobalError({
             </button>
           </div>
 
-          <p className="mt-12 text-sm text-gray-400">
+          <p className="mt-12 text-sm text-muted-foreground">
             Something went wrong on our end.
           </p>
         </div>

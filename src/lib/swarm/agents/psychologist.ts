@@ -1,7 +1,7 @@
 import { SwarmState } from "../graph";
 import { DigitalTwin } from "@/types/twin";
 import { broadcastAgentUpdate } from "@/lib/supabase/realtime";
-import { getAgentModel } from "./llm";
+import { getMiniModel } from "./llm";
 import { safeJsonParse } from "@/lib/utils";
 
 export async function psychologistAgent(state: SwarmState) {
@@ -30,7 +30,7 @@ const { research_data, campaign_id, prospect_url, brand_context } = state;
   };
 
   try {
-    const model = getAgentModel();
+    const model = getMiniModel();
 
     const psychologistPrompt = `
       Ești un expert în psihologie comportamentală B2B.

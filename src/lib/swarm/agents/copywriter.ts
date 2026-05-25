@@ -1,6 +1,6 @@
 import { SwarmState } from "../graph";
 import { broadcastAgentUpdate } from "@/lib/supabase/realtime";
-import { getAgentModel } from "./llm";
+import { getFullModel } from "./llm";
 import { checkSpamRisk } from "@/lib/spam-guard";
 
 export async function copywriterAgent(state: SwarmState) {
@@ -17,7 +17,7 @@ const { strategy, twin_profile, campaign_id, prospect_name, brand_context } = st
   await broadcastAgentUpdate(campaign_id, update);
 
   try {
-    const model = getAgentModel();
+    const model = getFullModel();
 
     const copywriterPrompt = `
       Ești un Copywriter de elită, expert în email-uri de outreach personalizate.
@@ -44,15 +44,19 @@ const { strategy, twin_profile, campaign_id, prospect_name, brand_context } = st
     const response = await model.invoke(copywriterPrompt);
     const email_draft = response.content as string;
 
-    // 5. Integrare SpamGuard (Sprint 6)
+    // 5. Integrare SpamGuard — verificare combinată (static + LLM)
     const spamResult = await checkSpamRisk(email_draft);
-    
+
+    const spamFlags = spamResult.flags.length > 0
+      ? ` Flags: ${spamResult.flags.slice(0, 2).join("; ")}`
+      : "";
+
     const doneUpdate = {
       agent: 'copywriter' as const,
       status: 'done' as const,
-      message: spamResult.score > 30 
-        ? `Draft finalizat, dar cu riscuri detectate (${spamResult.score}/100).` 
-        : 'Draft email finalizat și verificat anti-spam.',
+      message: spamResult.score > 30
+        ? `Draft finalizat — deliverability: ${spamResult.deliverability} (${spamResult.score}/100).${spamFlags}`
+        : `Draft email finalizat — deliverability: ${spamResult.deliverability}.`,
       confidence_delta: spamResult.score > 30 ? 5 : 15,
       timestamp: Date.now()
     };

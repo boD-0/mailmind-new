@@ -5,12 +5,14 @@ import { authClient } from '@/lib/auth/auth-client'
 import { toast } from 'sonner'
 import { useRouter, useParams } from 'next/navigation'
 import { useState } from 'react'
+import { usePostHog } from 'posthog-js/react'
 import { useTranslation } from '@/components/I18nProvider'
 
 export default function SignUpPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const params = useParams()
+  const posthog = usePostHog()
   const locale = (params?.locale as string) || 'en'
   const { t } = useTranslation()
 
@@ -27,6 +29,8 @@ export default function SignUpPage() {
       if (res.error) {
         toast.error(res.error.message || t('auth.toast_signup_error'))
       } else {
+        posthog.capture('signup_completed', { method: 'email' })
+        posthog.capture('trial_started', { plan: 'PROFESSIONAL', source: 'signup' })
         toast.success(t('auth.toast_signup_success'))
         router.push(`/${locale}/onboarding`)
       }
@@ -40,6 +44,8 @@ export default function SignUpPage() {
 
   const handleGoogleSignIn = async () => {
     try {
+      posthog.capture('signup_social_clicked', { provider: 'google' })
+      posthog.capture('trial_started', { plan: 'PROFESSIONAL', source: 'google_signup' })
       await authClient.signIn.social({
         provider: 'google',
         callbackURL: `/${locale}/onboarding`,
@@ -50,21 +56,19 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="dashboard-light">
-      <main className="bg-background text-foreground min-h-screen">
-        <AuthUI
-          isSignIn={false}
-          onSignUp={handleSignUp}
-          onGoogleSignIn={handleGoogleSignIn}
-          loading={loading}
-          signInContent={{
-            quote: { text: t('auth.quote_sign_in'), author: t('auth.author') },
-          }}
-          signUpContent={{
-            quote: { text: t('auth.quote_sign_up'), author: t('auth.author') },
-          }}
-        />
-      </main>
-    </div>
+    <main className="bg-background text-foreground min-h-screen">
+      <AuthUI
+        isSignIn={false}
+        onSignUp={handleSignUp}
+        onGoogleSignIn={handleGoogleSignIn}
+        loading={loading}
+        signInContent={{
+          quote: { text: t('auth.quote_sign_in'), author: t('auth.author') },
+        }}
+        signUpContent={{
+          quote: { text: t('auth.quote_sign_up'), author: t('auth.author') },
+        }}
+      />
+    </main>
   )
 }

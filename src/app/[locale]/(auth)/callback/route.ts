@@ -1,49 +1,43 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { getPostHogClient } from '@/lib/posthog-server'
+import { auth } from '@/lib/auth/auth'
 
+/**
+ * OAuth callback route — compatibility fallback.
+ *
+ * Better-Auth handles OAuth callbacks automatically via
+ * `/api/auth/callback/{provider}` (handled by `toNextJsHandler(auth)`).
+ * This route exists as a fallback for misconfigured OAuth redirect URIs.
+ *
+ * ⚠️  FIRST-TIME SETUP: In Google Cloud Console, set the redirect URI to:
+ *    {YOUR_APP_URL}/api/auth/callback/google
+ *    (NOT /callback or /auth/callback)
+ */
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url)
+  const { origin, searchParams } = new URL(request.url)
   const code = searchParams.get('code')
+  const provider = searchParams.get('provider') || 'google'
   const next = searchParams.get('next') ?? '/dashboard'
 
+  // If Google redirects here (old config), try to create a session via Better-Auth
   if (code) {
-    const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    
-    if (!error) {
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (user) {
-        // Verificăm dacă utilizatorul a finalizat onboarding-ul
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('onboarding_data')
-          .eq('id', user.id)
-          .single()
-
-        const hasCompletedOnboarding = profile?.onboarding_data && Object.keys(profile.onboarding_data).length > 0
-        const destination = hasCompletedOnboarding ? next : '/onboarding'
-
-        const posthog = getPostHogClient()
-        posthog.identify({
-          distinctId: user.id,
-          properties: { email: user.email },
-        })
-        posthog.capture({
-          distinctId: user.id,
-          event: 'user_signed_in',
-          properties: {
-            email: user.email,
-            has_completed_onboarding: !!hasCompletedOnboarding,
-          },
-        })
-
-        return NextResponse.redirect(`${origin}${destination}`)
+    try {
+      const session = await auth.api.getSession({ headers: request.headers })
+      if (session) {
+        return NextResponse.redirect(`${origin}${next}`)
       }
+    } catch {
+      // Session check failed — try the Better-Auth callback directly
     }
+
+    // Forward to Better-Auth's callback handler
+    const callbackUrl = new URL(`/api/auth/callback/${provider}`, origin)
+    callbackUrl.searchParams.set('code', code)
+    if (searchParams.get('state')) {
+      callbackUrl.searchParams.set('state', searchParams.get('state')!)
+    }
+    return NextResponse.redirect(callbackUrl)
   }
 
-  // Return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+  // No code — redirect to login with error
+  return NextResponse.redirect(`${origin}/login?error=oauth_failed`)
 }

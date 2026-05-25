@@ -18,6 +18,7 @@ import {
   TrendingUpDown, Sparkles, Brain, Zap, Database,
   Layout, Bot,
 } from "lucide-react";
+import { RagOnboarding } from "@/components/rag/RagOnboarding";
 
 // ─── VARIANTS ─────────────────────────────────────────────────────────────────
 
@@ -37,11 +38,11 @@ function AureliusBubble({ text, delay = 0 }: { text: string; delay?: number }) {
       transition={{ duration: 0.5, delay, ease: "easeOut" }}
       className="flex items-start gap-3 mb-6"
     >
-      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff5f5f] to-purple-500 flex items-center justify-center shrink-0 shadow-lg shadow-[#ff5f5f]/20">
+      <div className="w-10 h-10 rounded-xl bg-copper flex items-center justify-center shrink-0 shadow-sm">
         <Sparkles size={18} className="text-white" />
       </div>
-      <div className="bg-white rounded-2xl rounded-tl-none p-4 border border-gray-200 shadow-sm max-w-[85%]">
-        <p className="text-sm leading-relaxed text-gray-700">{text}</p>
+      <div className="bg-card rounded-2xl rounded-tl-none p-4 border border-border shadow-sm max-w-[85%]">
+        <p className="text-sm leading-relaxed text-muted-foreground">{text}</p>
       </div>
     </motion.div>
   );
@@ -76,10 +77,9 @@ function ToolCard({
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.15, duration: 0.4 }}
-      className={`rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden ${
-        isExpanded
-          ? "border-[#ff5f5f]/30 shadow-lg shadow-[#ff5f5f]/5"
-          : "border-gray-200 hover:border-gray-300 hover:shadow-md"
+      className={`rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden ${            isExpanded
+              ? "border-copper/30 shadow-sm"
+          : "border-border hover:border-copper/20 hover:shadow-md"
       }`}
       onClick={() => onToggle(tool.id)}
     >
@@ -89,8 +89,8 @@ function ToolCard({
             <tool.icon size={24} />
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-bold text-gray-900">{tool.title}</h4>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <h4 className="text-sm font-bold text-foreground">{tool.title}</h4>
+            <p className="text-xs text-muted-foreground mt-0.5">
               {isExpanded ? t('onboarding.click_collapse') : t('onboarding.click_expand')}
             </p>
           </div>
@@ -111,11 +111,11 @@ function ToolCard({
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="overflow-hidden"
             >
-              <div className="pt-4 mt-4 border-t border-gray-100 space-y-4">
-                <p className="text-sm text-gray-600 leading-relaxed">{tool.description}</p>
+              <div className="pt-4 mt-4 border-t border-border space-y-4">
+                <p className="text-sm text-muted-foreground leading-relaxed">{tool.description}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {tool.features.map((f, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs text-gray-500">
+                    <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
                       <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${tool.color}`} />
                       {f}
                     </div>
@@ -132,7 +132,7 @@ function ToolCard({
 
 function ChevronIcon() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
       <path d="m6 9 6 6 6-6" />
     </svg>
   );
@@ -143,9 +143,9 @@ function ChevronIcon() {
 function ProgressBar({ current, total }: { current: number; total: number }) {
   const pct = ((current + 1) / total) * 100;
   return (
-    <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden mb-8">
+    <div className="w-full h-1 bg-muted rounded-full overflow-hidden mb-8">
       <motion.div
-        className="h-full bg-gradient-to-r from-[#ff5f5f] to-purple-500 rounded-full"
+        className="h-full bg-copper rounded-full"
         initial={{ width: 0 }}
         animate={{ width: `${pct}%` }}
         transition={{ duration: 0.5, ease: "easeOut" }}
@@ -288,6 +288,7 @@ export default function OnboardingPage() {
     { id: "values", label: t('onboarding.step_values'), icon: HeartHandshake },
     { id: "pain-points", label: t('onboarding.step_pain_points'), icon: TrendingUpDown },
     { id: "tools", label: t('onboarding.step_tools'), icon: Zap },
+    { id: "documents", label: t('onboarding.step_documents'), icon: Database },
     { id: "final", label: t('onboarding.step_final'), icon: Sparkles },
   ];
 
@@ -399,20 +400,20 @@ export default function OnboardingPage() {
 
   if (isPending) {
     return (
-      <div className="min-h-screen bg-[#fdfbf7] flex items-center justify-center">
-        <div className="text-[#ff5f5f] animate-pulse font-display text-xl">{t('onboarding.loading')}</div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-copper animate-pulse font-display text-xl">{t('onboarding.loading')}</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#fdfbf7] flex flex-col items-center justify-center p-4 py-12 relative overflow-hidden">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-b from-[#ff5f5f]/5 to-transparent blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 py-12 relative overflow-hidden">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-b from-copper/5 to-transparent blur-3xl pointer-events-none" />
 
       <div className="w-full max-w-2xl mx-auto relative z-10">
         {step > 0 && <ProgressBar current={step} total={STEPS.length} />}
 
-        <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
+        <div className="bg-card rounded-xl border border-border shadow-xl overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
@@ -440,7 +441,7 @@ export default function OnboardingPage() {
                     <Button
                       type="button"
                       onClick={goNext}
-                      className="bg-[#ff5f5f] hover:bg-red-500 text-white h-12 px-10 rounded-xl shadow-lg shadow-[#ff5f5f]/25 text-sm font-bold tracking-wide"
+                      className="bg-copper hover:opacity-90 text-white h-12 px-10 rounded-xl shadow-lg shadow-copper/20 text-sm font-bold tracking-wide"
                     >
                       {t('onboarding.start_button')}
                       <ArrowRight size={18} className="ml-2" />
@@ -460,19 +461,19 @@ export default function OnboardingPage() {
                     className="grid grid-cols-1 md:grid-cols-2 gap-5"
                   >
                     <div className="space-y-2">
-                      <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">{t('onboarding.brand_label')}</label>
+                      <label className="text-foreground/80 text-xs uppercase tracking-widest font-bold">{t('onboarding.brand_label')}</label>
                       <Input
                         placeholder={t('onboarding.brand_placeholder')}
-                        className="bg-gray-50 border-gray-200 focus:border-[#ff5f5f] h-12"
+                        className="bg-muted border-border focus:border-copper h-12"
                         value={formData.name}
                         onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">{t('onboarding.industry_label')}</label>
+                      <label className="text-foreground/80 text-xs uppercase tracking-widest font-bold">{t('onboarding.industry_label')}</label>
                       <Input
                         placeholder={t('onboarding.industry_placeholder')}
-                        className="bg-gray-50 border-gray-200 focus:border-[#ff5f5f] h-12"
+                        className="bg-muted border-border focus:border-copper h-12"
                         value={formData.industry}
                         onChange={(e) => setFormData((p) => ({ ...p, industry: e.target.value }))}
                       />
@@ -491,14 +492,14 @@ export default function OnboardingPage() {
                     transition={{ delay: 0.5, duration: 0.4 }}
                     className="space-y-2"
                   >
-                    <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">{t('onboarding.audience_label')}</label>
+                    <label className="text-foreground/80 text-xs uppercase tracking-widest font-bold">{t('onboarding.audience_label')}</label>
                     <Input
                       placeholder={t('onboarding.audience_placeholder')}
-                      className="bg-gray-50 border-gray-200 focus:border-[#ff5f5f] h-12"
+                      className="bg-muted border-border focus:border-copper h-12"
                       value={formData.targetAudience}
                       onChange={(e) => setFormData((p) => ({ ...p, targetAudience: e.target.value }))}
                     />
-                    <p className="text-gray-400 text-xs mt-1 italic">
+                    <p className="text-muted-foreground text-xs mt-1 italic">
                       {t('onboarding.audience_hint')}
                     </p>
                   </motion.div>
@@ -515,10 +516,10 @@ export default function OnboardingPage() {
                     transition={{ delay: 0.5, duration: 0.4 }}
                     className="space-y-2"
                   >
-                    <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">{t('onboarding.voice_label')}</label>
+                    <label className="text-foreground/80 text-xs uppercase tracking-widest font-bold">{t('onboarding.voice_label')}</label>
                     <Input
                       placeholder={t('onboarding.voice_placeholder')}
-                      className="bg-gray-50 border-gray-200 focus:border-[#ff5f5f] h-12"
+                      className="bg-muted border-border focus:border-copper h-12"
                       value={formData.toneOfVoice}
                       onChange={(e) => setFormData((p) => ({ ...p, toneOfVoice: e.target.value }))}
                     />
@@ -530,8 +531,8 @@ export default function OnboardingPage() {
                           onClick={() => setFormData((p) => ({ ...p, toneOfVoice: tone }))}
                           className={`text-[11px] px-3 py-1.5 rounded-full border transition-all ${
                             formData.toneOfVoice === tone
-                              ? "border-[#ff5f5f] bg-[#ff5f5f]/5 text-[#ff5f5f] font-semibold"
-                              : "border-gray-200 text-gray-400 hover:border-gray-300"
+                              ? "border-copper bg-copper/5 text-copper font-semibold"
+                              : "border-border text-muted-foreground hover:border-gray-300"
                           }`}
                         >
                           {tone}
@@ -558,8 +559,8 @@ export default function OnboardingPage() {
                         variant={selectedValues.includes(value) ? "default" : "outline"}
                         className={`cursor-pointer transition-all text-sm px-4 py-2 rounded-full ${
                           selectedValues.includes(value)
-                            ? "bg-[#ff5f5f] text-white border-[#ff5f5f] shadow-sm"
-                            : "bg-transparent border-gray-200 text-gray-500 hover:border-[#ff5f5f] hover:text-[#ff5f5f]"
+                            ? "bg-copper text-white border-copper shadow-sm"
+                            : "bg-transparent border-border text-muted-foreground hover:border-copper hover:text-copper"
                         }`}
                         onClick={() => toggleValue(value)}
                       >
@@ -569,7 +570,7 @@ export default function OnboardingPage() {
                     ))}
                   </motion.div>
                   {selectedValues.length > 0 && (
-                    <p className="text-center text-xs text-gray-400">
+                    <p className="text-center text-xs text-muted-foreground">
                       {t('onboarding.values_count', { count: selectedValues.length })}
                     </p>
                   )}
@@ -593,8 +594,8 @@ export default function OnboardingPage() {
                         onClick={() => togglePainPoint(pp.id)}
                         className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left transition-all ${
                           selectedPainPoints.includes(pp.id)
-                            ? "border-[#ff5f5f] bg-[#ff5f5f]/5 text-[#ff5f5f]"
-                            : "border-gray-200 bg-gray-50/50 text-gray-600 hover:border-gray-300"
+                            ? "border-copper bg-copper/5 text-copper"
+                            : "border-border bg-muted/50 text-muted-foreground hover:border-gray-300"
                         }`}
                       >
                         <span className="text-lg">{pp.icon}</span>
@@ -608,7 +609,7 @@ export default function OnboardingPage() {
                   <div className="flex gap-2">
                     <Input
                       placeholder={t('onboarding.pain_placeholder')}
-                      className="bg-gray-50 border-gray-200 focus:border-[#ff5f5f] h-11"
+                      className="bg-muted border-border focus:border-copper h-11"
                       value={customPainPoint}
                       onChange={(e) => setCustomPainPoint(e.target.value)}
                       onKeyDown={(e) => {
@@ -622,7 +623,7 @@ export default function OnboardingPage() {
                       type="button"
                       variant="outline"
                       onClick={addCustomPainPoint}
-                      className="shrink-0 border-gray-200 text-gray-500"
+                      className="shrink-0 border-border text-muted-foreground"
                     >
                       {t('onboarding.pain_add')}
                     </Button>
@@ -650,7 +651,7 @@ export default function OnboardingPage() {
                             allToolsOpen ? [] : TOOLS.map((t) => t.id)
                           )
                         }
-                        className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400 hover:text-[#ff5f5f] transition-colors"
+                        className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-copper transition-colors"
                       >
                         <Layout size={12} />
                         {allToolsOpen ? t('onboarding.collapse_all') : t('onboarding.expand_all')}
@@ -673,7 +674,7 @@ export default function OnboardingPage() {
                     <motion.p
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="text-center text-xs text-gray-400 italic"
+                      className="text-center text-xs text-muted-foreground italic"
                     >
                       {t('onboarding.click_to_minimize')}
                     </motion.p>
@@ -681,8 +682,25 @@ export default function OnboardingPage() {
                 </div>
               )}
 
-              {/* ──────── STEP 7: FINAL ──────── */}
+              {/* ──────── STEP 7: RAG DOCUMENTS ──────── */}
               {step === 7 && (
+                <div className="space-y-6">
+                  <AureliusBubble text={t('onboarding.aurelius_documents')} delay={0} />
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5, duration: 0.4 }}
+                  >
+                    <RagOnboarding
+                      onComplete={() => goNext()}
+                      onSkip={() => goNext()}
+                    />
+                  </motion.div>
+                </div>
+              )}
+
+              {/* ──────── STEP 8: FINAL ──────── */}
+              {step === 8 && (
                 <div className="space-y-6">
                   <AureliusBubble text={t('onboarding.aurelius_final_1')} delay={0} />
                   <AureliusBubble text={t('onboarding.aurelius_final_2')} delay={0.3} />
@@ -694,37 +712,37 @@ export default function OnboardingPage() {
                     className="space-y-6"
                   >
                     <div className="space-y-2">
-                      <label className="text-gray-700 text-xs uppercase tracking-widest font-bold">{t('onboarding.context_label')}</label>
+                      <label className="text-foreground/80 text-xs uppercase tracking-widest font-bold">{t('onboarding.context_label')}</label>
                       <Textarea
                         placeholder={t('onboarding.context_placeholder')}
-                        className="bg-gray-50 border-gray-200 focus:border-[#ff5f5f] resize-none"
+                        className="bg-muted border-border focus:border-copper resize-none"
                         rows={3}
                         value={formData.context}
                         onChange={(e) => setFormData((p) => ({ ...p, context: e.target.value }))}
                       />
                     </div>
 
-                    <div className="bg-[#fdfbf7] rounded-2xl border border-gray-200 p-5 space-y-3">
-                      <p className="text-[10px] uppercase tracking-widest font-bold text-gray-400">{t('onboarding.recap_title')}</p>
+                    <div className="bg-background rounded-2xl border border-border p-5 space-y-3">
+                      <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">{t('onboarding.recap_title')}</p>
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <div>
-                          <span className="text-gray-400 text-[10px] uppercase tracking-wider">{t('onboarding.recap_brand')}</span>
-                          <p className="font-semibold text-gray-800">{formData.name || "—"}</p>
+                          <span className="text-muted-foreground text-[10px] uppercase tracking-wider">{t('onboarding.recap_brand')}</span>
+                          <p className="font-semibold text-foreground">{formData.name || "—"}</p>
                         </div>
                         <div>
-                          <span className="text-gray-400 text-[10px] uppercase tracking-wider">{t('onboarding.recap_industry')}</span>
-                          <p className="font-semibold text-gray-800">{formData.industry || "—"}</p>
+                          <span className="text-muted-foreground text-[10px] uppercase tracking-wider">{t('onboarding.recap_industry')}</span>
+                          <p className="font-semibold text-foreground">{formData.industry || "—"}</p>
                         </div>
                         <div>
-                          <span className="text-gray-400 text-[10px] uppercase tracking-wider">{t('onboarding.recap_tone')}</span>
-                          <p className="font-semibold text-gray-800">{formData.toneOfVoice || "—"}</p>
+                          <span className="text-muted-foreground text-[10px] uppercase tracking-wider">{t('onboarding.recap_tone')}</span>
+                          <p className="font-semibold text-foreground">{formData.toneOfVoice || "—"}</p>
                         </div>
                         <div>
-                          <span className="text-gray-400 text-[10px] uppercase tracking-wider">{t('onboarding.recap_audience')}</span>
-                          <p className="font-semibold text-gray-800 truncate">{formData.targetAudience || "—"}</p>
+                          <span className="text-muted-foreground text-[10px] uppercase tracking-wider">{t('onboarding.recap_audience')}</span>
+                          <p className="font-semibold text-foreground truncate">{formData.targetAudience || "—"}</p>
                         </div>
                       </div>
-                      <div className="flex gap-3 text-xs text-gray-500">
+                      <div className="flex gap-3 text-xs text-muted-foreground">
                         {selectedValues.length > 0 && (
                           <span>{t('onboarding.recap_values', { count: selectedValues.length })}</span>
                         )}
@@ -748,7 +766,7 @@ export default function OnboardingPage() {
                 type="button"
                 variant="outline"
                 onClick={goBack}
-                className="border-gray-200 text-gray-500 hover:bg-gray-50 h-11 px-6"
+                className="border-border text-muted-foreground hover:bg-muted h-11 px-6"
               >
                 <ArrowRight size={16} className="mr-2 rotate-180" />
                 {t('onboarding.back')}
@@ -759,6 +777,8 @@ export default function OnboardingPage() {
 
             {step === 0 ? (
               <div />
+            ) : step === 7 ? (
+              <div />
             ) : step < STEPS.length - 1 ? (
               <div className="flex items-center gap-3">
                 {step === 6 ? (
@@ -766,7 +786,7 @@ export default function OnboardingPage() {
                     type="button"
                     variant="ghost"
                     onClick={() => setStep(STEPS.length - 1)}
-                    className="text-gray-400 hover:text-gray-600 h-11 px-4 text-xs"
+                    className="text-muted-foreground hover:text-muted-foreground h-11 px-4 text-xs"
                   >
                     {t('onboarding.skip_to_end')}
                     <ArrowRight size={14} className="ml-1.5" />
@@ -775,7 +795,7 @@ export default function OnboardingPage() {
                 <Button
                   type="button"
                   onClick={goNext}
-                  className="bg-[#ff5f5f] hover:bg-red-500 text-white h-11 px-8 shadow-lg shadow-[#ff5f5f]/20"
+                  className="bg-copper hover:opacity-90 text-white h-11 px-8 shadow-lg shadow-copper/20"
                 >
                   {step === 6 ? t('onboarding.see_end') : t('onboarding.continue')}
                   <ArrowRight size={16} className="ml-2" />
@@ -786,7 +806,7 @@ export default function OnboardingPage() {
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="bg-gradient-to-r from-[#ff5f5f] to-purple-500 hover:from-red-500 hover:to-purple-600 text-white h-11 px-8 shadow-lg shadow-[#ff5f5f]/25"
+                className="bg-copper hover:opacity-90 text-white h-11 px-8 shadow-sm"
               >
                 {loading ? (
                   <>
@@ -807,12 +827,12 @@ export default function OnboardingPage() {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-center text-xs text-gray-400 mt-6 font-mono"
+          className="text-center text-xs text-muted-foreground mt-6 font-mono"
         >
           {t('onboarding.step_counter', { current: step + 1, total: STEPS.length })}
           {step > 0 && step < STEPS.length - 1 && (
-            <span className="ml-2 text-gray-300">
-              · {step <= 5 ? t('onboarding.section_questions') : step === 6 ? t('onboarding.section_tools') : t('onboarding.section_final')}
+            <span className="ml-2 text-muted-foreground/50">
+              · {step <= 5 ? t('onboarding.section_questions') : step === 6 ? t('onboarding.section_tools') : step === 7 ? t('onboarding.section_documents') : t('onboarding.section_final')}
             </span>
           )}
         </motion.p>

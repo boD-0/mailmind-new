@@ -26,7 +26,7 @@ export function AvatarPicker() {
               height: { type: "spring" as const, stiffness: 100, damping: 20 },
             },
           }}
-          className="bg-gradient-to-r from-[#ff5f5f]/20 to-[#ff5f5f]/10 w-full rounded-t-2xl"
+          className="bg-gradient-to-r from-copper/20 to-copper/10 w-full rounded-t-2xl"
         />
 
         <div className="px-8 pb-8 -mt-16">
@@ -51,10 +51,10 @@ export function AvatarPicker() {
             animate={{ opacity: 1, y: 0, transition: { delay: 0.3 } }}
             className="text-center mt-4"
           >
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-foreground">
               Alege-ți avatarul
             </h2>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-muted-foreground text-sm mt-1">
               Selectează avatarul care te reprezintă
             </p>
           </motion.div>
@@ -80,8 +80,8 @@ export function AvatarPicker() {
                 className={cn(
                   "relative w-14 h-14 rounded-full overflow-hidden border-2 transition-colors duration-300",
                   selectedAvatarId === avatar.id
-                    ? "border-[#ff5f5f] ring-2 ring-[#ff5f5f]/30 ring-offset-2 ring-offset-white"
-                    : "border-gray-200 hover:border-gray-300"
+                    ? "border-copper ring-2 ring-copper/30 ring-offset-2 ring-offset-white"
+                    : "border-border hover:border-gray-300"
                 )}
                 aria-label={`Select ${avatar.alt}`}
                 aria-pressed={selectedAvatarId === avatar.id}
@@ -116,7 +116,7 @@ export function AvatarCircle({
   return (
     <div
       className={cn(
-        "rounded-full overflow-hidden bg-gradient-to-tr from-[#ff5f5f] to-[#ff5f5f]/70 border border-gray-200 flex items-center justify-center",
+        "rounded-full overflow-hidden bg-gradient-to-tr from-copper to-copper/70 border border-border flex items-center justify-center",
         sizeMap[size]
       )}
     >

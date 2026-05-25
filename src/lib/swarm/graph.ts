@@ -6,44 +6,44 @@ import { psychologistAgent } from "./agents/psychologist";
 import { strategistAgent } from "./agents/strategist";
 import { copywriterAgent } from "./agents/copywriter";
 import { consensusAgent } from "./consensus";
-import { approvalGate } from "./approval-gate";
+import { approvalGate, ApprovalResult } from "./approval-gate";
 import { simulateReaction } from "./sandbox";
 import { broadcastAgentUpdate } from "@/lib/supabase/realtime";
 
 export const SwarmStateAnnotation = Annotation.Root({
-  // ... existing annotations ...
   research_data: Annotation<Record<string, unknown>>({
     reducer: (x, y) => ({ ...x, ...y }),
     default: () => ({}),
   }),
-  
+
   twin_profile: Annotation<DigitalTwin | null>({
     reducer: (x, y) => y ?? x,
     default: () => null,
   }),
-  
+
   strategy: Annotation<Record<string, unknown>>({
     reducer: (x, y) => ({ ...x, ...y }),
     default: () => ({}),
   }),
-  
+
   email_draft: Annotation<string | null>({
     reducer: (x, y) => y ?? x,
     default: () => null,
   }),
-  
+
   confidence_score: Annotation<number>({
     reducer: (x, y) => y,
     default: () => 0,
   }),
-  
+
   active_agent: Annotation<AgentName | null>({
     reducer: (x, y) => y,
     default: () => null,
   }),
-  
+
   campaign_id: Annotation<string>({
     reducer: (x, y) => y,
+    default: () => "",
   }),
 
   prospect_name: Annotation<string>({
@@ -60,59 +60,83 @@ export const SwarmStateAnnotation = Annotation.Root({
     reducer: (x, y) => ({ ...x, ...y }),
     default: () => ({}),
   }),
-  
+
   skip_to_copywriter: Annotation<boolean>({
     reducer: (x, y) => y,
     default: () => false,
   }),
 
-  swarm_mode: Annotation<'fast' | 'deep'>({
+  swarm_mode: Annotation<"fast" | "deep">({
     reducer: (x, y) => y,
-    default: () => 'deep',
+    default: () => "deep",
   }),
 
   trace_log: Annotation<Record<string, unknown>[]>({
     reducer: (x, y) => [...x, ...y],
     default: () => [],
   }),
+
+  /** Whether the approval gate was passed (set by approvalGate node) */
+  approval_passed: Annotation<boolean>({
+    reducer: (x, y) => y,
+    default: () => false,
+  }),
+
+  /** Structured approval result (set by approvalGate node) */
+  approval_result: Annotation<ApprovalResult | null>({
+    reducer: (x, y) => y ?? x,
+    default: () => null,
+  }),
 });
 
 export type SwarmState = typeof SwarmStateAnnotation.State;
 
-// Sandbox Node implementation
+// ── Sandbox Node ──
+
 async function sandboxNode(state: SwarmState) {
-const { email_draft, twin_profile, campaign_id } = state;
-  
+  const { email_draft, twin_profile, campaign_id } = state;
+
   if (!email_draft || !twin_profile) return { active_agent: null };
 
-  const update = {
-    agent: 'consensus' as const, // We reuse consensus for final simulation update
-    status: 'working' as const,
-    message: 'Simulez reacția prospectului în Sandbox...',
+  await broadcastAgentUpdate(campaign_id, {
+    agent: "consensus",
+    status: "working",
+    message: "Simulez reacția prospectului în Sandbox...",
     confidence_delta: 5,
-    timestamp: Date.now()
-  };
-  await broadcastAgentUpdate(campaign_id, update);
+    timestamp: Date.now(),
+  });
 
-  const reaction_map = await simulateReaction(email_draft, twin_profile, state.brand_context);
-  
-  const doneUpdate = {
-    agent: 'consensus' as const,
-    status: 'done' as const,
-    message: 'Simulare finalizată. Digital Twin validat.',
+  const reaction_map = await simulateReaction(
+    email_draft,
+    twin_profile,
+    state.brand_context,
+  );
+
+  await broadcastAgentUpdate(campaign_id, {
+    agent: "consensus",
+    status: "done",
+    message: "Simulare finalizată. Digital Twin validat.",
     confidence_delta: 5,
-    timestamp: Date.now()
-  };
-  await broadcastAgentUpdate(campaign_id, doneUpdate);
+    timestamp: Date.now(),
+  });
 
   return {
     twin_profile: { ...twin_profile, reaction_map },
     active_agent: null,
-    trace_log: [update, doneUpdate]
+    trace_log: [
+      {
+        agent: "sandbox",
+        status: "done",
+        message: `Reacție simulată — curiosity: ${reaction_map.curiosity}, trust: ${reaction_map.trust}`,
+        reaction_map,
+        timestamp: Date.now(),
+      },
+    ],
   };
 }
 
-// Construim Graful
+// ── Build the Graph ──
+
 const workflow = new StateGraph(SwarmStateAnnotation)
   .addNode("researcher", researcherAgent)
   .addNode("psychologist", psychologistAgent)
@@ -122,42 +146,51 @@ const workflow = new StateGraph(SwarmStateAnnotation)
   .addNode("copywriter", copywriterAgent)
   .addNode("sandbox", sandboxNode);
 
-// Definim fluxul conform blueprint-ului:
-// Research + Psychologist + Strategist (paralel) -> CONSENSUS -> APPROVAL GATE
-workflow.addConditionalEdges(START, (state) => {
+// START → researcher [+ psychologist + strategist in deep mode]
+workflow.addConditionalEdges(START, (state: SwarmState) => {
+  // Resume path: jump directly to copywriter
   if (state.skip_to_copywriter) return "copywriter";
-  
-  if (state.swarm_mode === 'fast') {
-    return ["researcher"]; // În modul fast, sărim peste psiholog și strateg inițial
-  }
-  
+
+  // Fast mode: only researcher
+  if (state.swarm_mode === "fast") return "researcher";
+
+  // Deep mode: all three in parallel
   return ["researcher", "psychologist", "strategist"];
 });
 
-workflow
-  .addEdge("researcher", "consensus")
-  .addEdge("psychologist", "consensus")
-  .addEdge("strategist", "consensus")
-  
-  .addEdge("consensus", "approval_gate")
-  
-  // Decidem dacă mergem mai departe sau ne oprim pentru aprobare
-  workflow.addConditionalEdges("approval_gate", (state) => {
-    // În modul fast, sărim peste aprobare
-    if (state.swarm_mode === 'fast') return "copywriter";
+// All research agents converge to consensus
+workflow.addEdge("researcher", "consensus");
+workflow.addEdge("psychologist", "consensus");
+workflow.addEdge("strategist", "consensus");
 
-    // Dacă am venit prin resume (skip_to_copywriter este true), continuăm spre copywriter.
-    if (state.skip_to_copywriter) return "copywriter";
+// Consensus → Approval Gate
+workflow.addEdge("consensus", "approval_gate");
 
-    // Altfel, ne oprim (returnăm END).
-    return END;
-  });
+// Approval Gate → Copywriter, END, or Consensus (retry)
+workflow.addConditionalEdges("approval_gate", (state: SwarmState) => {
+  // Fast mode: skip approval, go straight to copywriter
+  if (state.swarm_mode === "fast") return "copywriter";
 
-  workflow.addConditionalEdges("copywriter", (state) => {
-    if (state.swarm_mode === 'fast') return END;
-    return "sandbox";
-  });
+  // Resume path: skip approval check
+  if (state.skip_to_copywriter) return "copywriter";
 
-  workflow.addEdge("sandbox", END);
+  // Check the approval result
+  if (state.approval_passed) return "copywriter";
+
+  // Approval failed — stop the swarm (user must review and resume)
+  return END;
+});
+
+// Copywriter → Sandbox (deep) or END (fast)
+workflow.addConditionalEdges("copywriter", (state: SwarmState) => {
+  if (state.swarm_mode === "fast") return END;
+
+  // Only run sandbox if we have a draft
+  if (state.email_draft) return "sandbox";
+  return END;
+});
+
+// Sandbox → END
+workflow.addEdge("sandbox", END);
 
 export const swarmGraph = workflow.compile();

@@ -245,6 +245,37 @@ export const DB_TOOLS: ToolDefinition[] = [
       },
     },
   },
+  {
+    type: 'function',
+    function: {
+      name: 'get_campaign_insights',
+      description:
+        'Analyze the user\'s campaign performance and return personalized coaching insights. Includes open rate, reply rate, top performing agent, click-to-open ratio, and actionable recommendations. Use this to give data-driven advice about what\'s working and what to improve.',
+      parameters: {
+        type: 'object',
+        properties: {},
+        required: [],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'search_prospects',
+      description:
+        'Search the user\'s prospect database by name, email, or company. Returns matching prospects with their contact details and last contacted date. Minimum 2 characters.',
+      parameters: {
+        type: 'object',
+        properties: {
+          query: {
+            type: 'string',
+            description: 'Search query (min 2 characters). Searches prospect name, email, and company.',
+          },
+        },
+        required: ['query'],
+      },
+    },
+  },
 ]
 
 /* ── Combined Export ── */

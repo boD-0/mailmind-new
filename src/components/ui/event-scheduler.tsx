@@ -52,21 +52,21 @@ export function EventScheduler({ events, onAdd, onDelete, className }: EventSche
   return (
     <div className={cn("grid md:grid-cols-2 gap-6", className)}>
       {/* Creation Panel */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-border shadow-sm p-6">
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-9 h-9 rounded-full bg-[#ff5f5f]/10 grid place-items-center">
-            <CalendarDays size={16} className="text-[#ff5f5f]" />
+          <div className="w-9 h-9 rounded-full bg-copper/10 grid place-items-center">
+            <CalendarDays size={16} className="text-copper" />
           </div>
           <div>
-            <h3 className="font-display text-[18px] text-gray-900">Schedule Event</h3>
-            <p className="text-[11px] text-gray-400">Deadline · Meeting · Task</p>
+            <h3 className="font-display text-[18px] text-foreground">Schedule Event</h3>
+            <p className="text-[11px] text-muted-foreground">Deadline · Meeting · Task</p>
           </div>
         </div>
 
         <div className="space-y-4">
           {/* Title */}
           <div>
-            <label className="text-[10px] tracking-widest text-gray-400 uppercase mb-1.5 block">
+            <label className="text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5 block">
               Title
             </label>
             <Input
@@ -79,7 +79,7 @@ export function EventScheduler({ events, onAdd, onDelete, className }: EventSche
 
           {/* Type selector */}
           <div>
-            <label className="text-[10px] tracking-widest text-gray-400 uppercase mb-1.5 block">
+            <label className="text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5 block">
               Type
             </label>
             <div className="flex gap-2">
@@ -91,8 +91,8 @@ export function EventScheduler({ events, onAdd, onDelete, className }: EventSche
                   className={cn(
                     "text-[11px] px-3 py-1.5 rounded-full border transition-colors",
                     type === t
-                      ? "border-[#ff5f5f] text-[#ff5f5f] bg-[#ff5f5f]/10"
-                      : "border-gray-200 text-gray-500 hover:text-gray-800",
+                      ? "border-copper text-copper bg-copper/10"
+                      : "border-border text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -103,7 +103,7 @@ export function EventScheduler({ events, onAdd, onDelete, className }: EventSche
 
           {/* Date */}
           <div>
-            <label className="text-[10px] tracking-widest text-gray-400 uppercase mb-1.5 block">
+            <label className="text-[10px] tracking-widest text-muted-foreground uppercase mb-1.5 block">
               Date & Time
             </label>
             <DeadlinePicker value={date} onChange={setDate} />
@@ -122,15 +122,15 @@ export function EventScheduler({ events, onAdd, onDelete, className }: EventSche
       </div>
 
       {/* Event List */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+      <div className="bg-white rounded-2xl border border-border shadow-sm p-6">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-[#ff5f5f]/10 grid place-items-center">
-              <Calendar size={16} className="text-[#ff5f5f]" />
+            <div className="w-9 h-9 rounded-full bg-copper/10 grid place-items-center">
+              <Calendar size={16} className="text-copper" />
             </div>
             <div>
-              <h3 className="font-display text-[18px] text-gray-900">Upcoming</h3>
-              <p className="text-[11px] text-gray-400">
+              <h3 className="font-display text-[18px] text-foreground">Upcoming</h3>
+              <p className="text-[11px] text-muted-foreground">
                 {sorted.length} event{sorted.length !== 1 ? "s" : ""}
               </p>
             </div>
@@ -143,7 +143,7 @@ export function EventScheduler({ events, onAdd, onDelete, className }: EventSche
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-[13px] text-gray-400 text-center py-8"
+                className="text-[13px] text-muted-foreground text-center py-8"
               >
                 No events scheduled yet.
               </motion.p>
@@ -167,7 +167,7 @@ export function EventScheduler({ events, onAdd, onDelete, className }: EventSche
                       ? "border-red-200 bg-red-50/60"
                       : isSoon
                         ? "border-amber-200 bg-amber-50/60"
-                        : "border-gray-200 hover:border-gray-300",
+                        : "border-border hover:border-gray-300",
                   )}
                 >
                   <div className="flex items-start gap-3 min-w-0">
@@ -176,7 +176,7 @@ export function EventScheduler({ events, onAdd, onDelete, className }: EventSche
                       className={cn(
                         "mt-0.5 shrink-0 w-7 h-7 rounded-full grid place-items-center text-[10px]",
                         ev.type === "deadline"
-                          ? "bg-[#ff5f5f]/10 text-[#ff5f5f]"
+                          ? "bg-copper/10 text-copper"
                           : ev.type === "meeting"
                             ? "bg-blue-50 text-blue-500"
                             : "bg-emerald-50 text-emerald-500",
@@ -189,12 +189,12 @@ export function EventScheduler({ events, onAdd, onDelete, className }: EventSche
                           : "T"}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[13px] font-medium text-gray-900 truncate">
+                      <p className="text-[13px] font-medium text-foreground truncate">
                         {ev.title}
                       </p>
                       <div className="flex items-center gap-1.5 mt-0.5">
-                        <Clock size={11} className="text-gray-400 shrink-0" />
-                        <span className="text-[11px] text-gray-400">
+                        <Clock size={11} className="text-muted-foreground shrink-0" />
+                        <span className="text-[11px] text-muted-foreground">
                           {format(ev.date, "MMM d · h:mm aa")}
                         </span>
                         {isOverdue && (
@@ -212,7 +212,7 @@ export function EventScheduler({ events, onAdd, onDelete, className }: EventSche
                   </div>
                   <button
                     onClick={() => onDelete(ev.id)}
-                    className="shrink-0 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all p-1"
+                    className="shrink-0 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-500 transition-all p-1"
                     aria-label="Delete event"
                   >
                     <Trash2 size={13} />
@@ -224,12 +224,12 @@ export function EventScheduler({ events, onAdd, onDelete, className }: EventSche
         </div>
 
         {sorted.length > 0 && sorted[0] && (
-          <div className="border-t border-gray-100 mt-4 pt-3">
-            <div className="flex items-center gap-2 text-[11px] text-gray-400">
+          <div className="border-t border-border mt-4 pt-3">
+            <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
               <CheckCircle2 size={12} className="text-emerald-500" />
               <span>
                 Next:{" "}
-                <span className="text-gray-700 font-medium">{sorted[0].title}</span> —{" "}
+                <span className="text-foreground/80 font-medium">{sorted[0].title}</span> —{" "}
                 {format(sorted[0].date, "MMM d · h:mm aa")}
               </span>
             </div>

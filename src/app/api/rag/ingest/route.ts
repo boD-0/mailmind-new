@@ -1,12 +1,38 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { ingestDocument } from '@/lib/rag/ingest';
-import { apiRequireAuth, verifyOwnership } from "@/lib/auth/gatekeeper";
+import { ingestDocument, parsePdfBuffer } from '@/lib/rag/ingest';
+import { apiRequireAuth, verifyOwnership, checkFeatureAccess } from "@/lib/auth/gatekeeper";
+import { tieredUploadRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   // Authenticate via better-auth (consistent auth system)
   const user = await apiRequireAuth(req);
   if (user instanceof NextResponse) return user;
+
+  // Check plan feature access: vault ingestion requires at least STARTER
+  if (!checkFeatureAccess(user.plan, "hasVault")) {
+    return NextResponse.json(
+      { error: "Vault access requires at least the STARTER plan." },
+      { status: 403 }
+    );
+  }
+
+  // Tiered rate limit: FREE=2/min, STARTER=5/min, PROFESSIONAL=10/min
+  const rateLimitResult = await tieredUploadRateLimit(user.plan, user.id);
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'Upload limit reached. Please try again later.' },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(rateLimitResult.retryAfterSeconds),
+          'X-RateLimit-Limit': String(rateLimitResult.limit),
+          'X-RateLimit-Remaining': String(rateLimitResult.remaining),
+          'X-RateLimit-Reset': String(rateLimitResult.reset),
+        },
+      },
+    );
+  }
 
   try {
     const formData = await req.formData();
@@ -34,12 +60,26 @@ export async function POST(req: Request) {
       if (ownershipError) return ownershipError;
     }
 
-    // Citim conținutul fișierului (pentru simplitate text/pdf)
-    const content = await file.text();
+    // Extrahe conținutul — PDF-urile au nevoie de parsing special
+    let content: string;
+    const fileName = file.name;
+    const isPdf = fileName.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf';
+
+    if (isPdf) {
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      content = await parsePdfBuffer(buffer);
+    } else {
+      content = await file.text();
+    }
+
+    if (!content || content.trim().length === 0) {
+      return NextResponse.json({ error: 'Empty or unparseable document' }, { status: 400 });
+    }
 
     const result = await ingestDocument(
       content,
-      file.name,
+      fileName,
       user.id,
       campaignId
     );

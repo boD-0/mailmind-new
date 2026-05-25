@@ -35,7 +35,7 @@ function ToolbarButton({
     >
       <button
         className={`h-8 w-8 flex items-center justify-center rounded-md transition-colors duration-200 ${
-          isActive ? 'bg-[#ff5f5f]/15 text-[#ff5f5f]' : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100'
+          isActive ? 'bg-copper/15 text-copper' : 'text-muted-foreground hover:text-foreground/80 hover:bg-muted'
         } focus:outline-none`}
         aria-label={label}
         onClick={onClick}
@@ -91,7 +91,7 @@ export function Toolbar({ onAction, className = '' }: ToolbarProps) {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 10, scale: 0.9 }}
         transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-        className={`${className} flex items-center gap-1 p-1 bg-white/90 backdrop-blur-xl rounded-xl border border-gray-200 shadow-lg shadow-black/5 flex-wrap`}
+        className={`${className} flex items-center gap-1 p-1 bg-white/90 backdrop-blur-xl rounded-xl border border-border shadow-lg shadow-black/5 flex-wrap`}
       >
         {/* Text Formatting */}
         <ToolbarButton label="Bold" icon={Bold} isActive={activeButtons.includes('bold')} onClick={() => toggleActiveButton('bold')} tooltip={tooltip} showTooltip={showTooltip} hideTooltip={hideTooltip} />

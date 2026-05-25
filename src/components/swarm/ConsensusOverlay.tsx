@@ -18,13 +18,13 @@ export function ConsensusOverlay({ show }: ConsensusOverlayProps) {
           exit={{ opacity: 0, scale: 1.1 }}
           className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none"
         >
-          <div className="bg-white/90 backdrop-blur-xl p-12 rounded-[3rem] border-2 border-emerald-500/50 flex flex-col items-center gap-6 shadow-[0_0_100px_rgba(16,185,129,0.2)]">
+          <div className="bg-white/95 backdrop-blur-xl p-12 rounded-2xl border border-emerald-500/30 flex flex-col items-center gap-6 shadow-2xl shadow-emerald-500/10">
             <div className="w-24 h-24 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
               <CheckCircle2 size={48} strokeWidth={1.5} />
             </div>
             <div className="text-center">
               <h2 className="text-3xl font-black tracking-tighter text-emerald-500 mb-2">CONSENSUS REACHED</h2>
-              <p className="text-gray-400 text-xs uppercase tracking-[0.3em] font-bold">Campaign Strategy Validated</p>
+              <p className="text-muted-foreground text-xs uppercase tracking-[0.3em] font-bold">Campaign Strategy Validated</p>
             </div>
           </div>
         </motion.div>

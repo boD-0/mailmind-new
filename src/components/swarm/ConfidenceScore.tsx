@@ -13,13 +13,13 @@ export function ConfidenceScore({ value }: ConfidenceScoreProps) {
   const getStatusColor = () => {
     if (value >= 100) return 'text-emerald-500';
     if (value >= 85) return 'text-emerald-500/80';
-    if (value >= 50) return 'text-[#ff5f5f]';
-    return 'text-gray-400';
+    if (value >= 50) return 'text-copper';
+    return 'text-muted-foreground';
   };
 
   return (
     <div className="flex flex-col items-end relative">
-      <span className="text-[10px] uppercase text-gray-400 tracking-widest font-bold">Confidence Score</span>
+      <span className="text-[10px] uppercase text-muted-foreground tracking-widest font-bold">Confidence Score</span>
       
       <div className="flex items-center gap-3">
         <AnimatePresence mode="wait">

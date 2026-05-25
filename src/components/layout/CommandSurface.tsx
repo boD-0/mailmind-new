@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutDashboard, Lightbulb, MessageSquare, Shield, Settings, LogOut, User, Loader2, FolderKanban, FileText, Wrench, Rocket, UserPlus, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Lightbulb, MessageSquare, Shield, Settings, LogOut, User, Loader2, FolderKanban, FileText, Wrench, Rocket, UserPlus, ChevronRight, Sparkles } from "lucide-react";
 import { AureliusHelper } from "@/components/aurelius/AureliusHelper";
 import { ApiLimitNotification } from "@/components/ui/api-limit-notification";
 import { AvatarCircle } from "@/components/ui/avatar-picker";
@@ -23,6 +23,7 @@ const NAV_ITEMS = [
   { label: 'Ideas', icon: Lightbulb, href: '/dashboard/ideas' },
   { label: 'Global Chat', icon: MessageSquare, href: '/dashboard/chat' },
   { label: 'Tools', icon: Wrench, href: '/dashboard/tools' },
+  { label: 'Changelog', icon: Sparkles, href: '/changelog', badge: 'NEW' },
 ];
 
 function Sidebar() {
@@ -30,14 +31,14 @@ function Sidebar() {
   const { locale } = useParams();
 
   return (
-    <aside className="w-64 border-r border-gray-200 bg-white/70 backdrop-blur-xl flex flex-col h-screen sticky top-0">
-      <div className="h-20 flex items-center px-8 border-b border-gray-100">
-        <Link href={`/${locale}/dashboard`} className="text-xl font-black tracking-tighter text-[#ff5f5f]">
-          MAILMIND<span className="text-gray-300">.</span>
+    <aside className="w-64 border-r border-border bg-card flex flex-col h-screen sticky top-0">
+      <div className="h-20 flex items-center px-8 border-b border-border">
+        <Link href={`/${locale}/dashboard`} className="text-lg font-bold tracking-tight text-copper">
+          MAILMIND<span className="text-muted-foreground/40">.</span>
         </Link>
       </div>
 
-      <nav className="flex-1 p-6 space-y-2">
+      <nav className="flex-1 p-4 space-y-1">
         {NAV_ITEMS.map((item) => {
           const localizedHref = `/${locale}${item.href}`;
           const isActive = pathname === localizedHref;
@@ -45,26 +46,31 @@ function Sidebar() {
             <Link 
               key={item.href} 
               href={localizedHref}
-              className={`flex items-center gap-4 px-4 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium tracking-wide transition-colors ${
                 isActive 
-                  ? 'bg-[#ff5f5f] text-white shadow-[0_5px_15px_rgba(255,95,95,0.3)]' 
-                  : 'text-gray-400 hover:bg-gray-100 hover:text-gray-700'
+                  ? 'bg-primary-muted text-primary border border-primary/15' 
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
             >
               <item.icon size={16} />
               {item.label}
+              {'badge' in item && item.badge && (
+                <span className="ml-auto text-[9px] font-bold bg-copper/10 text-copper px-1.5 py-0.5 rounded-full uppercase tracking-wider leading-none">
+                  {item.badge}
+                </span>
+              )}
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-6 border-t border-gray-200 space-y-2">
+      <div className="p-4 border-t border-border">
         <Link 
           href={`/${locale}/dashboard/settings`}
-          className={`w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all ${
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium tracking-wide transition-colors ${
             pathname === `/${locale}/dashboard/settings`
-              ? 'bg-[#ff5f5f] text-white shadow-[0_5px_15px_rgba(255,95,95,0.3)]'
-              : 'text-gray-400 hover:bg-gray-100 hover:text-gray-700'
+              ? 'bg-primary-muted text-primary border border-primary/15'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
           }`}
         >
           <Settings size={16} />
@@ -269,13 +275,13 @@ function AvatarMenu() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-3 pl-6 border-l border-gray-200 hover:opacity-80 transition-opacity"
+        className="flex items-center gap-3 pl-6 border-l border-border hover:opacity-80 transition-opacity"
       >
         <div className="text-right hidden sm:block">
-          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             {userName.split(" ")[0]}
           </p>
-          <p className="text-xs font-bold text-gray-800 truncate max-w-[120px]">{userEmail}</p>
+          <p className="text-xs font-bold text-foreground truncate max-w-[120px]">{userEmail}</p>
         </div>
         <AvatarCircle />
       </button>
@@ -287,37 +293,37 @@ function AvatarMenu() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl border border-gray-200 shadow-xl shadow-black/5 overflow-hidden z-50"
+            className="absolute right-0 top-full mt-2 w-56 bg-card rounded-xl border border-border shadow-lg overflow-hidden z-50"
           >
             {/* User info header */}
-            <div className="px-4 py-3 border-b border-gray-100">
-              <p className="text-sm font-bold text-gray-900 truncate">{userName}</p>
-              <p className="text-[11px] text-gray-400 truncate">{userEmail}</p>
+            <div className="px-4 py-3 border-b border-border">
+              <p className="text-sm font-bold text-foreground truncate">{userName}</p>
+              <p className="text-[11px] text-muted-foreground truncate">{userEmail}</p>
             </div>
 
             <div className="py-1">
               <button
                 onClick={() => { setOpen(false); router.push(`/${locale}/dashboard/settings`) }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/80 hover:bg-muted transition-colors"
               >
-                <Settings size={15} className="text-gray-400" />
+                <Settings size={15} className="text-muted-foreground" />
                 Settings
               </button>
               <button
                 onClick={() => { setOpen(false); router.push(`/${locale}/dashboard/settings`) }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/80 hover:bg-muted transition-colors"
               >
-                <User size={15} className="text-gray-400" />
+                <User size={15} className="text-muted-foreground" />
                 Account
               </button>
 
               {/* Founder Mode — admin only */}
               {isAdmin && (
                 <>
-                  <div className="my-1 border-t border-gray-100" />
+                  <div className="my-1 border-t border-border" />
                   <button
                     onClick={() => { setOpen(false); router.push(`/${locale}/dashboard/admin`) }}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-[#ff5f5f] hover:bg-red-50 transition-colors"
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-copper hover:bg-primary-muted transition-colors"
                   >
                     <Shield size={15} />
                     Founder Mode
@@ -325,10 +331,10 @@ function AvatarMenu() {
                 </>
               )}
 
-              <div className="my-1 border-t border-gray-100" />
+              <div className="my-1 border-t border-border" />
               <button
                 onClick={handleSignOut}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/5 transition-colors"
               >
                 <LogOut size={15} />
                 Sign Out
@@ -370,14 +376,14 @@ function Header() {
 
   if (isPending) {
     return (
-      <header className="h-20 border-b border-gray-200 bg-white/70 backdrop-blur-xl flex items-center justify-center px-10 sticky top-0 z-40">
-        <Loader2 className="w-5 h-5 animate-spin text-gray-300" />
+      <header className="h-20 border-b border-border bg-card flex items-center justify-center px-10 sticky top-0 z-40">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground/50" />
       </header>
     )
   }
 
   return (
-    <header className="h-20 border-b border-gray-200 bg-white/70 backdrop-blur-xl flex items-center justify-between px-10 sticky top-0 z-40">
+    <header className="h-20 border-b border-border bg-card flex items-center justify-between px-10 sticky top-0 z-40">
       <div className="relative max-w-md w-full">
         <SearchComponent
           value={searchQuery}
@@ -431,7 +437,7 @@ export function CommandSurface({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="dashboard-light flex min-h-screen bg-obsidian">
+    <div className="flex min-h-screen bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0 relative">
         <Header />

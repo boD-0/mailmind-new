@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { randomUUID } from "crypto";
 import { loginRateLimit, signupRateLimit, passwordResetRateLimit } from "@/lib/rate-limit";
 import { defaultLocale, locales } from "@/lib/i18n";
+import { auth } from "@/lib/auth/auth";
 
 // ── Maintenance mode utilities ────────────────────────────────────────────────
 
@@ -140,6 +141,24 @@ export async function proxy(request: NextRequest) {
   const ip = getClientIp(request);
   let response = NextResponse.next();
 
+  // ── Step -1: Fix host headers for proxied environments (Codespace, etc.) ───
+  // When running behind a reverse proxy (GitHub Codespace, ngrok, etc.),
+  // Next.js Server Actions check the origin against allowed origins and reject
+  // requests if the forwarded host doesn't match. We rewrite the request URL
+  // to use the forwarded host so Next.js sees the correct origin.
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  if (forwardedHost && forwardedHost !== request.headers.get("host")) {
+    const url = request.nextUrl.clone();
+    url.host = forwardedHost;
+    url.port = "";
+    const forwardedProto = request.headers.get("x-forwarded-proto");
+    if (forwardedProto) {
+      url.protocol = forwardedProto;
+    }
+    // Use rewrite so Next.js knows the URL has changed for Server Actions validation
+    response = NextResponse.rewrite(url);
+  }
+
   // ── Step 0: Redirect bare paths to locale-prefixed paths ───────────────────
   // /dashboard → /ro/dashboard, /dashboard/war-room/... → /ro/dashboard/war-room/...
   // /sign-up → /ro/sign-up, /login → /ro/login, etc.
@@ -159,13 +178,62 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // ── Step 0.25: Auth protection for protected routes ───────────────────────
+  // Check if the path requires authentication (dashboard pages, protected APIs).
+  // Locale-prefixed paths have the form /{locale}/dashboard/...
+  // API routes don't have locale prefixes (they're at /api/... directly).
+
+  // Extract locale from pathname (guaranteed to exist after Step 0)
+  const localeMatch = pathname.match(new RegExp(`^/(${locales.join("|")})(/|$)`));
+  const locale = localeMatch?.[1] || defaultLocale;
+  const pathWithoutLocale = localeMatch
+    ? pathname.slice(localeMatch[0].length - (localeMatch[2] || "").length) || "/"
+    : pathname;
+
+  const isProtectedPage =
+    pathWithoutLocale.startsWith("/dashboard") ||
+    pathWithoutLocale.startsWith("/onboarding");
+
+  const isProtectedApi =
+    pathname.startsWith("/api/") &&
+    !pathname.startsWith("/api/auth/") &&
+    !pathname.startsWith("/api/webhooks/") &&
+    !pathname.startsWith("/api/stripe/webhook") &&
+    !pathname.startsWith("/api/klaviyo/") &&
+    !pathname.startsWith("/api/health") &&
+    !pathname.startsWith("/api/usage"); // stub, no auth needed
+
+  if (isProtectedPage || isProtectedApi) {
+    try {
+      const session = await auth.api.getSession({
+        headers: request.headers,
+      });
+
+      if (!session) {
+        // API routes: return 401 JSON
+        if (isProtectedApi) {
+          return NextResponse.json(
+            { error: "Unauthorized" },
+            { status: 401 },
+          );
+        }
+        // Page routes: redirect to login, preserving the original path
+        const loginUrl = new URL(`/${locale}/login`, request.url);
+        loginUrl.searchParams.set("redirect", pathname);
+        return NextResponse.redirect(loginUrl);
+      }
+    } catch {
+      // If session check fails (DB error, etc.), allow the request through.
+      // Server actions and API routes have their own auth checks as fallback.
+      console.warn("[Proxy] Session check failed for:", pathname);
+    }
+  }
+
   // ── Step 0.5: Maintenance mode check ──────────────────────────────────────
   if (!isMaintenanceAllowed(pathname)) {
     const active = await isMaintenanceActive();
     if (active && !isAdmin(request)) {
-      // Extract locale from pathname (e.g., /ro/dashboard → ro)
-      const localeMatch = pathname.match(/^\/([a-z]{2})\//);
-      const locale = localeMatch ? localeMatch[1] : defaultLocale;
+      // Use locale extracted in Step 0.25 (or fallback to default)
       const maintenanceUrl = new URL(`/${locale}/maintenance`, request.url);
       maintenanceUrl.searchParams.set("reason", "maintenance");
       return NextResponse.redirect(maintenanceUrl);

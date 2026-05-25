@@ -29,14 +29,14 @@ const SearchComponent = ({
       <div
         className="absolute -inset-0.5 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{
-          background: "linear-gradient(135deg, #ff5f5f20, #fbbf2420, #ff5f5f20)",
+          background: "linear-gradient(135deg, rgba(193,123,63,0.13), rgba(251,191,36,0.13), rgba(193,123,63,0.13))",
           filter: "blur(8px)",
         }}
       />
 
-      <div className="relative flex items-center bg-white/60 backdrop-blur-sm border border-gray-200 rounded-xl shadow-sm group-focus-within:border-[#ff5f5f]/30 group-focus-within:shadow-md group-focus-within:shadow-red-100/50 transition-all duration-300">
+      <div className="relative flex items-center bg-white/60 backdrop-blur-sm border border-border rounded-xl shadow-sm group-focus-within:border-copper/30 group-focus-within:shadow-md group-focus-within:shadow-copper/10 transition-all duration-300">
         {/* Search icon */}
-        <div className="pl-3.5 text-gray-400 group-focus-within:text-[#ff5f5f] transition-colors duration-300">
+        <div className="pl-3.5 text-muted-foreground group-focus-within:text-copper transition-colors duration-300">
           <Search size={17} />
         </div>
 
@@ -48,7 +48,7 @@ const SearchComponent = ({
           onFocus={onFocus}
           onBlur={onBlur}
           placeholder={placeholder}
-          className="flex-1 bg-transparent border-none h-[42px] px-3 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none"
+          className="flex-1 bg-transparent border-none h-[42px] px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
         />
 
         {/* Clear button */}
@@ -65,7 +65,7 @@ const SearchComponent = ({
                 onChange(event);
               }
             }}
-            className="mr-2 flex items-center justify-center w-5 h-5 rounded-full bg-gray-200/80 hover:bg-gray-300 transition-colors text-gray-400 hover:text-gray-600"
+            className="mr-2 flex items-center justify-center w-5 h-5 rounded-full bg-gray-200/80 hover:bg-gray-300 transition-colors text-muted-foreground hover:text-muted-foreground"
             aria-label="Clear search"
           >
             <X size={11} />
@@ -74,7 +74,7 @@ const SearchComponent = ({
 
         {/* ⌘K shortcut */}
         <div className="pr-3 flex items-center">
-          <kbd className="hidden sm:flex items-center gap-0.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-mono font-medium text-gray-400 border border-gray-200">
+          <kbd className="hidden sm:flex items-center gap-0.5 rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-mono font-medium text-muted-foreground border border-border">
             <span>⌘</span>K
           </kbd>
         </div>

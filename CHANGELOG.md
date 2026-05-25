@@ -1,5 +1,300 @@
 # Changelog
 
+## [Unreleased] — 2026-05-25
+
+### 💰 Faza 6 — Payments + Auth + Security
+
+#### Polar.sh Subscription Integration
+
+- **`src/app/api/polar/checkout/route.ts`** *(NEW)* — Creates Polar.sh checkout sessions. Finds/creates customer by `external_id`, maps plan to product ID from `POLAR_PRO_PRODUCT_ID`/`POLAR_STARTER_PRODUCT_ID` env vars, returns redirect URL. Auth-gated + PostHog tracking.
+- **`src/app/api/polar/portal/route.ts`** *(NEW)* — Creates Polar customer portal sessions for subscription management (upgrade/downgrade/cancel). Finds customer by `external_id`.
+- **`src/app/api/webhooks/polar/route.ts`** *(UPDATED)* — Handles Polar webhook events (`subscription.created`/`updated`/`canceled`/`revoked`). Matches users by `polarCustomerId` with **email fallback** for first-time subscriptions. HMAC signature verification with graceful env-var-missing handling. PostHog event tracking.
+
+#### Tiered Feature Gating
+
+- **`src/lib/auth/gatekeeper.ts`** *(UPDATED)* — Added `canAccess` (alias for `checkFeatureAccess`), `requirePlan(userPlan, min)` returning `NextResponse | null` for API-level gating, `requirePlanPage(request, min)` for page-level redirect to `/pricing`. Plan ordering: FREE=0, STARTER=1, PROFESSIONAL=2.
+- **`src/app/api/vault/upload/route.ts`** *(FIXED)* — Added missing imports (`safeJsonParse`, `randomUUID`, `db`, `vaultDocuments`).
+
+#### Tiered Rate Limiting
+
+- **`src/lib/rate-limit.ts`** *(UPDATED)* — Added `tieredAiRateLimit(plan, userId)` — FREE=3/min, STARTER=10/min, PROFESSIONAL=30/min. Added `tieredUploadRateLimit` — FREE=2/min, STARTER=5/min, PROFESSIONAL=10/min.
+- Applied to **6 API endpoints**: Aurelius chat, Swarm launch, RAG ingest, A/B Test, Sequence Builder, Send Test email — all now have per-plan rate limits with `Retry-After` headers.
+
+#### Admin Panel (Real Stats)
+
+- **`src/app/actions/admin-stats.ts`** *(NEW)* — Real DB queries (swarm count, user count, document count, total tokens, recent executions). Admin-gated via `ADMIN_EMAIL` env var. Parallel Promise.all queries. Returns `formattedTokens` pre-computed.
+- **`src/app/[locale]/dashboard/admin/page.tsx`** *(REWRITTEN)* — Real-time admin dashboard with stats grid (Total Swarms, Active Users, Documents Stored, Tokens Used), recent swarm executions table with status badges + time-ago formatting, maintenance mode toggle + swarm param sliders. Loading spinners on all stats while fetching.
+
+#### Env Checker Update
+
+- **`scripts/check-env.ts`** *(UPDATED)* — Added `POLAR_ACCESS_TOKEN`, `POLAR_WEBHOOK_SECRET`, `POLAR_PRO_PRODUCT_ID`, `POLAR_STARTER_PRODUCT_ID`, `EMAIL_FROM`.
+
+#### Pricing Page → Polar CTAs
+
+- **`src/app/[locale]/pricing/page.tsx`** *(UPDATED)* — STARTER and PROFESSIONAL tier CTAs now call `POST /api/polar/checkout` with loading spinner. 401 fallback redirects to sign-up. FREE tier CTA remains a sign-up link.
+
+---
+
+### 📧 Faza 6.5 — Send Test Email Wiring
+
+- **`src/app/api/email/send-test/route.ts`** *(NEW)* — Auth-gated POST endpoint. Validates `to` (email), `subject` (max 200 chars), `html` (max 100KB). Sends via Resend API. Rate-limited at 5/min per user. Privacy-safe logging (emails masked).
+- **`src/components/tools/SpecialTools.tsx`** *(UPDATED)* — Send Test section now has recipient input, subject input, HTML textarea (pre-filled from `emailContent` prop via `useEffect` sync), wired button to `POST /api/email/send-test` with loading spinner + toast feedback. Consistent React hook imports.
+
+---
+
+### 🌐 Faza 7 — i18n + Polish + Launch Prep
+
+#### i18n Completeness
+
+- **`src/messages/en.json`** *(FIXED)* — Onboarding section: replaced ALL Romanian strings with proper English translations (loading, step labels, Aurelius bubbles, labels, placeholders, hints, toast messages, recap, counter, section names).
+- **`src/messages/fr.json`** *(UPDATED)* — Added missing keys: `no_campaigns`, `no_campaigns_hint`, `campaign_view_all`.
+- **`src/messages/de.json`** *(UPDATED)* — Added missing keys: `no_campaigns`, `no_campaigns_hint`, `campaign_view_all`.
+- **`scripts/check-i18n.ts`** *(NEW)* — Parity checker: flattens all JSON keys, compares `en.json` as reference against `ro`/`fr`/`de`, reports missing + extra keys per locale. Exits code 1 on mismatch. ESM-compatible via `import.meta.url`. **All 4 locales currently match** ✅.
+
+#### Error Boundaries (13 files)
+
+Added `error.tsx` to every route that lacked one: `login`, `sign-up`, `pricing`, `dashboard`, `dashboard/admin`, `dashboard/chat`, `dashboard/ideas`, `dashboard/tools`, `dashboard/settings`, `dashboard/war-room/[id]`, `onboarding`, `maintenance`, `demo`. All use the stable `reset()` API.
+
+#### Loading States (13 files)
+
+Added `loading.tsx` to every route that lacked one — same set as error boundaries. All use `LoadingScreen` with descriptive per-page messages.
+
+#### SEO + Metadata
+
+- **`src/app/[locale]/layout.tsx`** *(UPDATED)* — Enhanced metadata: template titles, OpenGraph (`og-image.png`), Twitter cards (`summary_large_image`), keywords, `metadataBase`, robots directives.
+- **`src/app/robots.ts`** *(NEW)* — Dynamic `robots.txt`: allows `/`, `/demo`, `/pricing` (all locale-prefixed), disallows `/dashboard/*`, `/admin/*`, `/api/*`, `/login`, `/sign-up`, `/onboarding`, `/maintenance`.
+- **`src/app/sitemap.ts`** *(NEW)* — Dynamic `sitemap.xml` with locale-prefixed landing (priority 1.0), demo (0.9), pricing (0.8) — weekly/monthly change frequency.
+
+---
+
+### 🔧 Post-Review Fixes (2026-05-25)
+
+- Renamed `NEXT_PUBLIC_PRO_TIER`/`NEXT_PUBLIC_STARTER_TIER` → `POLAR_PRO_PRODUCT_ID`/`POLAR_STARTER_PRODUCT_ID` (no client-bundle leak)
+- Fixed `POLAR_WEBHOOK_SECRET!` non-null assertion → graceful `if (!secret) return false` check
+- Removed duplicate `formatTokens` — server now returns pre-formatted `formattedTokens`, client uses it directly
+- Unified React hook imports in `SpecialTools.tsx` (all hooks imported at top level); simplified `useEffect` sync
+- Privacy-safe logging in send-test route (emails masked in console)
+- Removed unused `import React` from admin page; loading spinner now shows on all stats
+
+**TypeScript: 0 errors** ✅ | **i18n diff: all locales match** ✅
+
+---
+
+### 📧 Gmail / Google Workspace OAuth Integration
+
+- **`src/lib/gmail/oauth.ts`** *(NEW)* — Google OAuth2 client using `google-auth-library`. Generates consent URLs with `prompt=consent` + `access_type=offline` to ensure refresh tokens. Exchanges codes, refreshes tokens, auto-refreshes stale access tokens (5-min buffer).
+- **`src/lib/gmail/send.ts`** *(NEW)* — `sendGmailEmail()` loads the user's Gmail connection from DB, auto-refreshes the token if needed, builds RFC 2822 base64url-encoded email, and sends via Gmail REST API.
+- **`src/app/api/gmail/auth/route.ts`** *(NEW)* — `GET /api/gmail/auth` — auth-gated, stores CSRF state in Redis (5-min TTL), redirects to Google OAuth consent screen.
+- **`src/app/api/gmail/callback/route.ts`** *(NEW)* — `GET /api/gmail/callback` — validates CSRF state, exchanges auth code, upserts connection via `onConflictDoUpdate` (race-safe), redirects to `/dashboard/settings?gmail=connected|denied|expired|error`.
+- **`src/app/api/gmail/status/route.ts`** *(NEW)* — `GET /api/gmail/status` — returns `{ connected, googleEmail }` for the authenticated user.
+- **`src/app/api/gmail/disconnect/route.ts`** *(NEW)* — `DELETE /api/gmail/disconnect` — revokes the refresh token on Google (best-effort), deletes the DB row.
+- **`src/db/schema.ts`** *(UPDATED)* — Added `gmailConnections` table with unique index on `userId`, cascade delete.
+- **`src/app/[locale]/dashboard/settings/page.tsx`** *(UPDATED)* — New "Gmail Integration" section with connect/disconnect buttons, loading skeletons, error states, callback param handling.
+- **`scripts/check-env.ts`** *(UPDATED)* — Added `GOOGLE_GMAIL_CLIENT_ID` and `GOOGLE_GMAIL_CLIENT_SECRET`.
+- **`src/messages/{en,ro,fr,de}.json`** *(UPDATED)* — 12 new `settings.gmail_*` keys across all 4 locales.
+- **`drizzle/0006_gmail_connections.sql`** *(NEW)* — Migration with unique index per user.
+- **`package.json`** *(UPDATED)* — Added `google-auth-library` dependency.
+
+---
+
+### 🪙 Swarm Credits Add-on — Usage-based Pricing
+
+- **`src/lib/swarm/credits.ts`** *(NEW)* — `getCreditBalance`, `consumeCredit` (atomic `WHERE swarm_credits > 0 RETURNING`), `addCredits` helpers.
+- **`src/app/api/stripe/credits/checkout/route.ts`** *(NEW)* — `POST /api/stripe/credits/checkout` — auth-gated Stripe Checkout session for credit packs. 1 pack = 10 swarm executions, quantity clamped 1–50.
+- **`src/app/api/stripe/webhook/route.ts`** *(UPDATED)* — Added credit purchase handler: checks `metadata.type === "swarm_credits"`, atomic increment via `sql`, PostHog `credits_purchased` tracking.
+- **`src/app/api/swarm/launch/route.ts`** *(UPDATED)* — Falls through to `consumeCredit()` when plan limit exceeded. Tracks `credit_consumed` PostHog event.
+- **`src/app/actions/swarm-credits.ts`** *(NEW)* — `getSwarmCredits()` server action for dashboard.
+- **`src/components/dashboard/SwarmUsageBar.tsx`** *(UPDATED)* — Credit balance display with Coins icon, "Buy More" button (always visible for limited plans), loading spinner, error toast, success toast on Stripe redirect with URL param cleanup.
+- **`src/db/schema.ts`** *(UPDATED)* — Added `swarmCredits` integer column (default 0) to users table.
+- **`scripts/check-env.ts`** *(UPDATED)* — Added `STRIPE_CREDITS_PRICE_ID`.
+- **`src/messages/{en,ro,fr,de}.json`** *(UPDATED)* — Added `credits_extra`, `credits_buy`, `credits_purchase_success` across all 4 locales.
+- **`drizzle/0007_swarm_credits.sql`** *(NEW)* — Migration adding `swarm_credits INTEGER` column.
+
+---
+
+### 📥 Bulk CSV Import — Batch Prospect Upload
+
+- **`src/app/api/prospects/import/route.ts`** *(NEW)* — `POST /api/prospects/import` — auth-gated, receives CSV via FormData, parses with papaparse, validates columns (name/company required, email/goal/tone/url optional), 2MB max / 100 row limit, creates campaigns via `createCampaign()`. PostHog `bulk_import_completed` tracking.
+- **`src/components/dashboard/BulkImportDialog.tsx`** *(NEW)* — Multi-step dialog: drag & drop CSV → preview table → progress bar → success stats + error details. Client-side papaparse preview + sample CSV download. Fully i18n'd with `t()`.
+- **`src/app/[locale]/dashboard/page.tsx`** *(UPDATED)* — Added "Import CSV" button (dashed emerald border) next to "New Campaign", opens BulkImportDialog.
+- **`src/messages/{en,ro,fr,de}.json`** *(UPDATED)* — 30 new `dashboard.bulk_import_*` keys across all 4 locales.
+- **`package.json`** *(UPDATED)* — Added `papaparse` + `@types/papaparse` dependencies.
+
+**TypeScript: 0 errors** ✅ | **i18n: all 4 locales match** ✅
+
+---
+
+### 🔗 LinkedIn Sales Navigator Integration (Proxycurl)
+
+- **`src/lib/proxycurl/client.ts`** *(NEW)* — Proxycurl API client with `fetchLinkedinProfile(url)` and `searchLinkedinProfile(name, company?)`. Graceful env-var-missing handling.
+- **`src/app/api/prospects/linkedin/route.ts`** *(NEW)* — `POST /api/prospects/linkedin` — two modes: enrich by LinkedIn URL or search by name+company. Auth + tiered rate limit via `getUserWithPlan`.
+- **`src/components/dashboard/NewProjectDialog.tsx`** *(UPDATED)* — Added LinkedIn import section: paste URL → fetch profile → auto-fill name/company/goal. Loading spinner, error handling, keyboard support (Enter). PostHog `linkedin_import_success` tracking.
+- **`src/messages/{en,ro,fr,de}.json`** *(UPDATED)* — 19 new `linkedin.*` keys across all 4 locales.
+- **`scripts/check-env.ts`** *(UPDATED)* — Added `PROXYCURL_API_KEY`.
+
+---
+
+### 📊 Email Tracking Dashboard Panel
+
+- **`src/app/actions/email-tracking.ts`** *(NEW)* — `getEmailTrackingStats(campaignId?)` server action. Aggregates sent/opens/clicks/engagement rates + recent events from `emailEvents` table.
+- **`src/components/dashboard/EmailTrackingPanel.tsx`** *(NEW)* — Dashboard panel with 4-metric grid (sent/opens/clicks/engagement), recent events timeline with type-colored dots, loading spinner. Fully i18n'd.
+- **`src/app/[locale]/dashboard/page.tsx`** *(UPDATED)* — EmailTrackingPanel wired below campaign list.
+- **`src/messages/{en,ro,fr,de}.json`** *(UPDATED)* — 6 new `email_tracking.*` keys across all 4 locales.
+
+---
+
+### ⚡ Inngest Queue System — Async Swarm Execution
+
+- **`src/lib/inngest/client.ts`** *(NEW)* — Inngest client with graceful fallback when `INNGEST_EVENT_KEY` is missing.
+- **`src/lib/inngest/functions.ts`** *(NEW)* — `executeSwarm` background function: 3 retries, throttle (3/60s per user), priority per plan (PRO=100, STARTER=50, FREE=10). Executes swarm graph in `step.run`, saves results via Supabase.
+- **`src/app/api/inngest/route.ts`** *(NEW)* — Inngest serve endpoint at `/api/inngest`.
+- **`src/app/api/swarm/launch/route.ts`** *(UPDATED)* — Sends to Inngest queue when `INNGEST_EVENT_KEY` is set, falls back to inline execution otherwise. Fixes Vercel 60s timeout for large swarms.
+- **`scripts/check-env.ts`** *(UPDATED)* — Added `INNGEST_EVENT_KEY` and `CRON_SECRET_KEY`.
+- **`package.json`** *(UPDATED)* — Added `inngest` dependency.
+
+---
+
+### 🔒 SOC 2 / GDPR Trust Page (i18n Refactor)
+
+- **`src/app/[locale]/security/page.tsx`** *(REWRITTEN)* — All strings now use `t()` i18n calls. 7 sections: SOC 2, GDPR, Encryption, Data Processing, Retention, Subprocessors, Contact. Removed dead `Server` import.
+- **`src/messages/{en,ro,fr,de}.json`** *(UPDATED)* — 15 new `security.*` keys across all 4 locales.
+
+---
+
+### 🚀 CI/CD Pipeline — GitHub Actions
+
+- **`.github/workflows/ci.yml`** *(NEW)* — PR workflow: TypeScript check + ESLint. Publish workflow triggered by release. Matrix support for future test sharding.
+
+---
+
+### 📊 Campaign Analytics — Recharts Dashboard
+
+- **`src/app/actions/analytics.ts`** *(NEW)* — Server action `getCampaignAnalytics(campaignId?)` aggregating OCEAN scores, agent performance, reply/open/click rates, confidence over time from Supabase.
+- **`src/components/dashboard/CampaignAnalytics.tsx`** *(NEW)* — Recharts-powered panel: horizontal bar chart (agent performance), radar chart (OCEAN profile), line chart (confidence trend), engagement stat cards. Per-bar coloring via `<Cell fill />`. Fully i18n'd.
+- **`src/app/[locale]/dashboard/page.tsx`** *(UPDATED)* — CampaignAnalytics wired below email tracking panel.
+- **`src/messages/{en,ro,fr,de}.json`** *(UPDATED)* — 8 new `analytics.*` keys.
+
+---
+
+### 🎯 Onboarding Checklist — Gamified Progress
+
+- **`src/components/dashboard/OnboardingChecklist.tsx`** *(NEW)* — Animated checklist with progress bar, 4 milestone tasks (Profile, Swarm, Vault, War Room), unlockable feature badges, motion-powered item transitions. Fetches from `/api/user/progress`.
+- **`src/app/[locale]/dashboard/page.tsx`** *(UPDATED)* — OnboardingChecklist wired at top of dashboard.
+- **`src/messages/{en,ro,fr,de}.json`** *(UPDATED)* — 10 new `checklist.*` keys.
+
+---
+
+### 📝 Blog SEO — B2B Psychology Content
+
+- **`src/app/[locale]/blog/page.tsx`** *(NEW)* — Blog index with 6 B2B psychology articles (OCEAN profiling, reciprocity, calibrated email, AI specialization, SDR burnout, deliverability guide). Hero with badge, article cards with hover lift.
+- **`src/app/[locale]/blog/[slug]/page.tsx`** *(NEW)* — Dynamic blog post page. Renders full article body from i18n keys. "Coming soon" placeholder, back navigation, CTA section.
+- **`src/messages/{en,ro,fr,de}.json`** *(UPDATED)* — 28 new `blog.*` keys including article titles, excerpts, and full body text.
+
+---
+
+### 🆕 Sidebar Changelog Badge
+
+- **`src/components/layout/CommandSurface.tsx`** *(UPDATED)* — Added 'NEW' badge (red pill with pulse animation) to "Changelog" nav item linking to `/changelog`.
+
+---
+
+### 📇 Prospect Database — OCEAN History & Search
+
+- **`src/db/schema.ts`** *(UPDATED)* — Added `prospects` table: name, email, company, title, linkedinUrl, oceanoScores (JSONB), tags, notes, userId FK with cascade delete.
+- **`drizzle/0008_prospects.sql`** *(NEW)* — Migration with indexes on userId + email.
+- **`src/app/actions/prospects.ts`** *(NEW)* — Server actions: `listProspects(userId, search?)` (search by name/email/company), `getProspect(id)`, `upsertProspect(data)`, `deleteProspect(id)`. All auth-gated.
+- **`src/components/dashboard/ProspectsList.tsx`** *(NEW)* — Interactive prospect list: search with 300ms debounce, expandable rows with OCEAN mini-bars (5 personality dimensions color-coded), tags, delete with confirmation, motion-powered expand/collapse. Fully i18n'd.
+- **`src/app/[locale]/dashboard/page.tsx`** *(UPDATED)* — ProspectsList wired below campaign list.
+- **`src/messages/{en,ro,fr,de}.json`** *(UPDATED)* — 12 new `prospects.*` keys.
+
+---
+
+### 🧠 AI Coaching — Aurelius Campaign Insights
+
+- **`src/app/actions/coaching.ts`** *(NEW)* — Server action `getCoachingInsights(userId, campaignId?)`: analyzes email event patterns (open rate, reply rate, click rate) + campaign data, returns 4 insight cards with type, title, body, confidence %, actionable bool.
+- **`src/components/dashboard/CoachingInsights.tsx`** *(NEW)* — Aurelius coaching panel: summary pills (campaigns/opens/replies/top agent), insight cards with type-colored icons (lightbulb/target/trending-up/zap/alert), confidence % bar, CTA link, animated entrance. Fully i18n'd.
+- **`src/lib/aurelius/tools/db-runner.ts`** *(UPDATED)* — Added `get_campaign_insights` tool: queries emailEvents + campaigns from Supabase for pattern analysis. Added `upsert_prospect` for DB-backed prospect persistence from swarm context.
+- **`src/lib/aurelius/tools/definitions.ts`** *(UPDATED)* — Added tool schemas for `get_campaign_insights` and `upsert_prospect`.
+- **`src/lib/aurelius/prompt.ts`** *(UPDATED)* — Coaching capabilities section: Aurelius now proactively analyzes campaign patterns and suggests optimizations.
+- **`src/app/[locale]/dashboard/page.tsx`** *(UPDATED)* — CoachingInsights wired below analytics.
+- **`src/messages/{en,ro,fr,de}.json`** *(UPDATED)* — 11 new `coaching.*` keys.
+
+---
+
+### 🔧 i18n Fixes
+
+- **`src/messages/ro.json`** *(FIXED)* — Renamed `blog.why-personalized-emails-work_excerpt/_body` → `why-personalized-emails_excerpt/_body` to match en.json reference.
+- **`src/messages/fr.json`** *(FIXED)* — Same blog key naming fix.
+- **`src/messages/de.json`** *(FIXED)* — Same blog key naming fix + restored accidentally-removed `dashboard.no_campaigns` and `dashboard.no_campaigns_hint` keys.
+
+---
+
+### 🧪 Trial 14 Zile PROFESSIONAL — Auto-activare la Signup
+
+- **`src/lib/auth/auth.ts`** *(UPDATED)* — La creare cont: `trialEnd = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)`. Coloana `trialEnd` salvată în `users`.
+- **`src/db/schema.ts`** *(UPDATED)* — Coloana `trialEnd: timestamp("trial_end")`.
+- **`drizzle/0003_trial_end.sql`** *(NEW)* — Migrare pentru coloana `trial_end`.
+- **`src/components/dashboard/TrialBanner.tsx`** *(NEW)* — Banner în dashboard: zile rămase din trial, CTA upgrade când expiră. PostHog `trial_started` tracking la signup.
+- **`src/app/[locale]/(auth)/sign-up/page.tsx`** *(UPDATED)* — `posthog.capture('trial_started', { plan: 'PROFESSIONAL' })` la signup email + Google.
+
+---
+
+### 📋 Waitlist — Early Bird Access
+
+- **`src/app/[locale]/waitlist/page.tsx`** *(NEW)* — Pagină de waitlist cu formular email + name + source. Early bird: primii 100 primesc 3 luni STARTER gratuit.
+- **`src/app/api/waitlist/route.ts`** *(NEW)* — `POST /api/waitlist` — rate limit 3/ora per IP, salvare în `waitlist` table.
+- **`src/db/schema.ts`** *(UPDATED)* — Tabel `waitlist` (email, name, source, createdAt).
+- **`src/app/[locale]/waitlist/loading.tsx`** *(NEW)* — Loading state.
+- **`src/app/[locale]/waitlist/error.tsx`** *(NEW)* — Error boundary.
+
+---
+
+### 🚀 Product Hunt Launch Page
+
+- **`src/app/[locale]/launch/page.tsx`** *(NEW)* — Pagină dedicată lansării Product Hunt: hero cu badge "Launching on Product Hunt", 6 key differentiators, 4-step how-it-works, 3 testimoniale beta, CTA early access.
+- **`src/app/[locale]/launch/error.tsx`** *(NEW)* — Error boundary.
+
+---
+
+### 📊 PostHog Funnels — Conversie Tracking
+
+- **`src/lib/analytics/funnels.ts`** *(NEW)* — 4 funnel-uri definite + documentate: Signup→Upgrade, Trial→War Room→Paid, Pricing→Checkout→Paid, Waitlist→Signup→First Swarm. Setup instructions. `TRACKED_EVENTS` reference cu locațiile tuturor evenimentelor.
+
+---
+
+### 💬 In-App Feedback Widget
+
+- **`src/components/ui/feedback-widget.tsx`** *(NEW)* — Buton flotant "Give feedback" cu popover: rating 1-5 stele + text. Trimite la `POST /api/feedback`.
+- **`src/app/api/feedback/route.ts`** *(NEW)* — Salvează feedback în DB cu userId, rating, text.
+
+---
+
+### ⭐ Testimoniale + Case Studies
+
+- **`src/components/ui/testimonials-section.tsx`** *(NEW)* — Secțiune reutilizabilă cu 4 testimoniale animate: quote i18n, metric badge (reply rate / open rate / time saved / meetings booked), hover lift.
+- **`src/app/[locale]/page.tsx`** *(UPDATED)* — TestimonialsSection integrat pe landing page.
+- **`src/messages/{en,ro,fr,de}.json`** *(UPDATED)* — 12 keys `home.testimonials.*`.
+
+---
+
+### ⚖️ Comparison Page — MailMind vs Competitori
+
+- **`src/app/[locale]/compare/page.tsx`** *(NEW)* — Pagină de comparație: MailMind vs Lemlist / Apollo / Clay. Tabel comparativ: AI agents, OCEAN profiling, Digital Twin, War Room, pricing, etc.
+- **`src/app/[locale]/compare/error.tsx`** *(NEW)* — Error boundary.
+
+---
+
+### 💰 Cost Monitoring — OpenAI Token Usage
+
+- **`src/app/api/admin/cost-monitoring/route.ts`** *(NEW)* — `GET /api/admin/cost-monitoring?key=<CRON_SECRET_KEY>` — agregare zilnică token usage + cost per user/tier. Compară cost vs revenue. Cron job-ready.
+- **`scripts/check-env.ts`** *(UPDATED)* — Added `CRON_SECRET_KEY`.
+
+---
+
+**TypeScript: 0 errors** ✅ | **i18n: all 4 locales match** ✅
+
+---
+
 ## [Unreleased] — 2026-05-22
 
 ### 🎨 UI Component Audit — All Remaining Components Uniformized

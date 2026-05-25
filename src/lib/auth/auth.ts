@@ -78,6 +78,16 @@ export const auth = betterAuth({
         type: "boolean",
         defaultValue: false,
       },
+      polarSubscriptionId: {
+        type: "string",
+        defaultValue: null,
+        nullable: true,
+      },
+      trialEnd: {
+        type: "date",
+        defaultValue: null,
+        nullable: true,
+      },
     },
   },
   pages: {
@@ -95,7 +105,27 @@ export const auth = betterAuth({
   trustedOrigins: [
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
     "http://localhost:3000",
+    ...(process.env.ALLOWED_DEV_ORIGINS?.split(',').map(s => s.trim()) ?? []),
   ].filter(Boolean),
+
+  // ─── Trial: 14-day PROFESSIONAL trial on signup ───────────────────────
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          // Set a 14-day trial from now — user starts on PROFESSIONAL plan
+          const trialEnd = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+          return {
+            data: {
+              ...user,
+              plan: "PROFESSIONAL",
+              trialEnd: trialEnd.toISOString(),
+            },
+          };
+        },
+      },
+    },
+  },
 });
 
 export type Session = typeof auth.$Infer.Session;

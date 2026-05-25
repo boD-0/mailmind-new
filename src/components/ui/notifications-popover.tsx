@@ -47,7 +47,7 @@ function NotificationRow({ notif }: { notif: Notification }) {
       transition={{ duration: 0.2 }}
       className={cn(
         'relative flex items-start gap-3 px-3 py-2.5 rounded-lg transition-colors group',
-        notif.unread ? 'bg-[#ff5f5f]/5' : 'hover:bg-gray-50'
+        notif.unread ? 'bg-copper/5' : 'hover:bg-muted'
       )}
       onClick={() => markAsRead(notif.id)}
     >
@@ -61,14 +61,14 @@ function NotificationRow({ notif }: { notif: Notification }) {
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold text-gray-900 truncate">{notif.title}</p>
-        <p className="text-[10px] text-gray-500 leading-relaxed mt-0.5 line-clamp-2">{notif.message}</p>
+        <p className="text-xs font-semibold text-foreground truncate">{notif.title}</p>
+        <p className="text-[10px] text-muted-foreground leading-relaxed mt-0.5 line-clamp-2">{notif.message}</p>
         <div className="flex items-center gap-2 mt-1.5">
-          <span className="text-[9px] text-gray-400 font-medium">{timeAgo}</span>
+          <span className="text-[9px] text-muted-foreground font-medium">{timeAgo}</span>
           {notif.actionLabel && (
             <a
               href={notif.actionHref || '#'}
-              className="text-[9px] font-bold text-[#ff5f5f] hover:underline flex items-center gap-0.5"
+              className="text-[9px] font-bold text-copper hover:underline flex items-center gap-0.5"
             >
               {notif.actionLabel}
               <ExternalLink className="w-2.5 h-2.5" />
@@ -79,13 +79,13 @@ function NotificationRow({ notif }: { notif: Notification }) {
 
       {/* Unread dot */}
       {notif.unread && (
-        <span className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-[#ff5f5f]" />
+        <span className="absolute top-3 right-3 w-1.5 h-1.5 rounded-full bg-copper" />
       )}
 
       {/* Dismiss */}
       <button
         onClick={(e) => { e.stopPropagation(); removeNotification(notif.id) }}
-        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600"
+        className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-gray-200 text-muted-foreground hover:text-muted-foreground"
       >
         <X className="w-3 h-3" />
       </button>
@@ -112,11 +112,11 @@ function getTimeAgo(ts: number): string {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center py-10 px-4 text-center">
-      <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center mb-3">
-        <Bell className="w-5 h-5 text-gray-400" />
+      <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-3">
+        <Bell className="w-5 h-5 text-muted-foreground" />
       </div>
-      <p className="text-sm font-semibold text-gray-700 mb-1">All clear</p>
-      <p className="text-[10px] text-gray-400 max-w-[180px]">
+      <p className="text-sm font-semibold text-foreground/80 mb-1">All clear</p>
+      <p className="text-[10px] text-muted-foreground max-w-[180px]">
         Notifications about swarm completions, deadlines, and tasks will appear here.
       </p>
     </div>
@@ -136,10 +136,10 @@ export function NotificationsPopover() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="relative p-2 text-gray-400 hover:text-gray-700 transition-colors" aria-label="Notifications">
+        <button className="relative p-2 text-muted-foreground hover:text-foreground/80 transition-colors" aria-label="Notifications">
           <Bell size={20} />
           {unreadCount > 0 && (
-            <Badge className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[9px] font-bold bg-[#ff5f5f] text-white border-2 border-white rounded-full shadow-sm">
+            <Badge className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[9px] font-bold bg-copper text-white border-2 border-white rounded-full shadow-sm">
               {unreadCount > 99 ? '99+' : unreadCount}
             </Badge>
           )}
@@ -148,15 +148,15 @@ export function NotificationsPopover() {
       <PopoverContent
         align="end"
         sideOffset={12}
-        className="w-[380px] p-0 bg-white border-gray-200 shadow-xl rounded-2xl overflow-hidden"
+        className="w-[380px] p-0 bg-white border-border shadow-xl rounded-2xl overflow-hidden"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
           <div className="flex items-center gap-2">
-            <Bell className="w-4 h-4 text-[#ff5f5f]" />
-            <span className="text-sm font-bold text-gray-900">Notifications</span>
+            <Bell className="w-4 h-4 text-copper" />
+            <span className="text-sm font-bold text-foreground">Notifications</span>
             {unreadCount > 0 && (
-              <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full">
+              <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
                 {unreadCount}
               </span>
             )}
@@ -165,7 +165,7 @@ export function NotificationsPopover() {
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="text-[10px] font-semibold text-[#ff5f5f] hover:text-red-600 transition-colors px-2 py-1 rounded-lg hover:bg-[#ff5f5f]/5"
+                className="text-[10px] font-semibold text-copper hover:text-copper transition-colors px-2 py-1 rounded-lg hover:bg-copper/5"
               >
                 Mark all read
               </button>
@@ -173,7 +173,7 @@ export function NotificationsPopover() {
             {notifications.length > 0 && (
               <button
                 onClick={clearAll}
-                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-1.5 text-muted-foreground hover:text-muted-foreground hover:bg-muted rounded-lg transition-colors"
                 title="Clear all"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -197,13 +197,13 @@ export function NotificationsPopover() {
 
         {/* Footer */}
         {notifications.length > 0 && (
-          <div className="border-t border-gray-100 px-4 py-2.5 flex items-center justify-between">
-            <span className="text-[9px] text-gray-400 font-medium">
+          <div className="border-t border-border px-4 py-2.5 flex items-center justify-between">
+            <span className="text-[9px] text-muted-foreground font-medium">
               {notifications.length} notification{notifications.length !== 1 ? 's' : ''}
             </span>
             <button
               onClick={clearAll}
-              className="text-[9px] font-bold text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-[9px] font-bold text-muted-foreground hover:text-muted-foreground transition-colors"
             >
               Clear all
             </button>

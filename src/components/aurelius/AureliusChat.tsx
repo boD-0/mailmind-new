@@ -70,11 +70,11 @@ function useAutoResizeTextarea({ minHeight, maxHeight }: { minHeight: number; ma
 function TypingDots() {
   return (
     <div className="flex justify-start">
-      <div className="bg-white p-4 rounded-2xl rounded-tl-none border border-gray-200 shadow-sm">
+      <div className="bg-white p-4 rounded-2xl rounded-tl-none border border-border shadow-sm">
         <div className="flex gap-1.5">
-          <span className="w-2 h-2 bg-[#ff5f5f] rounded-full animate-bounce" />
-          <span className="w-2 h-2 bg-[#ff5f5f] rounded-full animate-bounce [animation-delay:0.15s]" />
-          <span className="w-2 h-2 bg-[#ff5f5f] rounded-full animate-bounce [animation-delay:0.3s]" />
+          <span className="w-2 h-2 bg-copper rounded-full animate-bounce" />
+          <span className="w-2 h-2 bg-copper rounded-full animate-bounce [animation-delay:0.15s]" />
+          <span className="w-2 h-2 bg-copper rounded-full animate-bounce [animation-delay:0.3s]" />
         </div>
       </div>
     </div>
@@ -94,19 +94,19 @@ function EmptyState({ context }: { context: AureliusContext }) {
 
   return (
     <div className="flex flex-col items-center justify-center h-full text-center px-6">
-      <div className="w-14 h-14 rounded-2xl bg-[#ff5f5f]/10 flex items-center justify-center mb-5">
-        <Sparkles className="w-7 h-7 text-[#ff5f5f]" />
+      <div className="w-14 h-14 rounded-2xl bg-copper/10 flex items-center justify-center mb-5">
+        <Sparkles className="w-7 h-7 text-copper" />
       </div>
-      <h3 className="text-gray-900 text-lg font-bold mb-2 tracking-tight">
+      <h3 className="text-foreground text-lg font-bold mb-2 tracking-tight">
         How can I help you today?
       </h3>
-      <p className="text-gray-400 text-sm max-w-xs leading-relaxed">
+      <p className="text-muted-foreground text-sm max-w-xs leading-relaxed">
         {modeMessages[context.mode] || modeMessages.idle}
       </p>
 
       {context.mode !== 'idle' && (
-        <div className="mt-4 px-3 py-1.5 bg-[#ff5f5f]/5 rounded-lg border border-[#ff5f5f]/15">
-          <span className="text-[10px] font-semibold text-[#ff5f5f] uppercase tracking-widest">
+        <div className="mt-4 px-3 py-1.5 bg-copper/5 rounded-lg border border-copper/15">
+          <span className="text-[10px] font-semibold text-copper uppercase tracking-widest">
             ● {context.mode === 'swarm_active' ? 'Swarm Active' :
                context.mode === 'approval_needed' ? 'Approval Needed' :
                context.mode === 'twin_insight' ? 'Digital Twin Insight' :
@@ -123,15 +123,15 @@ function EmptyState({ context }: { context: AureliusContext }) {
 function StreamingMessage({ content }: { content: string }) {
   return (
     <div className="flex justify-start">
-      <div className="max-w-[85%] p-3.5 rounded-2xl bg-white text-gray-700 border border-gray-200 rounded-tl-none shadow-sm">
+      <div className="max-w-[85%] p-3.5 rounded-2xl bg-white text-foreground/80 border border-border rounded-tl-none shadow-sm">
         <div className="flex items-center gap-2 mb-1.5">
-          <Sparkles size={12} className="text-[#ff5f5f]" />
+          <Sparkles size={12} className="text-copper" />
           <span className="text-[9px] font-bold uppercase tracking-widest opacity-40">
             Aurelius
           </span>
         </div>
         <p className="text-sm leading-relaxed whitespace-pre-wrap">{content}</p>
-        <span className="inline-block w-1.5 h-4 bg-[#ff5f5f] ml-0.5 animate-pulse align-text-bottom" />
+        <span className="inline-block w-1.5 h-4 bg-copper ml-0.5 animate-pulse align-text-bottom" />
       </div>
     </div>
   )
@@ -148,7 +148,7 @@ function ErrorBanner({ message, onDismiss }: { message: string; onDismiss: () =>
     >
       <AlertCircle className="w-3.5 h-3.5 shrink-0" />
       <span className="flex-1">{message}</span>
-      <button onClick={onDismiss} className="text-red-400 hover:text-red-600">✕</button>
+      <button onClick={onDismiss} className="text-red-400 hover:text-copper">✕</button>
     </motion.div>
   )
 }
@@ -303,8 +303,8 @@ export function AureliusChat({ context }: AureliusChatProps) {
     <div className="flex flex-col h-[480px]">
       {/* Brand Profile Indicator */}
       {brandProfile && !hasMessages && (
-        <div className="mb-2 px-3 py-1.5 bg-[#ff5f5f]/5 rounded-lg border border-[#ff5f5f]/15 text-center">
-          <span className="text-[10px] font-medium text-[#ff5f5f]">
+        <div className="mb-2 px-3 py-1.5 bg-copper/5 rounded-lg border border-copper/15 text-center">
+          <span className="text-[10px] font-medium text-copper">
             ● {brandProfile.name} · {brandProfile.industry}
           </span>
         </div>
@@ -335,12 +335,12 @@ export function AureliusChat({ context }: AureliusChatProps) {
                   <div className={cn(
                     "max-w-[85%] p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm",
                     msg.role === 'user'
-                      ? 'bg-[#ff5f5f] text-white rounded-tr-none'
-                      : 'bg-white text-gray-700 border border-gray-200 rounded-tl-none'
+                      ? 'bg-copper text-white rounded-tr-none'
+                      : 'bg-white text-foreground/80 border border-border rounded-tl-none'
                   )}>
                     <div className="flex items-center gap-2 mb-1.5">
                       {msg.role === 'assistant' && (
-                        <Sparkles size={12} className="text-[#ff5f5f]" />
+                        <Sparkles size={12} className="text-copper" />
                       )}
                       <span className="text-[9px] font-bold uppercase tracking-widest opacity-40">
                         {msg.role === 'user' ? 'You' : 'Aurelius'}
@@ -371,7 +371,7 @@ export function AureliusChat({ context }: AureliusChatProps) {
       </div>
 
       {/* Input Area */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+      <div className="bg-white rounded-xl border border-border shadow-sm">
         <div className="overflow-y-auto">
           <Textarea
             ref={textareaRef}
@@ -387,10 +387,10 @@ export function AureliusChat({ context }: AureliusChatProps) {
               "resize-none",
               "bg-transparent",
               "border-none",
-              "text-gray-800 text-sm",
+              "text-foreground text-sm",
               "focus:outline-none",
               "focus-visible:ring-0 focus-visible:ring-offset-0",
-              "placeholder:text-gray-400",
+              "placeholder:text-muted-foreground",
               "min-h-[44px]"
             )}
             style={{ overflow: 'hidden' }}
@@ -398,18 +398,18 @@ export function AureliusChat({ context }: AureliusChatProps) {
           />
         </div>
 
-        <div className="flex items-center justify-between p-2 border-t border-gray-100">
+        <div className="flex items-center justify-between p-2 border-t border-border">
           <div className="flex items-center gap-1">
             <button
               type="button"
-              className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-muted rounded-lg transition-colors"
               title="Attach file"
             >
-              <Paperclip className="w-3.5 h-3.5 text-gray-400" />
+              <Paperclip className="w-3.5 h-3.5 text-muted-foreground" />
             </button>
             <button
               type="button"
-              className="px-2 py-1 rounded-lg text-[10px] text-gray-400 transition-colors border border-dashed border-gray-300 hover:border-gray-400 hover:bg-gray-50 flex items-center gap-1"
+              className="px-2 py-1 rounded-lg text-[10px] text-muted-foreground transition-colors border border-dashed border-gray-300 hover:border-gray-400 hover:bg-muted flex items-center gap-1"
             >
               <PlusIcon className="w-3 h-3" />
               Context
@@ -436,8 +436,8 @@ export function AureliusChat({ context }: AureliusChatProps) {
               className={cn(
                 "p-2 rounded-lg transition-all flex items-center justify-center",
                 input.trim() && !isStreaming
-                  ? "bg-[#ff5f5f] text-white hover:bg-red-500 shadow-sm"
-                  : "text-gray-400"
+                  ? "bg-copper text-white hover:bg-copper/80 shadow-sm"
+                  : "text-muted-foreground"
               )}
             >
               <ArrowUpIcon className="w-4 h-4" />

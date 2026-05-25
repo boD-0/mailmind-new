@@ -1,6 +1,6 @@
 import { SwarmState } from "../graph";
 import { broadcastAgentUpdate } from "@/lib/supabase/realtime";
-import { getAgentModel } from "./llm";
+import { getFullModel } from "./llm";
 import { safeJsonParse } from "@/lib/utils";
 
 export async function strategistAgent(state: SwarmState) {
@@ -24,7 +24,7 @@ const { research_data, twin_profile, campaign_id, brand_context } = state;
   };
 
   try {
-    const model = getAgentModel();
+    const model = getFullModel();
 
     const strategistPrompt = `
       Ești un Strategist de Growth Marketing.

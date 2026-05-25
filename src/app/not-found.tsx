@@ -20,7 +20,7 @@ export default async function NotFound() {
 
   return (
     <html lang={preferredLocale} className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-      <body className="bg-[#fdfbf7] text-[#1a1a1a] font-sans min-h-screen flex flex-col items-center justify-center p-4">
+      <body className="bg-background text-foreground font-sans min-h-screen flex flex-col items-center justify-center p-4">
         <div className="text-center max-w-md">
           {/* 4 4 */}
           <div className="flex items-center justify-center gap-4 mb-8">
@@ -53,7 +53,7 @@ export default async function NotFound() {
             Boo! Page missing!
           </h1>
 
-          <p className="text-lg text-gray-500 mb-8 max-w-sm mx-auto">
+          <p className="text-lg text-muted-foreground mb-8 max-w-sm mx-auto">
             Whoops! This page must be a ghost — it&apos;s not here!
           </p>
 
@@ -64,7 +64,7 @@ export default async function NotFound() {
             Find shelter
           </Link>
 
-          <p className="mt-12 text-sm text-gray-400">
+          <p className="mt-12 text-sm text-muted-foreground">
             What means 404?
           </p>
         </div>

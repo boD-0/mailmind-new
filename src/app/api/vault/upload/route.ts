@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { randomUUID } from "crypto";
 import { r2Client, R2_BUCKET } from "@/lib/r2";
-import { requireOnboarding, checkFeatureAccess } from "@/lib/auth/gatekeeper";
 import { db } from "@/db/drizzle";
 import { vaultDocuments } from "@/db/schema";
-import { randomUUID } from "crypto";
 import { safeJsonParse } from "@/lib/utils";
-import { uploadRateLimit } from "@/lib/rate-limit";
+import { requireOnboarding, checkFeatureAccess } from "@/lib/auth/gatekeeper";
+import { tieredUploadRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const user = await requireOnboarding(req);
 
-  // Rate limit uploads: 5 requests/min per user
-  const rateLimitResult = await uploadRateLimit(user.id);
+  // Tiered rate limit: FREE=2/min, STARTER=5/min, PROFESSIONAL=10/min
+  const rateLimitResult = await tieredUploadRateLimit(user.plan, user.id);
   if (!rateLimitResult.success) {
     return NextResponse.json(
       { error: "Upload limit reached. Please try again later." },
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
   if (!checkFeatureAccess(user.plan, "hasVault")) {
     return NextResponse.json(
-      { error: "Email Vault este disponibil doar pentru planurile STARTER și PROFESSIONAL." },
+      { error: "Vault access requires at least the STARTER plan." },
       { status: 403 }
     );
   }

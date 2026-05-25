@@ -399,7 +399,7 @@ function MailMindBrandPanel() {
     <div className="absolute inset-0 flex flex-col items-center justify-center p-12">
       {/* Animated orbs */}
       <motion.div
-        className="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-gradient-to-br from-[#ff5f5f]/10 to-purple-500/10 blur-3xl"
+        className="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-gradient-to-br from-copper/10 to-purple-500/10 blur-3xl"
         animate={{
           x: [0, 30, -20, 10, 0],
           y: [0, -20, 15, -10, 0],
@@ -408,7 +408,7 @@ function MailMindBrandPanel() {
         transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
-        className="absolute -bottom-20 -right-20 w-80 h-80 rounded-full bg-gradient-to-br from-amber-200/10 to-[#ff5f5f]/10 blur-3xl"
+        className="absolute -bottom-20 -right-20 w-80 h-80 rounded-full bg-gradient-to-br from-amber-200/10 to-copper/10 blur-3xl"
         animate={{
           x: [0, -20, 30, -10, 0],
           y: [0, 15, -20, 10, 0],
@@ -425,7 +425,7 @@ function MailMindBrandPanel() {
         transition={{ duration: 0.6 }}
       >
         <motion.div
-          className="w-12 h-12 bg-[#ff5f5f] rounded-xl flex items-center justify-center shadow-lg shadow-red-200/30"
+          className="w-12 h-12 bg-copper rounded-xl flex items-center justify-center shadow-lg shadow-red-200/30"
           whileHover={{ rotate: -10, scale: 1.05 }}
           transition={{ type: 'spring', stiffness: 400, damping: 10 }}
         >
@@ -491,7 +491,7 @@ function MailMindBrandPanel() {
         transition={{ duration: 0.6, delay: 0.6 }}
       >
         <motion.div
-          className="w-1.5 h-1.5 rounded-full bg-[#ff5f5f]/60"
+          className="w-1.5 h-1.5 rounded-full bg-copper/60"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 2, repeat: Infinity }}
         />
@@ -517,7 +517,7 @@ function MailMindBrandPanel() {
           transition={{ duration: 2, repeat: Infinity, delay: 1.2 }}
         />
         <motion.div
-          className="w-1.5 h-1.5 rounded-full bg-[#ff5f5f]/60"
+          className="w-1.5 h-1.5 rounded-full bg-copper/60"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
         />

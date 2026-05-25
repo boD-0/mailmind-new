@@ -5,12 +5,14 @@ import { motion } from "framer-motion"
 import { ArrowRight, Sparkles, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useTranslation } from "@/components/I18nProvider"
 
 interface HeroProps {
   locale?: string
 }
 
 function Hero({ locale = "" }: HeroProps) {
+  const { t } = useTranslation()
   const [titleNumber, setTitleNumber] = useState(0)
   const titles = useMemo(
     () => ["personalized", "researched", "calibrated", "converting", "team-written"],
@@ -38,14 +40,13 @@ function Hero({ locale = "" }: HeroProps) {
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             <motion.div
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              whileHover={{ y: -1 }}
+              transition={{ duration: 0.2 }}
             >
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2 text-sm font-semibold rounded-full border-2 border-purple-300/60 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-600 hover:from-purple-100 hover:to-pink-100 hover:border-purple-400/80 transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-purple-200/50"
+                className="gap-2 text-sm font-semibold rounded-full border-copper/20 bg-copper-muted text-copper hover:bg-copper-muted/60 hover:border-copper/30 transition-all duration-300"
               >
                 <motion.span
                   animate={{ rotate: [0, 15, -15, 0] }}
@@ -53,7 +54,7 @@ function Hero({ locale = "" }: HeroProps) {
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                 </motion.span>
-                AI-powered email campaigns
+                {t('home.hero.badge')}
               </Button>
             </motion.div>
           </motion.div>
@@ -63,15 +64,15 @@ function Hero({ locale = "" }: HeroProps) {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="text-5xl md:text-7xl max-w-3xl tracking-tighter text-center font-bold text-[#1a1a1a] leading-[1.15]"
+              className="text-5xl md:text-7xl max-w-3xl tracking-tighter text-center font-bold text-foreground leading-[1.15]"
             >
-              <span>Emails that feel</span>
+              <span>{t('home.hero.headline_1')}</span>
               <span className="relative flex w-full justify-center overflow-hidden text-center md:pb-4 md:pt-1">
                 &nbsp;
                 {titles.map((title, index) => (
                   <motion.span
                     key={index}
-                    className="absolute font-bold bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent"
+                    className="absolute font-bold text-copper"
                     initial={{ opacity: 0, y: -100 }}
                     transition={{ type: "spring", stiffness: 50 }}
                     animate={
@@ -90,11 +91,9 @@ function Hero({ locale = "" }: HeroProps) {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-lg md:text-xl leading-relaxed tracking-tight text-gray-500 max-w-2xl text-center"
+              className="text-lg md:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-2xl text-center"
             >
-              Four specialized AI agents — Researcher, Psychologist, Strategist and Copywriter —
-              work as your virtual team to research prospects, craft emails, and continuously
-              improve every campaign. Not templates. Not AI slop. Real emails that get replies.
+              {t('home.hero.subheadline')}
             </motion.p>
           </div>
 
@@ -105,35 +104,22 @@ function Hero({ locale = "" }: HeroProps) {
             className="flex flex-row gap-3"
           >
             <Link href={`/${locale}/demo`}>
-              <motion.div
-                whileHover={{ scale: 1.08, y: -3 }}
-                whileTap={{ scale: 0.93 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                <Button size="lg" variant="outline" className="gap-3 rounded-full text-base font-semibold px-7 py-6 h-auto border-2 border-violet-300/70 bg-gradient-to-r from-violet-50 to-blue-50 text-violet-700 hover:from-violet-100 hover:to-blue-100 hover:border-violet-400 hover:shadow-lg hover:shadow-violet-200/50 transition-all duration-300 group">
-                  <motion.span
-                    animate={{ y: [0, -3, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <Users className="w-4 h-4" />
-                  </motion.span>
-                  Watch Demo
-                  <motion.span
-                    className="inline-block ml-1 text-[10px] bg-violet-200 text-violet-700 px-2 py-0.5 rounded-full font-bold"
-                    animate={{ scale: [1, 1.15, 1] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  >
+
+                <Button size="lg" variant="outline"                className="gap-3 rounded-full text-base font-semibold px-7 py-6 h-auto border border-border bg-card text-foreground hover:border-copper/30 hover:bg-copper/10 transition-all duration-300 group">
+                  <Users className="w-4 h-4" />
+                  {t('home.hero.cta_live_demo')}
+                  <span className="inline-block ml-1 text-[10px] bg-copper-muted text-copper px-2 py-0.5 rounded-full font-bold">
                     FREE
-                  </motion.span>
+                  </span>
                 </Button>
-              </motion.div>
+
             </Link>
             <Link href={`/${locale}/sign-up`}>
               <Button
                 size="lg"
-                className="gap-3 rounded-full text-base font-semibold px-7 py-6 h-auto bg-[#ff5f5f] text-white hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-200/50 group"
+                className="gap-3 rounded-full text-base font-semibold px-7 py-6 h-auto bg-copper text-white hover:bg-copper-light transition-all duration-300 group"
               >
-                Start Writing Free
+                {t('home.hero.cta_get_started')}
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
@@ -143,9 +129,9 @@ function Hero({ locale = "" }: HeroProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.7 }}
-            className="text-xs text-gray-400 mt-2"
+            className="text-xs text-muted-foreground mt-2"
           >
-            No credit card required · Free plan available
+            {t('home.cta.trust_nocc')} · {t('home.cta.trust_uptime')}
           </motion.p>
         </div>
       </div>

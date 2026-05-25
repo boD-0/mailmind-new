@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
-    if (typeof window !== 'undefined' && token && !posthog.persistence?.get_property('$distinct_id')) {
+    if (typeof window !== 'undefined' && token) {
       posthog.init(token, {
         api_host: "/ingest",
         ui_host: 'https://app.posthog.com',

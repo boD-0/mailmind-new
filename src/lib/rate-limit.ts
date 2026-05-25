@@ -143,21 +143,54 @@ export async function apiRateLimit(userId: string): Promise<RateLimitResult> {
   });
 }
 
-/** Rate limit for AI generation endpoints: 10 per minute per user */
-export async function aiGenerationRateLimit(userId: string): Promise<RateLimitResult> {
+/**
+ * Tiered rate limit for AI generation endpoints.
+ * Limits scale with the user's subscription plan.
+ *
+ *   FREE:        3 / minute
+ *   STARTER:    10 / minute
+ *   PROFESSIONAL: 30 / minute
+ */
+export async function tieredAiRateLimit(
+  plan: string,
+  userId: string,
+): Promise<RateLimitResult> {
+  const limits: Record<string, number> = {
+    FREE: 3,
+    STARTER: 10,
+    PROFESSIONAL: 30,
+  };
+  const maxRequests = limits[plan] ?? 3;
+
   return rateLimit({
     keyPrefix: "api:ai",
-    maxRequests: 10,
+    maxRequests,
     windowSeconds: 60,
     identifier: userId,
   });
 }
 
-/** Rate limit for file uploads: 5 per minute per user */
-export async function uploadRateLimit(userId: string): Promise<RateLimitResult> {
+/**
+ * Tiered rate limit for file uploads / RAG ingestion.
+ *
+ *   FREE:        2 / minute
+ *   STARTER:     5 / minute
+ *   PROFESSIONAL: 10 / minute
+ */
+export async function tieredUploadRateLimit(
+  plan: string,
+  userId: string,
+): Promise<RateLimitResult> {
+  const limits: Record<string, number> = {
+    FREE: 2,
+    STARTER: 5,
+    PROFESSIONAL: 10,
+  };
+  const maxRequests = limits[plan] ?? 2;
+
   return rateLimit({
     keyPrefix: "api:upload",
-    maxRequests: 5,
+    maxRequests,
     windowSeconds: 60,
     identifier: userId,
   });

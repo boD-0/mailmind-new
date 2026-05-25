@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { apiRequireAuth } from "@/lib/auth/gatekeeper";
-import { aiGenerationRateLimit } from '@/lib/rate-limit';
+import { tieredAiRateLimit } from '@/lib/rate-limit';
 
 export const maxDuration = 30
 
@@ -32,8 +32,8 @@ export async function POST(request: Request) {
   const user = await apiRequireAuth(request);
   if (user instanceof NextResponse) return user;
 
-  // Rate limit AI generation: 10 requests/min per user
-  const rateLimitResult = await aiGenerationRateLimit(user.id);
+  // Tiered rate limit: FREE=3/min, STARTER=10/min, PROFESSIONAL=30/min
+  const rateLimitResult = await tieredAiRateLimit(user.plan, user.id);
   if (!rateLimitResult.success) {
     return NextResponse.json(
       { error: 'AI generation limit reached. Please try again later.' },

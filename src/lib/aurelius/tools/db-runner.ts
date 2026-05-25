@@ -5,8 +5,8 @@
  */
 
 import { db } from '@/db/drizzle'
-import { projects, swarmExecutions, vaultDocuments } from '@/db/schema'
-import { eq, desc, like, and, or } from 'drizzle-orm'
+import { projects, swarmExecutions, vaultDocuments, emailEvents, prospects } from '@/db/schema'
+import { eq, desc, like, and, or, count, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
 /* ── Types ── */
@@ -225,6 +225,135 @@ async function getVaultDocuments(userId: string, args: GetVaultDocumentsArgs): P
   return lines.join('\n')
 }
 
+/**
+ * get_campaign_insights — Analyze email events and swarm executions to surface
+ * personalized coaching insights (open rate, reply rate, top agent, etc.).
+ */
+async function getCampaignInsights(userId: string): Promise<string> {
+  // Aggregate email events
+  const eventRows = await db
+    .select({ eventType: emailEvents.eventType, cnt: count() })
+    .from(emailEvents)
+    .where(eq(emailEvents.userId, userId))
+    .groupBy(emailEvents.eventType)
+
+  const eventCounts: Record<string, number> = {}
+  for (const r of eventRows) {
+    if (r.eventType) eventCounts[r.eventType] = r.cnt
+  }
+
+  const totalSent = Object.values(eventCounts).reduce((a, b) => a + b, 0) || 0
+  const opens = eventCounts['open'] || 0
+  const replies = eventCounts['reply'] || 0
+  const clicks = eventCounts['click'] || 0
+  const avgOpenRate = totalSent > 0 ? Math.round((opens / totalSent) * 100) : 0
+  const avgReplyRate = totalSent > 0 ? Math.round((replies / totalSent) * 100) : 0
+
+  // Agent performance
+  const swarmRows = await db
+    .select({ agentsUsed: swarmExecutions.agentsUsed, status: swarmExecutions.status })
+    .from(swarmExecutions)
+    .where(eq(swarmExecutions.userId, userId))
+    .orderBy(desc(swarmExecutions.createdAt))
+    .limit(30)
+
+  const successfulSwarms = swarmRows.filter((r) => r.status === 'success')
+  const agentCounts: Record<string, number> = {}
+  for (const s of successfulSwarms) {
+    for (const agent of s.agentsUsed || []) {
+      agentCounts[agent] = (agentCounts[agent] || 0) + 1
+    }
+  }
+
+  let topAgent = 'N/A'
+  let topAgentCount = 0
+  for (const [agent, cnt] of Object.entries(agentCounts)) {
+    if (cnt > topAgentCount) { topAgentCount = cnt; topAgent = agent }
+  }
+
+  // Prospect count
+  const prospectRows = await db
+    .select({ cnt: count() })
+    .from(prospects)
+    .where(eq(prospects.userId, userId))
+  const prospectCount = prospectRows[0]?.cnt ?? 0
+
+  const lines: string[] = ['## Campaign Insights\n']
+  lines.push(`📊 **Total Emails Sent:** ${totalSent}`)
+  lines.push(`📬 **Open Rate:** ${avgOpenRate}% (${opens} opens)`)
+  lines.push(`💬 **Reply Rate:** ${avgReplyRate}% (${replies} replies)`)
+  lines.push(`🖱️ **Clicks:** ${clicks}`)
+  lines.push(`🤖 **Total Swarms:** ${swarmRows.length} (${successfulSwarms.length} successful)`)
+  if (topAgent !== 'N/A') lines.push(`⭐ **Top Agent:** ${topAgent} (${topAgentCount}x in successful swarms)`)
+  lines.push(`👤 **Prospects Saved:** ${prospectCount}`)
+
+  // Coaching recommendations
+  if (totalSent >= 3) {
+    lines.push('\n### 💡 Coaching Suggestions\n')
+
+    if (avgOpenRate < 20 && avgOpenRate > 0) {
+      lines.push('- Your open rate is below 20%. Try shorter subject lines (under 7 words) and include the prospect name.')
+    } else if (avgOpenRate >= 40) {
+      lines.push('- Excellent open rates! Your subject lines are working well.')
+    }
+
+    if (avgReplyRate < 5 && avgReplyRate > 0) {
+      lines.push('- Reply rate is low. Consider using deeper OCEAN profiling (enable Psychologist agent) for stronger personalization.')
+    } else if (avgReplyRate >= 15) {
+      lines.push('- Strong reply rates — your personalization strategy is clearly effective.')
+    }
+
+    if (clicks > 0 && opens > 0 && (clicks / opens) < 0.1) {
+      lines.push('- People open but rarely click. Strengthen your CTA and value proposition in the first two sentences.')
+    }
+
+    if (topAgent !== 'N/A' && topAgentCount >= 2) {
+      lines.push(`- ${topAgent} is your MVP agent (${topAgentCount} successful campaigns). Consider giving it more influence in Swarm params.`)
+    }
+  } else {
+    lines.push('\n*Not enough data for coaching insights yet. Launch 2-3 more Swarm campaigns to unlock personalized recommendations.*')
+  }
+
+  return lines.join('\n')
+}
+
+/**
+ * search_prospects — Search the user's prospect database.
+ */
+export interface SearchProspectsArgs {
+  query: string
+}
+
+async function searchProspects(userId: string, args: SearchProspectsArgs): Promise<string> {
+  const q = args.query.trim()
+  if (!q || q.length < 2) return 'Please provide at least 2 characters to search.'
+
+  const rows = await db
+    .select({ name: prospects.name, email: prospects.email, company: prospects.company, lastContactedAt: prospects.lastContactedAt })
+    .from(prospects)
+    .where(
+      and(
+        eq(prospects.userId, userId),
+        or(
+          like(prospects.name, `%${q}%`),
+          like(prospects.email ?? '', `%${q}%`),
+          like(prospects.company ?? '', `%${q}%`),
+        ),
+      ),
+    )
+    .orderBy(desc(prospects.updatedAt))
+    .limit(10)
+
+  if (rows.length === 0) return `No prospects found matching "${q}".`
+
+  const lines: string[] = [`Found ${rows.length} prospect(s) matching "${q}":\n`]
+  for (const p of rows) {
+    const lastContact = p.lastContactedAt ? ` (last contacted ${p.lastContactedAt.toISOString().slice(0, 10)})` : ''
+    lines.push(`- **${p.name}**${p.company ? ` — ${p.company}` : ''}${p.email ? ` · ${p.email}` : ''}${lastContact}`)
+  }
+  return lines.join('\n')
+}
+
 /* ── Main Executor ── */
 
 export async function executeDbTool(
@@ -248,6 +377,12 @@ export async function executeDbTool(
 
       case 'get_vault_documents':
         return getVaultDocuments(ctx.userId, args as unknown as GetVaultDocumentsArgs)
+
+      case 'get_campaign_insights':
+        return getCampaignInsights(ctx.userId)
+
+      case 'search_prospects':
+        return searchProspects(ctx.userId, args as unknown as SearchProspectsArgs)
 
       default:
         return `[Error: Unknown DB tool "${toolName}".]`

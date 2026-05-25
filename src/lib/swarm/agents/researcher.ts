@@ -1,7 +1,7 @@
 import { SwarmState } from "../graph";
 import { tavily } from "@tavily/core";
 import { broadcastAgentUpdate } from "@/lib/supabase/realtime";
-import { ChatOpenAI } from "@langchain/openai";
+import { getMiniModel } from "./llm";
 import { redis, CACHE_TTL } from "@/lib/redis";
 import { safeJsonParse } from "@/lib/utils";
 
@@ -47,13 +47,7 @@ const doneUpdate = {
       maxResults: 5
     });
 
-    const model = new ChatOpenAI({
-      apiKey: process.env.TOGETHER_AI_API_KEY,
-      configuration: {
-        baseURL: "https://api.together.xyz/v1",
-      },
-      modelName: "meta-llama/Llama-3-70b-chat-hf",
-    });
+    const model = getMiniModel();
 
     const summaryPrompt = `
       Ești un Researcher de elită. Analizează rezultatele căutării pentru prospectul ${prospect_name} (${prospect_url}).

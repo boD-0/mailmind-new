@@ -11,7 +11,6 @@
     <a href="#-architecture"><img src="https://img.shields.io/badge/Architecture-🏗️-ff5f5f?style=flat-square&labelColor=fdfbf7" alt="Architecture"></a>
     <a href="#-features"><img src="https://img.shields.io/badge/Features-✨-ff5f5f?style=flat-square&labelColor=fdfbf7" alt="Features"></a>
     <a href="#-tech-stack"><img src="https://img.shields.io/badge/Tech_Stack-🚀-ff5f5f?style=flat-square&labelColor=fdfbf7" alt="Tech Stack"></a>
-    <a href="#-getting-started"><img src="https://img.shields.io/badge/Getting_Started-🚦-ff5f5f?style=flat-square&labelColor=fdfbf7" alt="Getting Started"></a>
   </p>
 
   <br>
@@ -253,85 +252,6 @@ src/
 
 ---
 
-## 🚦 Getting Started
-
-### Prerequisites
-
-- **Node.js** 20+
-- **PostgreSQL** (Neon recommended) or Supabase project
-- **OpenAI API Key**
-- **Cloudflare R2** bucket (or S3-compatible storage)
-- **Upstash Redis** instance (for caching & rate limiting)
-
-### Environment Variables
-
-Create a `.env.local` file:
-
-```env
-# Database
-DATABASE_URL=postgresql://...
-
-# Auth
-BETTER_AUTH_SECRET=...
-BETTER_AUTH_URL=http://localhost:3000
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-
-# OpenAI
-OPENAI_API_KEY=sk-...
-
-# Supabase (realtime & vector storage)
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
-SUPABASE_SERVICE_ROLE_KEY=...
-
-# Cloudflare R2 (or S3-compatible)
-R2_ACCESS_KEY_ID=...
-R2_SECRET_ACCESS_KEY=...
-R2_BUCKET=...
-R2_ENDPOINT=...
-R2_PUBLIC_URL=...
-
-# Upstash Redis
-UPSTASH_REDIS_URL=...
-UPSTASH_REDIS_TOKEN=...
-
-# Polar.sh (subscriptions)
-POLAR_WEBHOOK_SECRET=...
-NEXT_PUBLIC_PRO_TIER=...
-NEXT_PUBLIC_STARTER_TIER=...
-
-# Stripe (alternative payments)
-STRIPE_SECRET_KEY=...
-STRIPE_WEBHOOK_SECRET=...
-NEXT_PUBLIC_STRIPE_PRICE_ID=...
-
-# Tavily (web search for Researcher agent)
-TAVILY_API_KEY=...
-
-# PostHog (analytics)
-NEXT_PUBLIC_POSTHOG_KEY=...
-NEXT_PUBLIC_POSTHOG_HOST=...
-```
-
-### Installation
-
-```bash
-# Install dependencies
-npm install
-
-# Run database migrations
-npm run db:generate
-npm run db:migrate
-
-# Start development server
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
----
-
 ## 📊 Database Schema
 
 ```
@@ -357,8 +277,10 @@ users ──── projects ──── vault_documents
 | `npm run build` | Production build |
 | `npm run start` | Start production server |
 | `npm run lint` | ESLint check |
-
-DB migrations run via Drizzle Kit (`npx drizzle-kit push`).
+| `npm run db:push` | Push schema to database |
+| `npm run db:generate` | Generate SQL migration files |
+| `npm run db:migrate` | Apply pending migrations |
+| `npm run db:studio` | Open Drizzle Studio (GUI database viewer) |
 
 ---
 
@@ -379,9 +301,9 @@ DB migrations run via Drizzle Kit (`npx drizzle-kit push`).
 
 ---
 
-## 🌐 Live Demo
+## 🌐 Demo
 
-See MailMind in action at [`/[locale]/demo`](https://mailmind.app/demo) — pick a sample prospect and watch 4 AI agents collaborate in real time.
+Run the project locally and visit `/demo` to see MailMind in action — pick a sample prospect and watch 4 AI agents collaborate in real time.
 
 ---
 

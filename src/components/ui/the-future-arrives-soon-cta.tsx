@@ -43,13 +43,13 @@ function AnimatedDigit({ value }: { value: number }) {
 function TimeUnit({ value, label }: { value: number; label: string }) {
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className="relative flex items-center justify-center bg-white border-2 border-gray-200 rounded-2xl px-6 py-5 md:px-8 md:py-7 min-w-[90px] md:min-w-[110px] shadow-[4px_4px_0px_#1a1a1a] overflow-hidden group hover:shadow-[6px_6px_0px_#1a1a1a] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all duration-200">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#ff5f5f]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        <span className="font-mono text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[#1a1a1a]">
+      <div className="relative flex items-center justify-center bg-card border-2 border-border rounded-2xl px-6 py-5 md:px-8 md:py-7 min-w-[90px] md:min-w-[110px] shadow-[4px_4px_0px_var(--foreground)] overflow-hidden group hover:shadow-[6px_6px_0px_var(--foreground)] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all duration-200">
+        <div className="absolute inset-0 bg-gradient-to-b from-copper/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <span className="font-mono text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
           <AnimatedDigit value={value} />
         </span>
       </div>
-      <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
+      <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
         {label}
       </span>
     </div>
@@ -70,19 +70,19 @@ export function CountdownBanner() {
   if (!mounted) return null
 
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center bg-[#fdfbf7] overflow-hidden">
+    <section className="relative w-full min-h-screen flex items-center justify-center bg-background overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="absolute w-[800px] h-[600px] bg-[#ff5f5f]/8 rounded-full blur-3xl -top-1/2 -left-1/4" />
+        <div className="absolute w-[800px] h-[600px] bg-copper/8 rounded-full blur-3xl -top-1/2 -left-1/4" />
         <div className="absolute w-[600px] h-[600px] bg-amber-100/40 rounded-full blur-3xl bottom-0 right-0" />
-        <div className="absolute w-[400px] h-[400px] bg-[#ff5f5f]/10 rounded-full blur-3xl top-1/3 right-1/4" />
+        <div className="absolute w-[400px] h-[400px] bg-copper/10 rounded-full blur-3xl top-1/3 right-1/4" />
       </div>
 
       {/* Subtle dot pattern */}
       <div
         className="absolute inset-0 opacity-[0.04]"
         style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, #1a1a1a 1px, transparent 0)`,
+          backgroundImage: `radial-gradient(circle at 1px 1px, var(--foreground) 1px, transparent 0)`,
           backgroundSize: '40px 40px',
         }}
       />
@@ -92,29 +92,29 @@ export function CountdownBanner() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="relative rounded-3xl border-2 border-gray-200 bg-white p-8 md:p-16 flex flex-col items-center gap-8 md:gap-12 text-center shadow-[8px_8px_0px_#1a1a1a] overflow-hidden"
+          className="relative rounded-2xl border border-border bg-card p-8 md:p-16 flex flex-col items-center gap-8 md:gap-12 text-center shadow-xl overflow-hidden"
         >
           {/* Subtle inner glow */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#ff5f5f]/3 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-copper/3 to-transparent pointer-events-none" />
 
           <div className="flex flex-col items-center gap-4 relative z-10">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#ff5f5f]/10 border border-[#ff5f5f]/20 text-sm font-semibold text-[#ff5f5f]"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-copper/10 border border-copper/20 text-sm font-semibold text-copper"
             >
-              <Sparkles className="w-4 h-4 animate-sparkle" />
+              <Sparkles className="w-4 h-4" />
               <span>Under Maintenance</span>
             </motion.div>
 
-            <h2 className="text-3xl md:text-4xl lg:text-6xl font-extrabold tracking-tighter text-[#1a1a1a]">
+            <h2 className="text-3xl md:text-4xl lg:text-6xl font-extrabold tracking-tighter text-foreground">
               We&apos;ll be back
               <br />
-              <span className="text-[#ff5f5f]">very soon</span>
+              <span className="text-copper">very soon</span>
             </h2>
 
-            <p className="text-gray-500 text-base md:text-lg max-w-xl leading-relaxed">
+            <p className="text-muted-foreground text-base md:text-lg max-w-xl leading-relaxed">
               We&apos;re performing scheduled upgrades to bring you an even better experience.
               Thanks for your patience!
             </p>
@@ -123,11 +123,11 @@ export function CountdownBanner() {
           <div className="flex items-center gap-2 md:gap-4 relative z-10">
             <TimeUnit value={time?.hours ?? 0} label="Hours" />
             <div className="flex flex-col items-center justify-center pb-6">
-              <span className="text-2xl md:text-4xl font-light text-gray-300 animate-pulse">:</span>
+              <span className="text-2xl md:text-4xl font-light text-muted-foreground/50 animate-pulse">:</span>
             </div>
             <TimeUnit value={time?.minutes ?? 0} label="Minutes" />
             <div className="flex flex-col items-center justify-center pb-6">
-              <span className="text-2xl md:text-4xl font-light text-gray-300 animate-pulse">:</span>
+              <span className="text-2xl md:text-4xl font-light text-muted-foreground/50 animate-pulse">:</span>
             </div>
             <TimeUnit value={time?.seconds ?? 0} label="Seconds" />
           </div>
@@ -138,12 +138,12 @@ export function CountdownBanner() {
             transition={{ delay: 0.4, duration: 0.5 }}
             className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto relative z-10"
           >
-            <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#ff5f5f] text-white font-semibold hover:bg-red-500 transition-colors shadow-lg shadow-red-500/20 squishy">
+            <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-copper text-white font-semibold hover:bg-copper/80 transition-all duration-200 shadow-lg shadow-copper/20 active:scale-[0.98]">
               <span>Notify Me When Ready</span>
               <ArrowRight className="w-4 h-4" />
             </button>
-            <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white text-gray-600 font-medium hover:bg-gray-50 hover:text-gray-900 transition-colors border-2 border-gray-200 hover:border-gray-300 squishy">
-              <Clock className="w-4 h-4 text-gray-400" />
+            <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-card text-muted-foreground font-medium hover:bg-muted hover:text-foreground transition-all duration-200 border border-border hover:border-copper/30 active:scale-[0.98]">
+              <Clock className="w-4 h-4 text-muted-foreground" />
               <span>Add to Calendar</span>
             </button>
           </motion.div>
@@ -154,7 +154,7 @@ export function CountdownBanner() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.5 }}
-          className="text-center mt-8 text-xs text-gray-300 tracking-wider"
+          className="text-center mt-8 text-xs text-muted-foreground/50 tracking-wider"
         >
           MailMind <span className="mx-2">·</span> Swarm Intelligence Email
         </motion.p>

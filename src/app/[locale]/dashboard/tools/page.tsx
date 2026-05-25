@@ -22,30 +22,30 @@ function UpgradeGate({ plan }: { plan: string }) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         className="text-center max-w-md px-8"
       >
-        <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#ff5f5f] to-purple-600 flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-[#ff5f5f]/20">
+        <div className="w-20 h-20 rounded-xl bg-copper flex items-center justify-center mx-auto mb-8 shadow-sm">
           <Crown size={36} className="text-white" />
         </div>
-        <h1 className="text-3xl font-black tracking-tight text-gray-900 mb-3">
+        <h1 className="text-3xl font-black tracking-tight text-foreground mb-3">
           War Room Tools
         </h1>
-        <p className="text-gray-400 text-sm leading-relaxed mb-2">
+        <p className="text-muted-foreground text-sm leading-relaxed mb-2">
           Special tools (A/B Test, Sequence Builder, Send Test, Export) are exclusive to{" "}
-          <span className="font-bold text-gray-700">PROFESSIONAL</span> plan subscribers.
+          <span className="font-bold text-foreground/80">PROFESSIONAL</span> plan subscribers.
         </p>
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8 text-left">
-          <p className="text-[11px] font-bold text-amber-800 uppercase tracking-wider flex items-center gap-2 mb-2">
+        <div className="bg-muted border border-border rounded-xl p-4 mb-8 text-left">
+          <p className="text-[11px] font-bold text-foreground uppercase tracking-wider flex items-center gap-2 mb-2">
             <Crown size={14} /> Your Plan: {plan}
           </p>
-          <ul className="space-y-1.5 text-xs text-amber-700">
-            <li className="flex items-center gap-2">✗ A/B Subject Line Testing</li>
-            <li className="flex items-center gap-2">✗ Sequence Builder</li>
-            <li className="flex items-center gap-2">✗ Send Test Email</li>
-            <li className="flex items-center gap-2">✗ Campaign Export</li>
+          <ul className="space-y-1.5 text-xs text-muted-foreground">
+            <li className="flex items-center gap-2">— A/B Subject Line Testing</li>
+            <li className="flex items-center gap-2">— Sequence Builder</li>
+            <li className="flex items-center gap-2">— Send Test Email</li>
+            <li className="flex items-center gap-2">— Campaign Export</li>
           </ul>
         </div>
         <Link
           href="/pricing"
-          className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-[#ff5f5f] to-purple-600 text-white text-sm font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+          className="inline-flex items-center gap-2 px-8 py-3.5 bg-copper text-white text-sm font-bold rounded-xl shadow-sm hover:opacity-90 transition-all"
         >
           <Crown size={18} /> Upgrade to PROFESSIONAL
         </Link>
@@ -79,34 +79,34 @@ export default function ToolsPage() {
       >
         <Link
           href={`/${locale}/dashboard`}
-          className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-[#ff5f5f] transition-colors mb-4"
+          className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-copper transition-colors mb-4"
         >
           <ArrowLeft size={12} /> Back to Dashboard
         </Link>
 
         <div className="flex items-start justify-between">
           <div>
-            <div className="text-[11px] tracking-[0.25em] text-[#ff5f5f] uppercase mb-3 font-mono flex items-center gap-2">
+            <div className="text-[11px] tracking-[0.25em] text-copper uppercase mb-3 font-mono flex items-center gap-2">
               <Sparkles size={12} /> War Room Tools
             </div>
-            <h1 className="font-display text-[40px] leading-[1.05] text-gray-900">
+            <h1 className="font-display text-[40px] leading-[1.05] text-foreground">
               {greeting}, Founder.<br />
-              <span className="text-gray-400 italic text-[20px]">Your toolbelt is ready.</span>
+              <span className="text-muted-foreground italic text-[20px]">Your toolbelt is ready.</span>
             </h1>
           </div>
 
-          <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-[#ff5f5f]/5 to-purple-500/5 rounded-2xl border border-[#ff5f5f]/10">
+          <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-muted rounded-2xl border border-border">
             <div className="flex -space-x-1.5">
               {[FlaskConical, Layers, Send, Download].map((Icon, i) => (
                 <div
                   key={i}
-                  className="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center shadow-sm"
+                  className="w-7 h-7 rounded-lg bg-white border border-border flex items-center justify-center shadow-sm"
                 >
-                  <Icon size={12} className="text-gray-500" />
+                  <Icon size={12} className="text-muted-foreground" />
                 </div>
               ))}
             </div>
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">4 Tools Active</span>
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">4 Tools Active</span>
           </div>
         </div>
       </motion.div>
@@ -132,7 +132,7 @@ export default function ToolsPage() {
               return (
                 <span
                   key={t.label}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-gray-200 text-[9px] font-bold uppercase tracking-wider text-gray-500 shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-border text-[9px] font-bold uppercase tracking-wider text-muted-foreground shadow-sm"
                 >
                   <div className={`w-5 h-5 rounded-lg flex items-center justify-center ${t.color}`}>
                     <Icon size={10} />
@@ -144,7 +144,7 @@ export default function ToolsPage() {
           </div>
 
           {/* Unified SpecialTools panel */}
-          <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
+          <div className="bg-white rounded-xl p-6 border border-border shadow-sm">
             <SpecialTools />
           </div>
         </motion.div>

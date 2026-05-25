@@ -1,3 +1,10 @@
+-- ⚠️ NOTE (2026-05-21): This migration references auth.users(id) which is Supabase Auth (UUID).
+-- The Drizzle/Neon schema in src/db/schema.ts now defines api_usage + api_usage_daily
+-- with Better-Auth text IDs. Use ONE system:
+--   - Drizzle (Neon PostgreSQL):  npx drizzle-kit push
+--   - Supabase:  supabase db push
+-- These tables should NOT exist in both databases.
+--
 -- API_USAGE: Tracks per-user API consumption for security & RLS
 create table if not exists api_usage (
   id              bigint generated always as identity primary key,

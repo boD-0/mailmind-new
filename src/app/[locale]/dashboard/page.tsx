@@ -2,9 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, ChevronRight, Clock, Sparkles, Target, Send as SendIcon, Loader2 } from "lucide-react";
+import { Plus, ChevronRight, Clock, Sparkles, Target, Send as SendIcon, Loader2, UploadIcon } from "lucide-react";
 import Link from "next/link";
 import { NewProjectDialog, type NewProjectData } from "@/components/dashboard/NewProjectDialog";
+import { BulkImportDialog } from "@/components/dashboard/BulkImportDialog";
+import { SwarmUsageBar } from "@/components/dashboard/SwarmUsageBar";
+import { EmailTrackingPanel } from "@/components/dashboard/EmailTrackingPanel";
+import { CampaignAnalytics } from "@/components/dashboard/CampaignAnalytics";
+import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
+import { ProspectsList } from "@/components/dashboard/ProspectsList";
+import { CoachingInsights } from "@/components/dashboard/CoachingInsights";
 import { authClient } from "@/lib/auth/auth-client";
 import { Plan } from "@/lib/auth/gatekeeper";
 import { EventScheduler, type ScheduledEvent } from "@/components/ui/event-scheduler";
@@ -34,14 +41,14 @@ function StatPill({ emoji, value, sub }: { emoji: string; value: string; sub: st
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 shadow-sm"
+      className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-border shadow-sm"
       whileHover={{ y: -2, boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}
       transition={{ duration: 0.2 }}
     >
       <span className="text-base">{emoji}</span>
       <div className="flex items-baseline gap-1.5">
-        <span className="text-lg font-bold text-gray-900 tracking-tight">{value}</span>
-        <span className="text-[11px] text-gray-400">{sub}</span>
+        <span className="text-lg font-bold text-foreground tracking-tight">{value}</span>
+        <span className="text-[11px] text-muted-foreground">{sub}</span>
       </div>
     </motion.div>
   );
@@ -68,17 +75,17 @@ function CollapsibleSection({
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors group"
+        className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
       >
         <motion.span
           animate={{ rotate: open ? 90 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          <ChevronRight size={16} className="text-gray-400 group-hover:text-gray-600" />
+          <ChevronRight size={16} className="text-muted-foreground group-hover:text-muted-foreground" />
         </motion.span>
         {label}
         {count !== undefined && (
-          <span className="text-[11px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{count}</span>
+          <span className="text-[11px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{count}</span>
         )}
       </button>
       <AnimatePresence initial={false}>
@@ -110,6 +117,7 @@ export default function DashboardPage() {
   const { t } = useTranslation();
 
   const [newOpen, setNewOpen] = useState(false);
+  const [bulkImportOpen, setBulkImportOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [campaigns, setCampaigns] = useState<DashboardCampaign[]>([]);
   const [metrics, setMetrics] = useState({ totalCampaigns: 0, avgConfidence: 0, draftsInProgress: 0, sentThisWeek: 0 });
@@ -207,6 +215,15 @@ export default function DashboardPage() {
         userPlan={userPlan}
       />
 
+      <BulkImportDialog
+        open={bulkImportOpen}
+        onClose={() => setBulkImportOpen(false)}
+        onImportComplete={() => {
+          setBulkImportOpen(false);
+          window.location.reload();
+        }}
+      />
+
       {/* ── TOP BAR: Greeting + Date + New Campaign ── */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -215,22 +232,30 @@ export default function DashboardPage() {
         className="flex items-start justify-between mb-6 shrink-0"
       >
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-            {greeting}, <span className="text-[#ff5f5f]">{userName}</span>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">
+            {greeting}, <span className="text-copper">{userName}</span>
           </h1>
-        </div>
-        <div className="flex items-center gap-3">
+        </div>          <div className="flex items-center gap-3">
           <div className="text-right">
-            <div className="flex items-center gap-1.5 text-[11px] text-gray-400 font-mono">
-              <Clock size={11} className="text-gray-300" />
+            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-mono">
+              <Clock size={11} className="text-muted-foreground/50" />
               {dateStr}
             </div>
           </div>
           <motion.button
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
+            onClick={() => setBulkImportOpen(true)}
+            className="flex items-center gap-1.5 bg-white border-2 border-dashed border-emerald-300 text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold hover:border-emerald-400 hover:bg-emerald-50 transition-colors"
+          >
+            <UploadIcon size={15} />
+            Import CSV
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => setNewOpen(true)}
-            className="flex items-center gap-1.5 bg-[#ff5f5f] text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-red-500 transition-colors shadow-sm hover:shadow-md hover:shadow-red-200/50"
+            className="flex items-center gap-1.5 bg-copper text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-copper/80 transition-colors shadow-sm hover:shadow-md hover:shadow-copper/20"
           >
             <Plus size={15} />
             {t("dashboard.new_campaign")}
@@ -243,7 +268,7 @@ export default function DashboardPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.1 }}
-        className="flex flex-wrap gap-3 mb-6 shrink-0"
+        className="flex flex-wrap gap-3 mb-4 shrink-0"
       >
         <StatPill emoji="📧" value={`${emailsThisWeek}`} sub="săptămâna asta" />
         <StatPill emoji="🎯" value={`${avgConfidence}%`} sub="încredere medie" />
@@ -251,11 +276,16 @@ export default function DashboardPage() {
         <StatPill emoji="📬" value={`${campaignCount}`} sub="campanii" />
       </motion.div>
 
+      {/* ── SWARM USAGE BAR ── */}
+      <div className="mb-6 shrink-0">
+        <SwarmUsageBar />
+      </div>
+
       {/* ── MAIN CONTENT: scrollable area ── */}
       <div className="flex-1 overflow-y-auto space-y-4 pr-1">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-6 h-6 animate-spin text-gray-300" />
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground/50" />
           </div>
         ) : (
           <>
@@ -263,7 +293,7 @@ export default function DashboardPage() {
             <CollapsibleSection label="Pipeline" count={pipelineTotal}>
               <div className="space-y-3">
                 {/* Colored progress bar */}
-                <div className="relative h-2.5 rounded-full bg-gray-100 overflow-hidden">
+                <div className="relative h-2.5 rounded-full bg-muted overflow-hidden">
                   {pipelineTotal > 0 && (
                     <motion.div
                       className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-emerald-400 via-amber-400 via-indigo-400 to-rose-400"
@@ -301,7 +331,7 @@ export default function DashboardPage() {
                     <motion.div
                       key={stage.key}
                       whileHover={{ y: -4, boxShadow: "0 8px 20px rgba(0,0,0,0.06)" }}
-                      className={`flex-1 bg-white rounded-xl border border-gray-200 p-3 text-center transition-all duration-300 ${stage.borderHover} hover:shadow-md cursor-default relative overflow-hidden group`}
+                      className={`flex-1 bg-white rounded-xl border border-border p-3 text-center transition-all duration-300 ${stage.borderHover} hover:shadow-md cursor-default relative overflow-hidden group`}
                     >
                       {/* Subtle hover gradient */}
                       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50/0 group-hover:to-gray-50/80 transition-all duration-300" />
@@ -312,9 +342,9 @@ export default function DashboardPage() {
                       >
                         <stage.icon size={15} />
                       </motion.div>
-                      <div className="text-xs font-semibold text-gray-700 relative z-10">{stage.label}</div>
+                      <div className="text-xs font-semibold text-foreground/80 relative z-10">{stage.label}</div>
                       <motion.div
-                        className="text-lg font-bold text-gray-900 relative z-10"
+                        className="text-lg font-bold text-foreground relative z-10"
                         initial={false}
                         key={`${stage.key}-${stage.count}`}
                         animate={{ scale: [1, 1.3, 1] }}
@@ -331,10 +361,10 @@ export default function DashboardPage() {
             {/* ── RECENT CAMPAIGNS (only 2) ── */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-semibold text-gray-500 tracking-wide uppercase">
+                <h3 className="text-sm font-semibold text-muted-foreground tracking-wide uppercase">
                   {t("dashboard.campaigns_title")}
                 </h3>
-                <Link href={`/${l}/dashboard/ideas`} className="text-[11px] text-gray-400 hover:text-[#ff5f5f] transition-colors">
+                <Link href={`/${l}/dashboard/ideas`} className="text-[11px] text-muted-foreground hover:text-copper transition-colors">
                   {t("dashboard.campaign_view_all")} →
                 </Link>
               </div>
@@ -367,17 +397,17 @@ export default function DashboardPage() {
                     >
                       <Link
                         href={`/${l}/dashboard/war-room/${c.id}`}
-                        className="group block bg-white rounded-2xl border border-gray-200 p-4 hover:border-[#ff5f5f]/30 hover:shadow-lg hover:shadow-red-100/40 transition-all duration-300 relative overflow-hidden"
+                        className="group block bg-white rounded-2xl border border-border p-4 hover:border-copper/30 hover:shadow-lg hover:shadow-copper/10 transition-all duration-300 relative overflow-hidden"
                       >
                         {/* Warm gradient hover glow */}
                         <div className="absolute inset-0 bg-gradient-to-br from-red-50/0 via-amber-50/0 to-rose-50/0 group-hover:from-red-50/30 group-hover:via-amber-50/20 group-hover:to-rose-50/30 transition-all duration-500" />
                         <div className="relative z-10">
                           <div className="flex items-start justify-between mb-3">
                             <div className="min-w-0 flex-1">
-                              <div className="text-sm font-bold text-gray-900 truncate group-hover:text-[#ff5f5f] transition-colors">
+                              <div className="text-sm font-bold text-foreground truncate group-hover:text-copper transition-colors">
                                 {c.title}
                               </div>
-                              <div className="text-[11px] text-gray-400 mt-0.5">{c.prospect_name || "—"}</div>
+                              <div className="text-[11px] text-muted-foreground mt-0.5">{c.prospect_name || "—"}</div>
                             </div>
                             <div className="flex items-center gap-1.5 shrink-0 ml-2">
                               <motion.span
@@ -386,22 +416,22 @@ export default function DashboardPage() {
                                 animate={c.status === "swarm_running" || c.status === "active" ? { boxShadow: [`0 0 4px ${s.color}`, `0 0 10px ${s.color}`, `0 0 4px ${s.color}`] } : {}}
                                 transition={{ duration: 2, repeat: Infinity }}
                               />
-                              <span className="text-[10px] font-medium text-gray-400">{s.label}</span>
+                              <span className="text-[10px] font-medium text-muted-foreground">{s.label}</span>
                             </div>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] text-gray-400 font-mono bg-gray-50 px-2 py-0.5 rounded-full">{formatCampaignDate(c.created_at)}</span>
+                            <span className="text-[10px] text-muted-foreground font-mono bg-muted px-2 py-0.5 rounded-full">{formatCampaignDate(c.created_at)}</span>
                             <div className="flex items-center gap-2">
-                              <div className="w-14 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                              <div className="w-14 h-1.5 bg-muted rounded-full overflow-hidden">
                                 <motion.div
-                                  className="h-full rounded-full bg-gradient-to-r from-amber-400 to-[#ff5f5f]"
+                                  className="h-full rounded-full bg-gradient-to-r from-amber-400 to-copper"
                                   initial={{ width: "0%" }}
                                   whileInView={{ width: `${c.confidence_score}%` }}
                                   viewport={{ once: true }}
                                   transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
                                 />
                               </div>
-                              <span className="text-[10px] font-mono font-semibold text-gray-500">
+                              <span className="text-[10px] font-mono font-semibold text-muted-foreground">
                                 {confidenceEmoji} {c.confidence_score}%
                               </span>
                             </div>
@@ -413,6 +443,31 @@ export default function DashboardPage() {
                 })}
               </div>
               )}
+            </div>
+
+            {/* ── ONBOARDING CHECKLIST ── */}
+            <div className="mb-4">
+              <OnboardingChecklist />
+            </div>
+
+            {/* ── AI COACHING INSIGHTS ── */}
+            <div className="mb-4">
+              <CoachingInsights />
+            </div>
+
+            {/* ── PROSPECT DATABASE ── */}
+            <CollapsibleSection label={t("prospects.title") || "Prospect Database"} count={0}>
+              <ProspectsList />
+            </CollapsibleSection>
+
+            {/* ── EMAIL TRACKING ── */}
+            <div className="mb-4">
+              <EmailTrackingPanel />
+            </div>
+
+            {/* ── CAMPAIGN ANALYTICS ── */}
+            <div className="mb-4">
+              <CampaignAnalytics />
             </div>
 
             {/* ── DEADLINES (collapsible) ── */}

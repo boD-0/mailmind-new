@@ -24,7 +24,7 @@ const SEARCH_TAGS = [
 function TypeIcon({ type }: { type: SearchResult["type"] }) {
   switch (type) {
     case "project":
-      return <FolderKanban size={14} className="text-[#ff5f5f]" />;
+      return <FolderKanban size={14} className="text-copper" />;
     case "document":
       return <FileText size={14} className="text-blue-500" />;
     case "idea":
@@ -126,26 +126,26 @@ export function SearchOverlay({
             transition={{ duration: 0.15, ease: "easeOut" }}
             className="fixed left-1/2 top-[15%] -translate-x-1/2 z-50 w-full max-w-xl"
           >
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-2xl shadow-black/10 overflow-hidden">
+            <div className="bg-white rounded-2xl border border-border shadow-2xl shadow-black/10 overflow-hidden">
               <Command
                 shouldFilter={false}
                 className="bg-transparent"
                 label="Search commands"
               >
                 {/* Search input */}
-                <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
-                  <Search size={18} className="text-gray-400 shrink-0 group-focus-within:text-[#ff5f5f] transition-colors" />
+                <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
+                  <Search size={18} className="text-muted-foreground shrink-0 group-focus-within:text-copper transition-colors" />
                   <Command.Input
                     ref={inputRef}
                     value={query}
                     onValueChange={setQuery}
                     placeholder="Search projects, documents, ideas..."
-                    className="flex-1 bg-transparent text-[15px] text-gray-900 outline-none placeholder:text-gray-400"
+                    className="flex-1 bg-transparent text-[15px] text-foreground outline-none placeholder:text-muted-foreground"
                   />
                   {loading && (
-                    <Loader2 size={16} className="text-gray-400 animate-spin" />
+                    <Loader2 size={16} className="text-muted-foreground animate-spin" />
                   )}
-                  <kbd className="hidden sm:inline-flex items-center gap-1 rounded-md border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[10px] text-gray-400 font-mono">
+                  <kbd className="hidden sm:inline-flex items-center gap-1 rounded-md border border-border bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground font-mono">
                     ESC
                   </kbd>
                 </div>
@@ -158,8 +158,8 @@ export function SearchOverlay({
                       className={cn(
                         "text-[10px] px-2.5 py-1 rounded-full border transition-colors",
                         !filter
-                          ? "border-[#ff5f5f] text-[#ff5f5f] bg-[#ff5f5f]/10"
-                          : "border-gray-200 text-gray-500 hover:text-gray-700",
+                          ? "border-copper text-copper bg-copper/10"
+                          : "border-border text-muted-foreground hover:text-foreground/80",
                       )}
                     >
                       All ({results.length})
@@ -181,8 +181,8 @@ export function SearchOverlay({
                           className={cn(
                             "text-[10px] px-2.5 py-1 rounded-full border transition-colors",
                             filter === tag.value
-                              ? "border-[#ff5f5f] text-[#ff5f5f] bg-[#ff5f5f]/10"
-                              : "border-gray-200 text-gray-500 hover:text-gray-700",
+                              ? "border-copper text-copper bg-copper/10"
+                              : "border-border text-muted-foreground hover:text-foreground/80",
                           )}
                         >
                           {tag.label} ({count})
@@ -198,11 +198,11 @@ export function SearchOverlay({
                   {query.trim().length >= 2 && !loading && results.length === 0 && (
                     <Command.Empty>
                       <div className="flex flex-col items-center py-8 text-center">
-                        <Search size={24} className="text-gray-300 mb-3" />
-                        <p className="text-[13px] text-gray-500">
+                        <Search size={24} className="text-muted-foreground/50 mb-3" />
+                        <p className="text-[13px] text-muted-foreground">
                           Nimic pentru &quot;{query}&quot;
                         </p>
-                        <p className="text-[11px] text-gray-400 mt-1">
+                        <p className="text-[11px] text-muted-foreground mt-1">
                           Încearcă alt termen
                         </p>
                       </div>
@@ -215,7 +215,7 @@ export function SearchOverlay({
                     <Command.Group
                       heading={
                         <span className="flex items-center gap-2">
-                          <FolderKanban size={12} className="text-[#ff5f5f]" />
+                          <FolderKanban size={12} className="text-copper" />
                           Projects
                         </span>
                       }
@@ -227,27 +227,27 @@ export function SearchOverlay({
                             key={result.id}
                             value={`project-${result.title}`}
                             onSelect={() => handleSelect(result)}
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer aria-selected:bg-[#ff5f5f]/10 aria-selected:text-gray-900 group"
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer aria-selected:bg-copper/10 aria-selected:text-foreground group"
                           >
-                            <div className="w-8 h-8 rounded-lg bg-[#ff5f5f]/10 grid place-items-center shrink-0">
-                              <FolderKanban size={14} className="text-[#ff5f5f]" />
+                            <div className="w-8 h-8 rounded-lg bg-copper/10 grid place-items-center shrink-0">
+                              <FolderKanban size={14} className="text-copper" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-[13px] font-medium text-gray-900 truncate">
+                              <p className="text-[13px] font-medium text-foreground truncate">
                                 {result.title}
                               </p>
-                              <p className="text-[11px] text-gray-400 truncate">
+                              <p className="text-[11px] text-muted-foreground truncate">
                                 {result.subtitle}
                               </p>
                             </div>
                             {result.tag && (
-                              <span className="text-[9px] tracking-widest uppercase text-gray-400 shrink-0">
+                              <span className="text-[9px] tracking-widest uppercase text-muted-foreground shrink-0">
                                 {result.tag}
                               </span>
                             )}
                             <ArrowRight
                               size={13}
-                              className="text-gray-300 opacity-0 group-aria-selected:opacity-100 transition-opacity shrink-0"
+                              className="text-muted-foreground/50 opacity-0 group-aria-selected:opacity-100 transition-opacity shrink-0"
                             />
                           </Command.Item>
                         ))}
@@ -272,27 +272,27 @@ export function SearchOverlay({
                             key={result.id}
                             value={`doc-${result.title}`}
                             onSelect={() => handleSelect(result)}
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer aria-selected:bg-blue-50 aria-selected:text-gray-900 group"
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer aria-selected:bg-blue-50 aria-selected:text-foreground group"
                           >
                             <div className="w-8 h-8 rounded-lg bg-blue-50 grid place-items-center shrink-0">
                               <FileText size={14} className="text-blue-500" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-[13px] font-medium text-gray-900 truncate">
+                              <p className="text-[13px] font-medium text-foreground truncate">
                                 {result.title}
                               </p>
-                              <p className="text-[11px] text-gray-400 truncate">
+                              <p className="text-[11px] text-muted-foreground truncate">
                                 {result.subtitle}
                               </p>
                             </div>
                             {result.tag && (
-                              <span className="text-[9px] tracking-widest uppercase text-gray-400 shrink-0">
+                              <span className="text-[9px] tracking-widest uppercase text-muted-foreground shrink-0">
                                 {result.tag}
                               </span>
                             )}
                             <ArrowRight
                               size={13}
-                              className="text-gray-300 opacity-0 group-aria-selected:opacity-100 transition-opacity shrink-0"
+                              className="text-muted-foreground/50 opacity-0 group-aria-selected:opacity-100 transition-opacity shrink-0"
                             />
                           </Command.Item>
                         ))}
@@ -302,25 +302,25 @@ export function SearchOverlay({
                   {/* Prompt to start searching */}
                   {query.trim().length < 2 && (
                     <div className="flex flex-col items-center py-10 text-center">
-                      <Search size={32} className="text-gray-200 mb-4" />
-                      <p className="text-[13px] text-gray-500">
+                      <Search size={32} className="text-muted-foreground/30 mb-4" />
+                      <p className="text-[13px] text-muted-foreground">
                         Scrie cel puțin 2 caractere
                       </p>
-                      <div className="flex items-center gap-3 mt-4 text-[10px] text-gray-400">
+                      <div className="flex items-center gap-3 mt-4 text-[10px] text-muted-foreground">
                         <span className="flex items-center gap-1">
-                          <kbd className="inline-flex items-center rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[9px] font-mono">
+                          <kbd className="inline-flex items-center rounded border border-border bg-muted px-1.5 py-0.5 text-[9px] font-mono">
                             ↑↓
                           </kbd>{" "}
                           Navighează
                         </span>
                         <span className="flex items-center gap-1">
-                          <kbd className="inline-flex items-center rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[9px] font-mono">
+                          <kbd className="inline-flex items-center rounded border border-border bg-muted px-1.5 py-0.5 text-[9px] font-mono">
                             ↵
                           </kbd>{" "}
                           Deschide
                         </span>
                         <span className="flex items-center gap-1">
-                          <kbd className="inline-flex items-center rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[9px] font-mono">
+                          <kbd className="inline-flex items-center rounded border border-border bg-muted px-1.5 py-0.5 text-[9px] font-mono">
                             ⌘K
                           </kbd>{" "}
                           Comută
@@ -331,15 +331,15 @@ export function SearchOverlay({
                 </Command.List>
 
                 {/* Footer */}
-                <div className="border-t border-gray-100 px-5 py-2.5 flex items-center justify-between">
-                  <span className="text-[10px] text-gray-400">
+                <div className="border-t border-border px-5 py-2.5 flex items-center justify-between">
+                  <span className="text-[10px] text-muted-foreground">
                     {results.length > 0
                       ? `${results.length} rezultat${results.length !== 1 ? "e" : ""}`
                       : "Caută în toate datele"}
                   </span>
-                  <span className="text-[9px] text-gray-400">
+                  <span className="text-[9px] text-muted-foreground">
                     Apasă{" "}
-                    <kbd className="inline-flex items-center rounded border border-gray-200 bg-gray-50 px-1 py-0.5 text-[9px] font-mono">
+                    <kbd className="inline-flex items-center rounded border border-border bg-muted px-1 py-0.5 text-[9px] font-mono">
                       ESC
                     </kbd>{" "}
                     pentru a închide

@@ -13,12 +13,14 @@ import {
 import {
   Menu, X, ArrowRight, Check, Search, Brain, Target, PenTool,
   Send, Mail, Sparkles,
-  Zap, Crown,
+  Zap, Crown, Shield, CreditCard,
 } from "lucide-react"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
 import { useTranslation } from '@/components/I18nProvider'
 import { Hero } from "@/components/ui/animated-hero"
 import { Footer } from "@/components/ui/footer"
+import DemoVideoSection from "@/components/ui/demo-video-section"
+import TestimonialsSection from "@/components/ui/testimonials-section"
 
 /* ════════════════════════════════════════════════════════════
    ANIMATION VARIANT PRESETS
@@ -141,37 +143,36 @@ const plans = [
     highlight: false,
   },
   {
-    nameKey: 'home.pricing.pro.name',
-    price: "$29",
-    originalPrice: "$49",
+    nameKey: 'home.pricing.starter.name',
+    price: "$49",
     period: '/month',
-    periodKey: 'home.pricing.pro.period',
+    periodKey: 'home.pricing.starter.period',
     badge: 'MOST POPULAR',
-    badgeKey: 'home.pricing.pro.badge',
+    badgeKey: 'home.pricing.starter.badge',
     features: [
-      'home.pricing.pro.features.0',
-      'home.pricing.pro.features.1',
-      'home.pricing.pro.features.2',
-      'home.pricing.pro.features.3',
-      'home.pricing.pro.features.4',
+      'home.pricing.starter.features.0',
+      'home.pricing.starter.features.1',
+      'home.pricing.starter.features.2',
+      'home.pricing.starter.features.3',
+      'home.pricing.starter.features.4',
     ],
-    ctaKey: 'home.pricing.pro.cta',
+    ctaKey: 'home.pricing.starter.cta',
     highlight: true,
   },
   {
-    nameKey: 'home.pricing.team.name',
-    price: "$199",
+    nameKey: 'home.pricing.professional.name',
+    price: "$149",
     period: '/month',
-    periodKey: 'home.pricing.team.period',
+    periodKey: 'home.pricing.professional.period',
     badge: null,
     features: [
-      'home.pricing.team.features.0',
-      'home.pricing.team.features.1',
-      'home.pricing.team.features.2',
-      'home.pricing.team.features.3',
-      'home.pricing.team.features.4',
+      'home.pricing.professional.features.0',
+      'home.pricing.professional.features.1',
+      'home.pricing.professional.features.2',
+      'home.pricing.professional.features.3',
+      'home.pricing.professional.features.4',
     ],
-    ctaKey: 'home.pricing.team.cta',
+    ctaKey: 'home.pricing.professional.cta',
     highlight: false,
   },
 ]
@@ -195,7 +196,7 @@ function FloatingOrbs() {
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       {/* Orb 1 */}
       <motion.div
-        className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-gradient-to-br from-[#ff5f5f]/5 to-purple-300/5 blur-3xl"
+        className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-gradient-to-br from-copper/5 to-purple-300/5 blur-3xl"
         animate={{
           x: [0, 40, 0, -30, 0],
           y: [0, -30, 20, 10, 0],
@@ -205,7 +206,7 @@ function FloatingOrbs() {
       />
       {/* Orb 2 */}
       <motion.div
-        className="absolute top-1/3 -right-32 w-96 h-96 rounded-full bg-gradient-to-br from-amber-200/5 to-[#ff5f5f]/5 blur-3xl"
+        className="absolute top-1/3 -right-32 w-96 h-96 rounded-full bg-gradient-to-br from-amber-200/5 to-copper/5 blur-3xl"
         animate={{
           x: [0, -50, 20, 30, 0],
           y: [0, 30, -20, -10, 0],
@@ -248,22 +249,21 @@ function SectionHeading({
     >
       <motion.span
         variants={fadeUp}
-        className="inline-block text-xs font-semibold tracking-widest uppercase text-gray-400 mb-4 px-4 py-1.5 rounded-full bg-gray-100/50 border border-gray-200/50"
+        className="inline-block text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-4 px-4 py-1.5 rounded-full bg-muted/50 border border-border"
       >
         {label}
       </motion.span>
       <motion.h2
         variants={fadeUp}
-        className="text-4xl md:text-5xl font-extrabold tracking-tighter text-[#1a1a1a] mb-4"
+        className="text-4xl md:text-5xl font-extrabold tracking-tighter text-foreground mb-4"
       >
-        {title}{" "}
-        <span className="text-[#ff5f5f] bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent bg-[length:200%_100%] animate-gradient-x">
-          {highlight}
-        </span>
+        {title}{" "}          <span className="text-copper">
+            {highlight}
+          </span>
       </motion.h2>
       <motion.p
         variants={fadeUp}
-        className="text-gray-600 text-lg max-w-xl mx-auto leading-relaxed"
+        className="text-muted-foreground text-lg max-w-xl mx-auto leading-relaxed"
       >
         {description}
       </motion.p>
@@ -284,71 +284,66 @@ function Header({ locale }: { locale: string }) {
   const headerBg = useTransform(
     scrollY,
     [0, 60],
-    ["rgba(253, 251, 247, 0.6)", "rgba(253, 251, 247, 0.9)"]
+    ["rgba(12, 12, 10, 0.6)", "rgba(12, 12, 10, 0.9)"]
   )
 
   return (
     <motion.header
       style={{ backgroundColor: headerBg }}
-      className="sticky top-0 z-50 backdrop-blur-xl border-b border-gray-200/50 px-6 py-4"
+      className="sticky top-0 z-50 backdrop-blur-xl border-b border-border/50 px-6 py-4"
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between">
         <Link href={`/${locale}`} className="flex items-center gap-2.5 group">
           <motion.div
-            className="w-8 h-8 bg-[#ff5f5f] rounded-xl flex items-center justify-center shadow-sm"
+            className="w-8 h-8 bg-copper rounded-xl flex items-center justify-center shadow-sm"
             whileHover={{ rotate: -10, scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
             <span className="text-white text-xs font-extrabold tracking-tight">M</span>
           </motion.div>
-          <span className="font-bold text-lg text-[#1a1a1a] tracking-tight">MailMind</span>
+          <span className="font-bold text-lg text-foreground tracking-tight">MailMind</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-500">
-          <Link href={`/${locale}/#features`} className="relative hover:text-[#1a1a1a] transition-colors group">
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
+          <Link href={`/${locale}/#features`} className="relative hover:text-foreground transition-colors group">
             {t('nav.features')}
-            <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#ff5f5f] transition-all duration-300 group-hover:w-full" />
+            <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-copper transition-all duration-300 group-hover:w-full" />
           </Link>
-          <Link href={`/${locale}/#how-it-works`} className="relative hover:text-[#1a1a1a] transition-colors group">
+          <Link href={`/${locale}/#how-it-works`} className="relative hover:text-foreground transition-colors group">
             {t('nav.how_it_works')}
-            <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#ff5f5f] transition-all duration-300 group-hover:w-full" />
+            <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-copper transition-all duration-300 group-hover:w-full" />
           </Link>
-          <Link href={`/${locale}/pricing`} className="relative hover:text-[#1a1a1a] transition-colors group">
+          <Link href={`/${locale}/pricing`} className="relative hover:text-foreground transition-colors group">
             {t('nav.pricing')}
-            <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#ff5f5f] transition-all duration-300 group-hover:w-full" />
+            <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-copper transition-all duration-300 group-hover:w-full" />
           </Link>
-          <Link href={`/${locale}/#faq`} className="relative hover:text-[#1a1a1a] transition-colors group">
+          <Link href={`/${locale}/#faq`} className="relative hover:text-foreground transition-colors group">
             {t('nav.faq')}
-            <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-[#ff5f5f] transition-all duration-300 group-hover:w-full" />
+            <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-copper transition-all duration-300 group-hover:w-full" />
           </Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
           <LanguageSwitcher />
-          <div className="w-px h-5 bg-gray-200" />
+          <div className="w-px h-5 bg-border" />
           <Link
             href={`/${locale}/login`}
-            className="text-sm font-medium text-gray-500 hover:text-[#1a1a1a] transition-colors"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             {t('nav.log_in')}
           </Link>
           <Link
             href={`/${locale}/sign-up`}
-            className="bg-[#ff5f5f] text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-red-500 transition-all hover:shadow-lg hover:shadow-red-200/50 relative overflow-hidden group"
+            className="bg-copper text-primary-foreground px-5 py-2.5 rounded-full text-sm font-semibold hover:opacity-90 transition-all hover:shadow-sm relative overflow-hidden group"
           >
             <span className="relative z-10">{t('nav.get_started')}</span>
-            <motion.span
-              className="absolute inset-0 bg-gradient-to-r from-red-500 to-[#ff5f5f]"
-              initial={{ x: "100%" }}
-              whileHover={{ x: 0 }}
-              transition={{ duration: 0.3 }}
-            />
+
           </Link>
         </div>
 
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden p-2 text-gray-500 hover:text-[#1a1a1a] transition-colors"
+          className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors"
           aria-label="Toggle navigation"
         >
           <motion.div
@@ -373,33 +368,33 @@ function Header({ locale }: { locale: string }) {
               variants={stagger}
               initial="hidden"
               animate="visible"
-              className="mt-4 pt-4 border-t border-gray-200/50 flex flex-col gap-2"
+              className="mt-4 pt-4 border-t border-border/50 flex flex-col gap-2"
             >
-                <motion.a variants={fadeUp} href={`/${locale}/#features`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.features')}</motion.a>
-                <motion.a variants={fadeUp} href={`/${locale}/#how-it-works`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.how_it_works')}</motion.a>
-                <Link href={`/${locale}/pricing`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.pricing')}</Link>
-                <motion.a variants={fadeUp} href={`/${locale}/#faq`} className="text-sm text-gray-600 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.faq')}</motion.a>
+                <motion.a variants={fadeUp} href={`/${locale}/#features`} className="text-sm text-muted-foreground px-3 py-2 hover:bg-muted rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.features')}</motion.a>
+                <motion.a variants={fadeUp} href={`/${locale}/#how-it-works`} className="text-sm text-muted-foreground px-3 py-2 hover:bg-muted rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.how_it_works')}</motion.a>
+                <Link href={`/${locale}/pricing`} className="text-sm text-muted-foreground px-3 py-2 hover:bg-muted rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.pricing')}</Link>
+                <motion.a variants={fadeUp} href={`/${locale}/#faq`} className="text-sm text-muted-foreground px-3 py-2 hover:bg-muted rounded-lg transition-colors" onClick={() => setMobileOpen(false)}>{t('nav.faq')}</motion.a>
               <motion.div
                 variants={fadeUp}
-                className="flex items-center justify-between pb-2 border-b border-gray-100"
+                className="flex items-center justify-between pb-2 border-b border-border/30"
               >
-                <span className="text-xs font-semibold text-gray-400 tracking-wider uppercase">{t('nav.language')}</span>
+                <span className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">{t('nav.language')}</span>
                 <LanguageSwitcher />
               </motion.div>
               <motion.div
                 variants={fadeUp}
-                className="flex gap-3 pt-2 mt-2 border-t border-gray-100"
+                className="flex gap-3 pt-2 mt-2 border-t border-border/30"
               >
                 <Link
                   href={`/${locale}/login`}
-                  className="flex-1 text-center text-sm font-medium text-gray-600 px-4 py-2.5 border border-gray-300 rounded-full hover:border-gray-400 transition-colors"
+                  className="flex-1 text-center text-sm font-medium text-muted-foreground px-4 py-2.5 border border-border rounded-full hover:border-copper/30 transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   {t('nav.log_in')}
                 </Link>
                 <Link
                   href={`/${locale}/sign-up`}
-                  className="flex-1 text-center bg-[#ff5f5f] text-white text-sm font-semibold px-4 py-2.5 rounded-full hover:bg-red-500 transition-colors"
+                  className="flex-1 text-center bg-copper text-primary-foreground text-sm font-semibold px-4 py-2.5 rounded-full hover:opacity-90 transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   {t('nav.get_started')}
@@ -417,10 +412,10 @@ function Header({ locale }: { locale: string }) {
 
 function FeaturesSection() {
   const { t } = useTranslation()
-  const pastelBgs = ["bg-emerald-50", "bg-amber-50", "bg-indigo-50", "bg-rose-50"]
+  const cardBgs = ["bg-emerald-950/20", "bg-amber-950/20", "bg-indigo-950/20", "bg-rose-950/20"]
 
   return (
-    <section id="features" className="relative py-24 px-6 bg-white overflow-hidden">
+    <section id="features" className="relative py-24 px-6 bg-obsidian-light overflow-hidden">
       <FloatingOrbs />
       <div className="max-w-5xl mx-auto relative z-10">
         <SectionHeading
@@ -444,10 +439,10 @@ function FeaturesSection() {
                 key={specialist.name}
                 variants={fadeUpScale}
                 custom={i * 0.08}
-                className={`border ${specialist.border} rounded-2xl shadow-sm ${pastelBgs[i]} p-6 cursor-default relative overflow-hidden group`}
+                className={`border ${specialist.border} rounded-2xl shadow-sm ${cardBgs[i]} p-6 cursor-default relative overflow-hidden group`}
                 whileHover={{
                   y: -6,
-                  boxShadow: `0 12px 30px rgba(0,0,0,0.08)`,
+                  boxShadow: `0 12px 30px rgba(0,0,0,0.3)`,
                   transition: { duration: 0.3 },
                 }}
               >
@@ -473,7 +468,7 @@ function FeaturesSection() {
                       </motion.span>
                   </div>
                 </div>
-                <p className="text-gray-600 leading-relaxed text-sm md:text-base relative z-10">
+                <p className="text-muted-foreground leading-relaxed text-sm md:text-base relative z-10">
                   {t(specialist.descKey)}
                 </p>
               </motion.div>
@@ -492,7 +487,7 @@ function InteractiveDemoSection() {
   const demoStepLabels = [t('home.demo.step_research'), t('home.demo.step_profile'), t('home.demo.step_strategy'), t('home.demo.step_copy'), t('home.demo.step_send')]
 
   return (
-    <section id="how-it-works" className="relative py-24 px-6 bg-[#fdfbf7] overflow-hidden">
+    <section id="how-it-works" className="relative py-24 px-6 bg-background overflow-hidden">
       <div className="max-w-5xl mx-auto relative z-10">
         <SectionHeading
           label={t('home.demo.label')}
@@ -514,7 +509,7 @@ function InteractiveDemoSection() {
               key={label}
               variants={fadeUp}
               custom={i * 0.05}
-              className="text-xs font-semibold text-gray-400 tracking-wider uppercase"
+              className="text-xs font-semibold text-muted-foreground tracking-wider uppercase"
             >
               {i + 1}. {label}
             </motion.span>
@@ -522,7 +517,7 @@ function InteractiveDemoSection() {
         </motion.div>
 
         {/* Animated Progress line */}
-        <div className="hidden md:block relative h-0.5 bg-gray-200 rounded-full mb-8 mx-2 overflow-hidden">
+        <div className="hidden md:block relative h-0.5 bg-border rounded-full mb-8 mx-2 overflow-hidden">
           <motion.div
             className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-400 via-amber-400 via-indigo-400 to-rose-400 rounded-full"
             initial={{ width: "0%" }}
@@ -533,7 +528,7 @@ function InteractiveDemoSection() {
           {[16, 32, 48, 64, 80].map((left, i) => (
             <motion.div
               key={i}
-              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border-2 z-10"
+              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-obsidian border-2 z-10"
               style={{
                 left: `calc(${left}% - 6px)`,
                 borderColor: ["#34d399", "#fbbf24", "#6366f1", "#f43f5e", "#a855f7"][i],
@@ -584,7 +579,7 @@ function InteractiveDemoSection() {
                 </motion.div>
                 <span className="text-xs font-bold tracking-wide">{t(step.labelKey)}</span>
                 <motion.span
-                  className="text-[10px] text-gray-500 font-medium hidden md:block"
+                  className="text-[10px] text-muted-foreground font-medium hidden md:block"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
@@ -604,7 +599,7 @@ function InteractiveDemoSection() {
           viewport={{ once: true }}
           className="mt-6 text-center md:hidden"
         >
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-muted-foreground">
             {t('home.demo.mobile_flow')}
           </p>
         </motion.div>
@@ -625,7 +620,7 @@ function DifferentiationSection() {
   ]
 
   return (
-    <section className="relative py-24 px-6 bg-white overflow-hidden">
+    <section className="relative py-24 px-6 bg-obsidian-light overflow-hidden">
       <div className="max-w-5xl mx-auto relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
         <motion.div
           variants={slideInLeft}
@@ -633,19 +628,19 @@ function DifferentiationSection() {
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
         >
-          <span className="inline-block text-xs font-semibold tracking-widest uppercase text-gray-400 mb-4 px-4 py-1.5 rounded-full bg-gray-100/50 border border-gray-200/50">
+          <span className="inline-block text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-4 px-4 py-1.5 rounded-full bg-muted/50 border border-border">
             {t('home.differentiation.label')}
           </span>
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter text-[#1a1a1a] mb-6 leading-[1.1]">
+          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter text-foreground mb-6 leading-[1.1]">
             {t('home.differentiation.title_1')}{" "}
-            <span className="line-through text-gray-300">{t('home.differentiation.title_strikethrough')}</span>
+            <span className="line-through text-muted-foreground/50">{t('home.differentiation.title_strikethrough')}</span>
             <br />
             {t('home.differentiation.title_2')}{" "}
-            <span className="bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent">
+            <span className="text-copper">
               {t('home.differentiation.title_highlight')}
             </span>
           </h2>
-          <p className="text-gray-600 leading-relaxed mb-8">
+          <p className="text-muted-foreground leading-relaxed mb-8">
             {t('home.differentiation.description')}
           </p>
           <motion.ul
@@ -660,11 +655,11 @@ function DifferentiationSection() {
                 key={item}
                 variants={fadeUp}
                 custom={0.1}
-                className="flex items-start gap-3 text-gray-600 text-sm group"
+                className="flex items-start gap-3 text-muted-foreground text-sm group"
               >
                 <motion.div
-                  className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0 mt-0.5"
-                  whileHover={{ scale: 1.2, backgroundColor: "rgb(167, 243, 208)" }}
+                  className="w-5 h-5 rounded-full bg-emerald-900/30 flex items-center justify-center shrink-0 mt-0.5"
+                  whileHover={{ scale: 1.2, backgroundColor: "rgba(52,211,153,0.3)" }}
                 >
                   <Check size={12} className="text-emerald-600" />
                 </motion.div>
@@ -683,8 +678,8 @@ function DifferentiationSection() {
           className="flex items-center justify-center"
         >
           <motion.div
-            className="w-full max-w-sm bg-[#fdfbf7] rounded-2xl border border-gray-200 p-6 shadow-sm"
-            whileHover={{ y: -4, boxShadow: "0 16px 40px rgba(0,0,0,0.08)" }}
+            className="w-full max-w-sm bg-obsidian-mid rounded-2xl border border-border p-6 shadow-sm"
+            whileHover={{ y: -4, boxShadow: "0 16px 40px rgba(0,0,0,0.4)" }}
             transition={{ duration: 0.3 }}
           >
             {/* OCEAN Radar Chart SVG */}
@@ -724,9 +719,9 @@ function DifferentiationSection() {
               {/* Data fill */}
               <motion.polygon
                 points="120,35 195,100 185,175 120,195 55,175 45,100"
-                fill="#ff5f5f"
+                fill="#c17b3f"
                 fillOpacity="0.12"
-                stroke="#ff5f5f"
+                stroke="#c17b3f"
                 strokeWidth="2"
                 initial={{ scale: 0, transformOrigin: "120px 120px" }}
                 whileInView={{ scale: 1 }}
@@ -755,7 +750,7 @@ function DifferentiationSection() {
                   cx={pt.cx}
                   cy={pt.cy}
                   r="3"
-                  fill="#ff5f5f"
+                  fill="#c17b3f"
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   viewport={{ once: true }}
@@ -786,7 +781,7 @@ function DifferentiationSection() {
                   y={label.y}
                   textAnchor={label.x < 40 ? "end" : label.x > 200 ? "start" : "middle"}
                   className="text-[8px] font-bold"
-                  fill="#1a1a1a"
+                  fill="currentColor"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
@@ -798,20 +793,20 @@ function DifferentiationSection() {
             </svg>
 
             <motion.div
-              className="mt-4 pt-4 border-t border-gray-100"
+              className="mt-4 pt-4 border-t border-border/30"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 1.4 }}
             >
-              <div className="flex items-center justify-between text-xs text-gray-500">
-                <span className="font-semibold text-[#1a1a1a]">{t('home.differentiation.ocean_profile')}</span>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span className="font-semibold text-foreground">{t('home.differentiation.ocean_profile')}</span>
                 <motion.span
                   className="flex items-center gap-1"
                   animate={{ opacity: [0.6, 1, 0.6] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <span className="w-2 h-2 rounded-full bg-[#ff5f5f]" />
+                  <span className="w-2 h-2 rounded-full bg-copper" />
                   {t('home.differentiation.digital_twin')}
                 </motion.span>
               </div>
@@ -830,16 +825,16 @@ function PricingSection() {
   const [billing, setBilling] = useState<"monthly" | "annual">("monthly")
 
   return (
-    <section id="pricing" className="relative py-24 px-6 bg-[#fdfbf7] overflow-hidden">
+    <section id="pricing" className="relative py-24 px-6 bg-background overflow-hidden">
       {/* Cartoonish floating shapes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         {[
-          { w: 42, h: 38, left: "10%", top: "12%", bg: "#fef3c7", delay: 0 },
-          { w: 55, h: 48, left: "26%", top: "28%", bg: "#ede9fe", delay: 0.5 },
-          { w: 36, h: 40, left: "42%", top: "8%", bg: "#dbeafe", delay: 1.0 },
-          { w: 60, h: 52, left: "58%", top: "25%", bg: "#fce7f3", delay: 1.5 },
-          { w: 44, h: 35, left: "74%", top: "18%", bg: "#d1fae5", delay: 2.0 },
-          { w: 50, h: 45, left: "90%", top: "32%", bg: "#fef9c3", delay: 2.5 },
+          { w: 42, h: 38, left: "10%", top: "12%", bg: "rgba(193,123,63,0.08)", delay: 0 },
+          { w: 55, h: 48, left: "26%", top: "28%", bg: "rgba(193,123,63,0.06)", delay: 0.5 },
+          { w: 36, h: 40, left: "42%", top: "8%", bg: "rgba(193,123,63,0.05)", delay: 1.0 },
+          { w: 60, h: 52, left: "58%", top: "25%", bg: "rgba(168,85,247,0.06)", delay: 1.5 },
+          { w: 44, h: 35, left: "74%", top: "18%", bg: "rgba(193,123,63,0.07)", delay: 2.0 },
+          { w: 50, h: 45, left: "90%", top: "32%", bg: "rgba(168,85,247,0.05)", delay: 2.5 },
         ].map((shape, i) => (
           <motion.div
             key={i}
@@ -850,7 +845,7 @@ function PricingSection() {
               left: shape.left,
               top: shape.top,
               background: shape.bg,
-              opacity: 0.3,
+              opacity: 0.5,
             }}              animate={{
                 y: [0, -15 - i * 3, 0],
                 rotate: [0, i % 2 === 0 ? 20 : -20, 0],
@@ -883,13 +878,13 @@ function PricingSection() {
         >
           <button
             onClick={() => setBilling("monthly")}
-            className={`text-sm font-semibold transition-all duration-300 ${billing === "monthly" ? "text-[#1a1a1a] scale-105" : "text-gray-400 hover:text-gray-600"}`}
+            className={`text-sm font-semibold transition-all duration-300 ${billing === "monthly" ? "text-foreground scale-105" : "text-muted-foreground hover:text-foreground"}`}
           >
             {t('pricing.toggle_monthly')}
           </button>
           <motion.button
             onClick={() => setBilling(billing === "monthly" ? "annual" : "monthly")}
-            className={`relative inline-flex h-8 w-16 items-center rounded-full transition-all duration-500 ${billing === "annual" ? "bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg shadow-purple-300/50" : "bg-gray-300"}`}
+            className={`relative inline-flex h-8 w-16 items-center rounded-full transition-all duration-300 ${billing === "annual" ? "bg-primary shadow-sm" : "bg-muted"}`}
             whileTap={{ scale: 0.9 }}
           >
             <motion.span
@@ -904,18 +899,18 @@ function PricingSection() {
                   transition={{ type: "spring", stiffness: 500, damping: 15 }}
                   className="text-xs"
                 >
-                  ✨
+                  <Check size={10} />
                 </motion.span>
               )}
             </motion.span>
           </motion.button>
           <button
             onClick={() => setBilling("annual")}
-            className={`text-sm font-semibold transition-all duration-300 relative ${billing === "annual" ? "text-[#1a1a1a] scale-105" : "text-gray-400 hover:text-gray-600"}`}
+            className={`text-sm font-semibold transition-all duration-300 relative ${billing === "annual" ? "text-foreground scale-105" : "text-muted-foreground hover:text-foreground"}`}
           >
             {t('pricing.toggle_yearly')}
             <motion.span
-              className="ml-2 text-[10px] text-white font-bold bg-gradient-to-r from-emerald-400 to-emerald-500 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1"
+              className="ml-2 text-[10px] text-white font-bold bg-emerald-500 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1"
               animate={{ scale: billing === "annual" ? [1, 1.1, 1] : 1 }}
               transition={{ duration: 2, repeat: Infinity }}
             >
@@ -936,23 +931,22 @@ function PricingSection() {
             const isAnnual = billing === "annual"
             const basePrice = parseInt(plan.price.replace("$", ""))
             const displayPrice = isAnnual && basePrice > 0 ? `$${Math.round(basePrice * 10)}` : plan.price
-            const displayOriginal = isAnnual && (plan as any).originalPrice ? (plan as any).originalPrice : null
             const displayPeriod = isAnnual && basePrice > 0 ? "/year" : plan.period
             return (
             <motion.div
               key={plan.nameKey}
               variants={fadeUpScale}
               custom={i * 0.1}
-              className={`rounded-2xl p-8 border bg-white relative flex flex-col transition-all duration-500 ${
+              className={`rounded-2xl p-8 border bg-card relative flex flex-col transition-all duration-500 ${
                 plan.highlight
-                  ? "border-purple-400 border-2 shadow-xl shadow-purple-100/60 scale-[1.02] md:scale-105"
-                  : "border-gray-200 shadow-sm hover:border-purple-200"
+                  ? "border-primary border-2 shadow-lg shadow-primary/10 scale-[1.01]"
+                  : "border-border shadow-sm hover:border-copper/30"
               }`}
               whileHover={{
                 y: plan.highlight ? -10 : -6,
                 boxShadow: plan.highlight
-                  ? "0 24px 48px rgba(168,85,247,0.2)"
-                  : "0 12px 30px rgba(0,0,0,0.08)",
+                  ? "0 24px 48px rgba(193,123,63,0.15)"
+                  : "0 12px 30px rgba(0,0,0,0.3)",
                 transition: { duration: 0.3 },
               }}
             >
@@ -963,7 +957,7 @@ function PricingSection() {
                   transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: i * 0.3 }}
                 >
                   <motion.span
-                    className="inline-flex items-center gap-1.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-5 py-1.5 rounded-full shadow-lg shadow-purple-200/50"
+                    className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground text-xs font-bold px-5 py-1.5 rounded-full shadow-sm"
                     initial={{ y: -10, opacity: 0 }}
                     whileInView={{ y: 0, opacity: 1 }}
                     viewport={{ once: true }}
@@ -974,17 +968,12 @@ function PricingSection() {
                   </motion.span>
                 </motion.span>
               )}
-              <h3 className={`font-bold text-lg mb-1 text-[#1a1a1a] ${plan.highlight ? "mt-2" : ""}`}>
+              <h3 className={`font-bold text-lg mb-1 text-foreground ${plan.highlight ? "mt-2" : ""}`}>
                 {t(plan.nameKey)}
               </h3>
               <div className="flex items-baseline gap-1 mb-6">
-                {displayOriginal && (
-                  <span className="text-xl text-gray-300 line-through font-semibold tracking-tighter mr-0.5">
-                    {displayOriginal}
-                  </span>
-                )}
                 <motion.span
-                  className={`text-4xl font-extrabold tracking-tighter ${plan.highlight ? "bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent" : "text-[#1a1a1a]"}`}
+                  className={`text-4xl font-extrabold tracking-tighter ${plan.highlight ? "text-primary" : "text-foreground"}`}
                   initial={{ scale: 0.5 }}
                   whileInView={{ scale: 1 }}
                   viewport={{ once: true }}
@@ -993,7 +982,7 @@ function PricingSection() {
                 >
                   {displayPrice}
                 </motion.span>
-                <span className="text-gray-400 text-sm">{displayPeriod}</span>
+                <span className="text-muted-foreground text-sm">{displayPeriod}</span>
                 {isAnnual && basePrice > 0 && (
                   <motion.span
                     initial={{ scale: 0 }}
@@ -1008,14 +997,14 @@ function PricingSection() {
                 {plan.features.map((fKey) => (
                   <motion.li
                     key={fKey}
-                    className="flex items-center gap-2.5 text-sm text-gray-600"
+                    className="flex items-center gap-2.5 text-sm text-muted-foreground"
                     initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.4 + i * 0.1 }}
                   >
                     <motion.div
-                      className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0"
+                      className="w-5 h-5 rounded-full bg-emerald-900/30 flex items-center justify-center shrink-0"
                       whileHover={{ scale: 1.2, rotate: 10 }}
                     >
                       <Check size={12} className="text-emerald-500" />
@@ -1027,8 +1016,8 @@ function PricingSection() {
               <motion.button
                 className={`w-full py-3 rounded-full font-semibold text-sm transition-all ${
                   plan.highlight
-                    ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 hover:shadow-lg hover:shadow-purple-200/50"
-                    : "border-2 border-gray-200 text-gray-600 hover:border-purple-300 hover:text-purple-600"
+                    ? "bg-primary text-primary-foreground hover:bg-primary-hover"
+                    : "border border-border text-muted-foreground hover:border-copper/50 hover:text-foreground"
                 }`}
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.95 }}
@@ -1048,17 +1037,17 @@ function PricingSection() {
 function FAQSection() {
   const { t } = useTranslation()
   return (
-    <section id="faq" className="relative py-24 px-6 bg-white overflow-hidden">
+    <section id="faq" className="relative py-24 px-6 bg-obsidian-light overflow-hidden">
       <div className="max-w-3xl mx-auto relative z-10">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4 text-center text-[#1a1a1a]"
+          className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4 text-center text-foreground"
         >
           {t('home.faq.title')}{" "}
-          <span className="bg-gradient-to-r from-[#ff5f5f] to-purple-500 bg-clip-text text-transparent">
+          <span className="text-copper">
             {t('home.faq.title_highlight')}
           </span>
         </motion.h2>
@@ -1067,7 +1056,7 @@ function FAQSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-gray-600 text-center mb-12"
+          className="text-muted-foreground text-center mb-12"
         >
           {t('home.faq.subtitle')}
         </motion.p>
@@ -1084,20 +1073,20 @@ function FAQSection() {
                 variants={fadeUp}
                 custom={i * 0.05}
               >
-                <AccordionItem value={`item-${i}`} className="border-gray-200">
-                  <AccordionTrigger className="text-sm font-medium text-[#1a1a1a] hover:no-underline group">
+                <AccordionItem value={`item-${i}`} className="border-border">
+                  <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline group">
                     <span className="flex items-center gap-3">
                       <motion.span
-                        className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center shrink-0 group-hover:bg-[#ff5f5f]/10 transition-colors"
+                        className="w-6 h-6 rounded-full bg-muted flex items-center justify-center shrink-0 group-hover:bg-copper/10 transition-colors"
                         whileHover={{ rotate: 90 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <Zap size={10} className="text-gray-400 group-hover:text-[#ff5f5f] transition-colors" />
+                        <Zap size={10} className="text-muted-foreground group-hover:text-copper transition-colors" />
                       </motion.span>
                       {t(item.qKey)}
                     </span>
                   </AccordionTrigger>
-                  <AccordionContent className="text-gray-600 leading-relaxed pl-9">
+                  <AccordionContent className="text-muted-foreground leading-relaxed pl-9">
                     {t(item.aKey)}
                   </AccordionContent>
                 </AccordionItem>
@@ -1126,7 +1115,7 @@ function FinalCTASection() {
   }
 
   return (
-    <section className="relative bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 py-24 px-6 text-center overflow-hidden">
+    <section className="relative bg-primary py-24 px-6 text-center overflow-hidden">
       {/* Animated gradient overlay */}
       <motion.div
         className="absolute inset-0 opacity-20"
@@ -1138,38 +1127,7 @@ function FinalCTASection() {
         transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
       />
 
-      {/* Cartoonish floating shapes */}
-      {[
-        { top: "5%", left: "5%", size: 70, delay: 0, emoji: "✨" },
-        { top: "15%", right: "10%", size: 50, delay: 0.8, emoji: "💌" },
-        { top: "60%", right: "8%", size: 55, delay: 1.5, emoji: "🚀" },
-        { bottom: "20%", left: "8%", size: 65, delay: 2.2, emoji: "⭐" },
-        { top: "40%", left: "15%", size: 45, delay: 1, emoji: "💬" },
-        { bottom: "30%", right: "20%", size: 40, delay: 2.8, emoji: "🔥" },
-      ].map((shape, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full flex items-center justify-center text-2xl select-none"
-          style={{
-            top: shape.top, left: shape.left,
-            right: (shape as any).right, bottom: (shape as any).bottom,
-            width: shape.size, height: shape.size,
-          }}
-          animate={{
-            y: [0, -20, 0],
-            rotate: [0, i % 2 === 0 ? 15 : -15, 0],
-            scale: [1, 1.15, 1],
-          }}
-          transition={{
-            duration: 3.5 + i * 0.5,
-            repeat: Infinity,
-            delay: shape.delay,
-            ease: "easeInOut",
-          }}
-        >
-          {shape.emoji}
-        </motion.div>
-      ))}
+
 
       <div className="max-w-2xl mx-auto relative z-10">
         <motion.div
@@ -1243,20 +1201,20 @@ function FinalCTASection() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('home.cta.placeholder')}
                 required
-                className="w-full pl-11 pr-5 py-4 rounded-full text-sm outline-none text-[#1a1a1a] placeholder:text-gray-400 bg-white border-2 border-white/50 focus:border-purple-300 focus:ring-4 focus:ring-purple-200/30 transition-all shadow-lg shadow-black/5"
+                className="w-full pl-11 pr-5 py-4 rounded-full text-sm outline-none text-foreground placeholder:text-muted-foreground bg-card border border-white/20 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </motion.div>
             <motion.button
               type="submit"
-              className="w-full sm:w-auto bg-[#1a1a1a] text-white px-8 py-4 rounded-full font-bold text-sm hover:bg-gray-800 transition-all hover:shadow-xl hover:shadow-black/30 inline-flex items-center gap-2 group whitespace-nowrap"
-              whileHover={{ scale: 1.05, y: -2 }}
+              className="w-full sm:w-auto bg-foreground text-background px-8 py-4 rounded-full font-bold text-sm hover:opacity-90 transition-all inline-flex items-center gap-2 group whitespace-nowrap"
+              whileHover={{ y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
               {t('home.cta.button')}
@@ -1270,38 +1228,20 @@ function FinalCTASection() {
           </motion.form>
         )}
 
-        {/* Trust indicators - cartoonish */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-10 pt-10 border-t border-white/20 flex flex-wrap justify-center gap-8 text-sm text-white/80 font-medium"
-        >
-          {[
-            { emoji: "🔒", textKey: 'home.cta.trust_soc2', delay: 0 },
-            { emoji: "⚡", textKey: 'home.cta.trust_uptime', delay: 0.1 },
-            { emoji: "💳", textKey: 'home.cta.trust_nocc', delay: 0.2 },
-          ].map((item, i) => (
-            <motion.span
-              key={item.textKey}
-              className="flex items-center gap-2"
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5 + item.delay }}
-              whileHover={{ scale: 1.1 }}
-            >
-              <motion.span
-                animate={{ y: [0, -3, 0] }}
-                transition={{ duration: 2, repeat: Infinity, delay: i * 0.4, ease: "easeInOut" }}
-              >
-                {item.emoji}
-              </motion.span>
-              {t(item.textKey)}
-            </motion.span>
-          ))}
-        </motion.div>
+        <div className="mt-10 pt-10 border-t border-white/20 flex flex-wrap justify-center gap-8 text-sm text-white/80 font-medium">
+          <span className="flex items-center gap-2">
+            <Shield size={14} />
+            {t('home.cta.trust_soc2')}
+          </span>
+          <span className="flex items-center gap-2">
+            <Zap size={14} />
+            {t('home.cta.trust_uptime')}
+          </span>
+          <span className="flex items-center gap-2">
+            <CreditCard size={14} />
+            {t('home.cta.trust_nocc')}
+          </span>
+        </div>
       </div>
     </section>
   )
@@ -1341,18 +1281,30 @@ const LANDING_SOCIAL_LINKS = ["footer.social_twitter", "footer.social_linkedin",
    MAIN PAGE
    ════════════════════════════════════════════════════════════ */
 
+/* ════════════════════════════════════════════════════════════
+   MAIN PAGE
+   ════════════════════════════════════════════════════════════ */
+
 export default function HomePage() {
   const { locale } = useParams()
   const l = locale as string
 
   return (
-    <main className="bg-[#fdfbf7] text-[#1a1a1a] font-sans antialiased selection:bg-[#ff5f5f]/20 selection:text-[#1a1a1a]">
+    <main className="bg-background text-foreground font-sans antialiased selection:bg-copper/20 selection:text-foreground">
+      {/* ── Copper streak accent ── */}
+      <div className="copper-streak" />
       <Header locale={l} />
       <Hero locale={l} />
+      <div className="copper-streak" />
+      <DemoVideoSection locale={l} />
       <FeaturesSection />
       <InteractiveDemoSection />
+      <div className="copper-streak" />
       <DifferentiationSection />
+      <TestimonialsSection />
+      <div className="copper-streak" />
       <PricingSection />
+      <div className="copper-streak" />
       <FAQSection />
       <FinalCTASection />
       <Footer locale={l} columns={LANDING_FOOTER_COLUMNS} socialLinks={LANDING_SOCIAL_LINKS} />

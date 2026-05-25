@@ -42,7 +42,7 @@ export function CookieConsent() {
         transition={{ type: "spring", damping: 22, stiffness: 280 }}
         className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[320px]"
       >
-        <div className="bg-white rounded-2xl shadow-2xl shadow-black/10 border border-gray-100 p-7 flex flex-col items-center gap-4">
+        <div className="bg-white rounded-2xl shadow-2xl shadow-black/10 border border-border p-7 flex flex-col items-center gap-4">
           {/* Cookie SVG Icon */}
           <svg
             id="cookieSvg"
@@ -63,11 +63,11 @@ export function CookieConsent() {
             <circle cx="26" cy="32" r="2" fill="#5C3D2E" />
           </svg>
 
-          <h3 className="text-base font-extrabold text-gray-800">
+          <h3 className="text-base font-extrabold text-foreground">
             Cookies Consent
           </h3>
 
-          <p className="text-xs font-semibold text-gray-400 text-center leading-relaxed">
+          <p className="text-xs font-semibold text-muted-foreground text-center leading-relaxed">
             This website uses cookies to improve your experience. By accepting,
             you agree to our{" "}
             <a
@@ -88,7 +88,7 @@ export function CookieConsent() {
             </button>
             <button
               onClick={handleDecline}
-              className="w-20 h-8 bg-gray-200 text-gray-600 text-xs font-semibold rounded-full cursor-pointer shadow-[0_4px_6px_-1px_#bebdbd,0_2px_4px_-1px_#bebdbd] hover:bg-gray-100 hover:shadow-[0_10px_15px_-3px_#bebdbd,0_4px_6px_-2px_#bebdbd] transition-all duration-300"
+              className="w-20 h-8 bg-gray-200 text-muted-foreground text-xs font-semibold rounded-full cursor-pointer shadow-[0_4px_6px_-1px_#bebdbd,0_2px_4px_-1px_#bebdbd] hover:bg-muted hover:shadow-[0_10px_15px_-3px_#bebdbd,0_4px_6px_-2px_#bebdbd] transition-all duration-300"
             >
               Decline
             </button>

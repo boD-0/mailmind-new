@@ -416,24 +416,24 @@ export function OmniCommandPalette({
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Portal container={portalContainer ?? undefined}>
         <Dialog.Overlay
-          className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+          className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
         />
         <Dialog.Content
           aria-label="Command palette"
           className={cn(
-            "fixed z-[101] inset-x-2 top-16 mx-auto w-[min(720px,100%-16px)] rounded-2xl border border-gray-200 bg-white text-gray-900 shadow-2xl shadow-black/10",
+            "fixed z-[101] inset-x-2 top-16 mx-auto w-[min(720px,100%-16px)] rounded-2xl border border-border glass-deep text-foreground",
             "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95 data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
             "outline-none",
             contentClassName
           )}
         >
           {/* Header */}
-          <div className="border-b">
+          <div className="border-b border-border">
             {renderHeader ? (
               renderHeader(query)
             ) : (
               <div className="flex items-center gap-2 px-3 py-2">
-                <Search className="size-4 text-gray-400" aria-hidden />
+                <Search className="size-4 text-muted-foreground" aria-hidden />
                 <input
                   ref={inputRef}
                   type="text"
@@ -456,15 +456,15 @@ export function OmniCommandPalette({
                       if (activeIndex >= 0 && flatItems[activeIndex]) execute(flatItems[activeIndex]!);
                     }
                   }}
-                  className="flex-1 bg-transparent outline-none placeholder:text-gray-400 text-sm text-gray-800"
+                  className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground text-sm text-foreground"
                 />
-                <kbd className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-400 border border-gray-200">
+                <kbd className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground border border-border">
                   ⌘K
                 </kbd>
                 <Dialog.Close asChild>
                   <button
                     aria-label="Close"
-                    className="ml-2 rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                    className="ml-2 rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                   >
                     <X className="size-4" aria-hidden />
                   </button>
@@ -483,9 +483,9 @@ export function OmniCommandPalette({
           >
             {/* Loading bar */}
             {loadingIds.size > 0 && (
-              <div className="flex items-center gap-2 px-3 py-2 text-gray-400 text-xs">
+              <div className="flex items-center gap-2 px-3 py-2 text-muted-foreground text-xs">
                 <Loader2 className="size-3 animate-spin" aria-hidden />
-                Căutăm…
+                Searching…
               </div>
             )}
 
@@ -493,7 +493,7 @@ export function OmniCommandPalette({
             {groups.map((g) => (
               <div key={g.id} className="py-1">
                 {g.items.length > 0 && (
-                  <div className="px-3 py-1 text-[10px] uppercase tracking-wider text-gray-400 font-semibold">
+                  <div className="px-3 py-1 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                     {g.label}
                   </div>
                 )}
@@ -513,10 +513,10 @@ export function OmniCommandPalette({
                         onFocus={() => setActiveId(item.id)}
                         onClick={() => !item.disabled && execute(item)}
                         className={cn(
-                          "group flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm",
+                          "group flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors duration-75",
                           active
-                            ? "bg-[#ff5f5f]/10 text-gray-900"
-                            : "hover:bg-gray-100 text-gray-700",
+                            ? "bg-copper/10 text-foreground"
+                            : "hover:bg-muted text-muted-foreground",
                           item.disabled && "opacity-50 cursor-not-allowed"
                         )}
                       >
@@ -525,7 +525,7 @@ export function OmniCommandPalette({
                         ) : (
                           <>
                             {/* Icon */}
-                            <div className={cn("shrink-0", active ? "text-[#ff5f5f]" : "text-gray-400")}>
+                            <div className={cn("shrink-0", active ? "text-copper" : "text-muted-foreground")}>
                               {item.icon ?? <Command className="size-4" aria-hidden />}
                             </div>
 
@@ -535,7 +535,7 @@ export function OmniCommandPalette({
                                 {renderHighlighted(item.label, item._indices)}
                               </div>
                               {item.subtitle && (
-                                <div className={cn("truncate text-xs", active ? "text-gray-500" : "text-gray-400")}>
+                                <div className={cn("truncate text-xs", active ? "text-muted-foreground" : "text-muted-foreground/60")}>
                                   {item.subtitle}
                                 </div>
                               )}
@@ -543,25 +543,25 @@ export function OmniCommandPalette({
 
                             {/* Shortcut / affordances */}
                             {item.pinned && (
-                              <span title="Pinned" className="text-[#ff5f5f]" aria-hidden>
+                              <span title="Pinned" className="text-copper" aria-hidden>
                                 <Pin className="size-3.5" />
                               </span>
                             )}
                             {item.href && (
-                              <span className="text-gray-400" aria-hidden>
+                              <span className="text-muted-foreground" aria-hidden>
                                 <ExternalLink className="size-3.5" />
                               </span>
                             )}
                             {item.shortcut && (
-                              <span className="ml-2 hidden items-center gap-1 text-[10px] text-gray-400 sm:flex">
+                              <span className="ml-2 hidden items-center gap-1 text-[10px] text-muted-foreground sm:flex">
                                 {item.shortcut.map((s, i) => (
-                                  <kbd key={i} className="rounded bg-gray-100 px-1 py-0.5 border border-gray-200">
+                                  <kbd key={i} className="rounded bg-muted px-1 py-0.5 border border-border">
                                     {s}
                                   </kbd>
                                 ))}
                               </span>
                             )}
-                            <ChevronRight className="ml-1 size-3.5 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden />
+                            <ChevronRight className="ml-1 size-3.5 text-muted-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden />
                           </>
                         )}
                       </button>
@@ -570,8 +570,8 @@ export function OmniCommandPalette({
                 </div>
                 {/* Empty hint per group */}
                 {g.items.length === 0 && debouncedQuery && (
-                  <div className="px-3 py-2 text-xs text-gray-400">
-                    Nimic în {g.label}.
+                  <div className="px-3 py-2 text-xs text-muted-foreground">
+                    Nothing in {g.label}.
                   </div>
                 )}
               </div>
@@ -579,31 +579,31 @@ export function OmniCommandPalette({
 
             {/* Global empty state */}
             {flatItems.length === 0 && (
-              <div className="px-3 py-8 text-center text-sm text-gray-400">
-                <div className="mx-auto mb-2 flex size-8 items-center justify-center rounded-full bg-gray-100">
+              <div className="px-3 py-8 text-center text-sm text-muted-foreground">
+                <div className="mx-auto mb-3 flex size-10 items-center justify-center rounded-full bg-muted">
                   <History className="size-4" aria-hidden />
                 </div>
-                Încearcă o altă căutare.
+                Try another search.
               </div>
             )}
           </div>
 
           {/* Footer */}
-          <div className="border-t">
+          <div className="border-t border-border">
             {renderFooter ? (
               renderFooter(activeIndex >= 0 && flatItems[activeIndex] ? flatItems[activeIndex] as OmniItem : null)
             ) : (
-              <div className="flex items-center justify-between px-3 py-2 text-xs text-gray-400">
+              <div className="flex items-center justify-between px-3 py-2 text-xs text-muted-foreground">
                 <div className="flex items-center gap-4">
                   <span className="flex items-center gap-1">
-                    <CornerDownLeft className="size-3" /> selectează
+                    <CornerDownLeft className="size-3" /> select
                   </span>
                   <span className="flex items-center gap-1">
                     <ArrowUp className="size-3" />
-                    <ArrowDown className="size-3" /> navighează
+                    <ArrowDown className="size-3" /> navigate
                   </span>
                   <span className="hidden items-center gap-1 sm:flex">
-                    <X className="size-3" /> închide
+                    <X className="size-3" /> close
                   </span>
                 </div>
               </div>
@@ -633,7 +633,7 @@ function renderHighlighted(label: string, indices?: number[]) {
       out.push(
         <          mark
             key={`m-${pos}`}
-            className="rounded-[2px] bg-[#ff5f5f]/20 text-[#ff5f5f] px-0.5 font-medium"
+            className="rounded-[2px] bg-copper/20 text-copper px-0.5 font-medium"
           >
           {run}
         </mark>
