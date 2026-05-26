@@ -3,21 +3,30 @@
 import { motion } from "framer-motion"
 import { useParams } from "next/navigation"
 import Link from "next/link"
-import { Sparkles, ArrowRight, Zap, BarChart3, Shield, Globe, Brain, FileText } from "lucide-react"
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (delay = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94], delay },
-  }),
-}
+import { Sparkles, ArrowRight, Zap, BarChart3, Shield, Globe, Brain } from "lucide-react"
 
 const changelog = [
   {
+    version: "v1.2.1",
+    date: "May 26, 2026",
+    badge: "Latest",
+    sections: [
+      {
+        title: "Bug Fixes",
+        icon: Shield,
+        items: [
+          "Fixed Sentry deprecation warnings: migrated disableLogger → webpack.treeshake.removeDebugLogging and reactComponentAnnotation → webpack.reactComponentAnnotation",
+          "Resolved middleware.ts / proxy.ts conflict — migrated to Next.js proxy convention (deleted middleware.ts, proxy.ts now uses default export)",
+          "Fixed CSS import path in globals.css (../../styles/tokens.css → ../styles/tokens.css)",
+          "Created .env.local with auto-generated auth secret for local development",
+        ],
+      },
+    ],
+  },
+  {
     version: "v1.2",
     date: "May 25, 2026",
-    badge: "Latest",
+    badge: "",
     sections: [
       {
         title: "Pricing & Monetization",
@@ -127,7 +136,7 @@ export default function ChangelogPage() {
           <motion.span className="inline-flex items-center gap-1.5 bg-copper/10 text-copper text-xs font-semibold tracking-wider px-4 py-1.5 rounded-full mb-6"
             animate={{ y: [0, -3, 0] }} transition={{ duration: 2, repeat: Infinity }}>
             <Sparkles size={12} />
-            What's New
+            What&apos;s New
           </motion.span>
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-3">
             MailMind{" "}

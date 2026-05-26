@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { useParams } from "next/navigation"
 import Link from "next/link"
-import { Sparkles, ArrowRight, Star, Trophy, Zap, Users, Rocket, Check, Clock, BarChart3, Globe, Search, Brain, Target, PenTool, Play } from "lucide-react"
+import { ArrowRight, Star, Trophy, Zap, Rocket, BarChart3, Globe, Search, Brain, Target, PenTool, Play } from "lucide-react"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },

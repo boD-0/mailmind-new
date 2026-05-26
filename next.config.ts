@@ -57,16 +57,18 @@ export default withSentryConfig(nextConfig, {
   // Upload a larger set of source maps for prettier stack traces (increases build time)
   widenClientFileUpload: true,
 
-  // Automatically annotate React components for better error grouping
-  reactComponentAnnotation: {
-    enabled: true,
-  },
-
   // Route browser requests to Sentry through a Next.js rewrite (ad-blocker safe)
   tunnelRoute: "/monitoring",
 
-  // Automatically tree-shake Sentry logger statements (reduces bundle size)
-  disableLogger: true,
+  // Webpack-level Sentry options (replaces deprecated top-level options)
+  webpack: {
+    reactComponentAnnotation: {
+      enabled: true,
+    },
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
 
   // Telemetry helps Sentry prioritize fixes — disable if you prefer
   telemetry: false,

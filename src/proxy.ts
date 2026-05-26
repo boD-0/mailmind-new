@@ -132,7 +132,7 @@ function getCspHeader(): string {
   ].join("; ");
 }
 
-export async function proxy(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const ip = getIpFromRequest(request);
   let response = NextResponse.next();

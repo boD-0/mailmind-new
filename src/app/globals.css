@@ -13,7 +13,7 @@
 @import "tw-animate-css";
 
 /* ── Design tokens (single source of truth) ──────────────────────────────── */
-@import "../../styles/tokens.css";
+@import "../styles/tokens.css";
 
 /* ── Base Styles ─────────────────────────────────────────────────────────── */
 
