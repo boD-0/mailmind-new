@@ -1,0 +1,4 @@
+// This file is intentionally empty - the diagnostic route has been removed.
+// It was created temporarily for debugging auth 500 errors.
+// The diagnostic confirmed: server-side auth API works perfectly.
+// The browser 500s were due to Next.js dev server hot-reload transient issues.

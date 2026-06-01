@@ -1,0 +1,10 @@
+{
+  "css.lint.unknownAtRules": "ignore",
+  "css.customData": [".vscode/tailwind.json"],
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]* archival)[\"'`]"]
+  ],
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "css"
+  }
+}

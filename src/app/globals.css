@@ -1,0 +1,366 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   MailMind Global Styles — src/app/globals.css
+
+   Imports design tokens, fonts, and utility classes.
+   All token definitions live in src/styles/tokens.css.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Fonts ───────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── Third-party imports ─────────────────────────────────────────────────── */
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* ── Design tokens (single source of truth) ──────────────────────────────── */
+@import "../styles/tokens.css";
+
+/* ── Base Styles ─────────────────────────────────────────────────────────── */
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+}
+
+/* ── Selection ───────────────────────────────────────────────────────────── */
+
+::selection {
+  background: var(--color-primary-muted);
+  color: var(--color-primary);
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-hover);
+}
+
+/* ── Typography Utility Classes ──────────────────────────────────────────── */
+
+.font-display {
+  font-family: var(--font-serif);
+}
+
+.font-heading-cinematic {
+  font-family: 'Instrument Serif', serif;
+}
+
+/* ── Glass Effects ───────────────────────────────────────────────────────── */
+
+.glass {
+  background: hsl(30 8% 10% / 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--color-border);
+}
+
+.light .glass {
+  background: hsl(0 0% 100% / 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--color-border);
+}
+
+.glass-deep {
+  background: hsl(30 8% 8% / 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--color-border);
+}
+
+.light .glass-deep {
+  background: hsl(0 0% 100% / 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--color-border);
+}
+
+.glass-lift {
+  transition: all var(--duration-normal) var(--ease-out-expo);
+}
+
+.glass-lift:hover {
+  background: hsl(30 8% 14% / 0.9);
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.light .glass-lift:hover {
+  background: hsl(0 0% 100% / 1);
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* ── Liquid Glass (border gradient effect) ───────────────────────────────── */
+
+.liquid-glass {
+  background: hsl(0 0% 100% / 0.01);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  box-shadow: inset 0 1px 1px hsl(0 0% 100% / 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.light .liquid-glass {
+  background: hsl(0 0% 100% / 0.03);
+}
+
+.liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(
+    180deg,
+    hsl(28 45% 50% / 0.45) 0%,
+    hsl(0 0% 100% / 0.15) 20%,
+    transparent 40%,
+    transparent 60%,
+    hsl(0 0% 100% / 0.15) 80%,
+    hsl(28 45% 50% / 0.45) 100%
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+.light .liquid-glass::before {
+  background: linear-gradient(
+    180deg,
+    hsl(4 88% 68% / 0.3) 0%,
+    hsl(0 0% 100% / 0.1) 20%,
+    transparent 40%,
+    transparent 60%,
+    hsl(0 0% 100% / 0.1) 80%,
+    hsl(4 88% 68% / 0.3) 100%
+  );
+}
+
+.liquid-glass-strong {
+  background: hsl(0 0% 100% / 0.02);
+  background-blend-mode: luminosity;
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.light .liquid-glass-strong {
+  background: hsl(0 0% 100% / 0.05);
+}
+
+.liquid-glass-strong::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(
+    180deg,
+    hsl(28 45% 50% / 0.5) 0%,
+    hsl(0 0% 100% / 0.2) 20%,
+    transparent 40%,
+    transparent 60%,
+    hsl(0 0% 100% / 0.2) 80%,
+    hsl(28 45% 50% / 0.5) 100%
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+.light .liquid-glass-strong::before {
+  background: linear-gradient(
+    180deg,
+    hsl(4 88% 68% / 0.35) 0%,
+    hsl(0 0% 100% / 0.15) 20%,
+    transparent 40%,
+    transparent 60%,
+    hsl(0 0% 100% / 0.15) 80%,
+    hsl(4 88% 68% / 0.35) 100%
+  );
+}
+
+/* ── Copper Decorative Elements ──────────────────────────────────────────── */
+
+.copper-streak {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, var(--color-copper), transparent);
+  opacity: 0.3;
+}
+
+.light .copper-streak {
+  opacity: 0.15;
+}
+
+/* ── Shadows ─────────────────────────────────────────────────────────────── */
+
+.luxury-shadow {
+  box-shadow: 0 20px 50px hsl(0 0% 0% / 0.5),
+              0 0 20px hsl(28 45% 50% / 0.05);
+}
+
+.light .luxury-shadow {
+  box-shadow: 0 4px 20px hsl(0 0% 0% / 0.06),
+              0 0 10px hsl(4 88% 68% / 0.03);
+}
+
+/* ── Card Hover ──────────────────────────────────────────────────────────── */
+
+.card-lift {
+  transition: transform var(--duration-fast) var(--ease-out-expo),
+              border-color var(--duration-fast) var(--ease-out-expo),
+              box-shadow var(--duration-fast) var(--ease-out-expo);
+}
+
+.card-lift:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Underline Hover ─────────────────────────────────────────────────────── */
+
+.underline-hover {
+  position: relative;
+  text-decoration: none;
+}
+
+.underline-hover::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width var(--duration-fast) var(--ease-out-expo);
+}
+
+.underline-hover:hover::after {
+  width: 100%;
+}
+
+/* ── Animations ──────────────────────────────────────────────────────────── */
+
+@keyframes enter-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-enter-up {
+  animation: enter-up var(--duration-normal) var(--ease-out-expo) forwards;
+}
+
+@keyframes enter-scale {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-enter-scale {
+  animation: enter-scale var(--duration-slow) var(--ease-out-expo) forwards;
+}
+
+@keyframes crystallize {
+  from { filter: blur(8px); opacity: 0.3; transform: scale(0.96); }
+  to   { filter: blur(0); opacity: 1; transform: scale(1); }
+}
+
+.crystallize {
+  animation: crystallize 1.2s var(--ease-out-expo) forwards;
+}
+
+@keyframes copper-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.4); opacity: 0.4; }
+}
+
+.animate-copper-pulse {
+  animation: copper-pulse 2s ease-in-out infinite;
+}
+
+@keyframes ripple {
+  from { transform: scale(1); opacity: 0.35; }
+  to   { transform: scale(2.2); opacity: 0; }
+}
+
+.animate-ripple        { animation: ripple 2s ease-out infinite; }
+.animate-ripple-delay   { animation: ripple 2s ease-out 0.9s infinite; }
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 6s linear infinite;
+}
+
+@keyframes gradient-x {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 4s ease infinite;
+}
+
+@keyframes shimmer-slide {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+.animate-shimmer {
+  animation: shimmer-slide 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(4 88% 58% / 0.4); }
+  50%      { box-shadow: 0 0 0 6px hsl(4 88% 58% / 0); }
+}
+
+.animate-badge-pulse {
+  animation: badge-pulse 2s infinite;
+}
+
+/* ── Respect motion preferences ──────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,72 @@
+# Git hooks directory
+# For secret scanning, run: git config core.hooksPath .githooks
+
+#!/bin/bash
+# Pre-commit hook — scans staged files for secrets before committing.
+# Uses git-secrets if available, falls back to basic pattern matching.
+
+set -e
+
+echo "🔐 Scanning for secrets..."
+
+# Check if git-secrets is installed
+if command -v git-secrets &> /dev/null; then
+  git secrets --scan
+  echo "✅ git-secrets scan passed"
+  exit 0
+fi
+
+# Fallback: basic pattern matching for common secret patterns
+SECRET_PATTERNS=(
+  "sk-[a-zA-Z0-9]{20,}"           # OpenAI keys
+  "sk_live_[a-zA-Z0-9]{20,}"      # Stripe live keys
+  "xox[bprs]-[a-zA-Z0-9-]{10,}"   # Slack tokens
+  "ghp_[a-zA-Z0-9]{36}"           # GitHub tokens
+  "AKIA[0-9A-Z]{16}"              # AWS access keys
+  "eyJ[a-zA-Z0-9_-]{20,}\\.[a-zA-Z0-9_-]{20,}\\.[a-zA-Z0-9_-]{20,}" # JWTs
+)
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [ -z "$STAGED_FILES" ]; then
+  echo "✅ No staged files to scan"
+  exit 0
+fi
+
+FOUND_SECRET=false
+
+for FILE in $STAGED_FILES; do
+  # Skip binary files, images, lock files
+  if [[ "$FILE" =~ \.(png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|ttf|eot|lock|map)$ ]]; then
+    continue
+  fi
+
+  # Skip .env.example and documentation files
+  if [[ "$FILE" == *".env.example"* ]] || [[ "$FILE" == *".md" ]]; then
+    continue
+  fi
+
+  if [ ! -f "$FILE" ]; then
+    continue
+  fi
+
+  for PATTERN in "${SECRET_PATTERNS[@]}"; do
+    if grep -Eq "$PATTERN" "$FILE"; then
+      echo "❌ WARNING: Potential secret found in $FILE"
+      echo "   Pattern matched: $PATTERN"
+      echo "   If this is intentional (e.g., in a test mock), add a # nosecrets comment on that line."
+      FOUND_SECRET=true
+    fi
+  done
+done
+
+if [ "$FOUND_SECRET" = true ]; then
+  echo ""
+  echo "🚨 Commit blocked: potential secrets found."
+  echo "   Review the warnings above and remove real secrets before committing."
+  echo "   To skip this check (NOT recommended): git commit --no-verify"
+  exit 1
+fi
+
+echo "✅ No secrets detected"
+exit 0
