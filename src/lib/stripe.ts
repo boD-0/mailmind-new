@@ -5,7 +5,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2026-04-22.dahlia', 
+  apiVersion: '2026-05-27.dahlia',
   appInfo: {
     name: 'MailMind V4',
     version: '1.0.0',

@@ -6,7 +6,9 @@ import { authClient } from '@/lib/auth/auth-client'
 import { toast } from 'sonner'
 import { useTranslation } from '@/components/I18nProvider'
 
-function getPasswordStrength(pw: string) {
+type StrengthLevel = 'weak' | 'fair' | 'good' | 'strong'
+
+function getPasswordStrength(pw: string): { checks: { minLength: boolean; hasUppercase: boolean; hasLowercase: boolean; hasNumber: boolean; hasSpecial: boolean }; score: number; level: StrengthLevel } {
   const checks = {
     minLength: pw.length >= 8,
     hasUppercase: /[A-Z]/.test(pw),
@@ -15,18 +17,18 @@ function getPasswordStrength(pw: string) {
     hasSpecial: /[^A-Za-z0-9]/.test(pw),
   }
   const score = Object.values(checks).filter(Boolean).length
-  const level = score <= 2 ? 'weak' : score <= 3 ? 'fair' : score <= 4 ? 'good' : 'strong'
+  const level: StrengthLevel = score <= 2 ? 'weak' : score <= 3 ? 'fair' : score <= 4 ? 'good' : 'strong'
   return { checks, score, level }
 }
 
-function StrengthIndicator({ level, score }: { level: string; score: number }) {
-  const colorMap: Record<string, string> = {
+function StrengthIndicator({ level, score }: { level: StrengthLevel; score: number }) {
+  const colorMap: Record<StrengthLevel, string> = {
     weak: 'bg-red-500',
     fair: 'bg-orange-500',
     good: 'bg-yellow-500',
     strong: 'bg-emerald-500',
   }
-  const labelMap: Record<string, string> = {
+  const labelMap: Record<StrengthLevel, string> = {
     weak: 'auth.strength_weak',
     fair: 'auth.strength_fair',
     good: 'auth.strength_good',

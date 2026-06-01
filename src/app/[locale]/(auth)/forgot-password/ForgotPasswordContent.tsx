@@ -19,7 +19,7 @@ export default function ForgotPasswordContent() {
     e.preventDefault()
     setLoading(true)
     try {
-      const { error } = await authClient.forgetPassword({
+      const { error } = await authClient.requestPasswordReset({
         email,
         redirectTo: `/${locale}/reset-password`,
       })

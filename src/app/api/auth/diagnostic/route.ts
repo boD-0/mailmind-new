@@ -24,6 +24,8 @@ export async function GET() {
           name: "Diagnostic Test",
           email: testEmail,
           password: "DiagnosticTest123!",
+          polarSubscriptionId: "",
+          trialEnd: new Date(),
         },
       });
       results.signUp = { ok: true, data: JSON.stringify(result).slice(0, 500) };

@@ -40,6 +40,9 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
   },
 };
 
+export function getPlanLimits(plan: Plan): PlanLimits {
+  return PLAN_LIMITS[plan]
+}
 
 export function checkFeatureAccess(
   plan: Plan,
