@@ -169,7 +169,7 @@ export default function LaunchPage() {
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(5)].map((_, j) => <Star key={j} size={12} className="text-amber-400 fill-amber-400" />)}
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1">"{t.quote}"</p>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1">&ldquo;{t.quote}&rdquo;</p>
                 <div>
                   <p className="text-sm font-semibold">{t.name}</p>
                   <p className="text-xs text-muted-foreground">{t.role}</p>
