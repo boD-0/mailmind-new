@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Lightbulb, Trash2, Tag, Search, Sparkles, Rocket, X, PenSquare } from "lucide-react";
+import { Plus, Trash2, Tag, Search, Rocket, X, PenSquare } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { EmptyState } from "@/components/ui/empty-state";
 import { authClient } from "@/lib/auth/auth-client";

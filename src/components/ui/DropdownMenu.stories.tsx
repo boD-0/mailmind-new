@@ -16,7 +16,7 @@ import {
 } from './dropdown-menu';
 import { Button } from './button';
 
-export default { title: 'UI/DropdownMenu', component: DropdownMenu };
+const meta = { title: 'UI/DropdownMenu', component: DropdownMenu };
 
 /* ── Basic Variants ───────────────────────────────────── */
 
@@ -118,6 +118,8 @@ export const WithCheckboxes = () => {
     </DropdownMenu>
   );
 };
+
+export default meta;
 
 export const WithSubmenu = () => (
   <DropdownMenu>

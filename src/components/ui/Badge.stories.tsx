@@ -1,7 +1,9 @@
 import React from 'react';
 import { Badge } from './badge';
 
-export default { title: 'UI/Badge', component: Badge };
+const meta = { title: 'UI/Badge', component: Badge };
+
+export default meta;
 
 /* ── Basic Variants ───────────────────────────────────── */
 

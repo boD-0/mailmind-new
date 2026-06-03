@@ -1,7 +1,9 @@
 import React from 'react';
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandSeparator, CommandShortcut } from './command';
 
-export default { title: 'UI/Command', component: Command };
+const meta = { title: 'UI/Command', component: Command };
+
+export default meta;
 
 /* ── Basic Variants ───────────────────────────────────── */
 

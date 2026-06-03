@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import posthog from "posthog-js";
 
 const STORAGE_KEY = "mailmind-cookie-consent";
@@ -9,15 +10,17 @@ const STORAGE_KEY = "mailmind-cookie-consent";
 type ConsentState = "accepted" | "declined" | null;
 
 export function CookieConsent() {
-  const [consent, setConsent] = useState<ConsentState>(null);
+  const [consent, setConsent] = useState<ConsentState>(() => {
+    if (typeof window === "undefined") return null;
+    const stored = localStorage.getItem(STORAGE_KEY) as ConsentState;
+    if (stored === "accepted" || stored === "declined") return stored;
+    return null;
+  });
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-    const stored = localStorage.getItem(STORAGE_KEY) as ConsentState;
-    if (stored === "accepted" || stored === "declined") {
-      setConsent(stored);
-    }
   }, []);
 
   const handleAccept = () => {
@@ -70,12 +73,12 @@ export function CookieConsent() {
           <p className="text-xs font-semibold text-muted-foreground text-center leading-relaxed">
             This website uses cookies to improve your experience. By accepting,
             you agree to our{" "}
-            <a
+            <Link
               href="/privacy"
               className="text-blue-500 hover:underline transition-colors"
             >
               Privacy Policy
-            </a>
+            </Link>
             .
           </p>
 

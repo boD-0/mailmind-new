@@ -28,7 +28,8 @@ export const auth = betterAuth({
     tokenTTL: 3600, // Verification link expires in 1 hour
     // Custom email sender — logs to console in dev, sends via Resend in prod
     sendVerificationEmail: async (data) => {
-      const { user, url, token } = data;
+      const { user, url } = data;
+      void data.token;
       console.log(`[Auth] Verification email for ${user.email}: ${url}`);
 
       const resendApiKey = process.env.RESEND_API_KEY;

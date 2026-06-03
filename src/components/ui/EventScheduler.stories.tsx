@@ -1,7 +1,8 @@
 import React from 'react';
 import { EventScheduler, type ScheduledEvent } from './event-scheduler';
 
-export default { title: 'UI/EventScheduler', component: EventScheduler };
+export default {}
+const meta = { title: 'UI/EventScheduler', component: EventScheduler };
 
 /* ── Basic Variants ───────────────────────────────────── */
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useSearchParams, useRouter, useParams } from 'next/navigation'
 import { authClient } from '@/lib/auth/auth-client'
 import { toast } from 'sonner'
@@ -16,8 +16,6 @@ export default function VerifyEmailContent() {
   const locale = (params?.locale as string) || 'ro'
   const { t } = useTranslation()
 
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
-  const [errorMessage, setErrorMessage] = useState('')
   const [resent, setResent] = useState(false)
   const [resending, setResending] = useState(false)
 
@@ -25,23 +23,23 @@ export default function VerifyEmailContent() {
   const token = searchParams.get('token')
   const error = searchParams.get('error')
 
-  useEffect(() => {
+  const { status, errorMessage } = (() => {
     if (error) {
-      setStatus('error')
+      let msg = '';
       if (error === 'invalid_token') {
-        setErrorMessage(t('auth.verify_error_invalid'))
+        msg = t('auth.verify_error_invalid');
       } else if (error === 'expired_token') {
-        setErrorMessage(t('auth.verify_error_expired'))
+        msg = t('auth.verify_error_expired');
       } else {
-        setErrorMessage(t('auth.verify_error_generic'))
+        msg = t('auth.verify_error_generic');
       }
-    } else if (token) {
-      setStatus('success')
-    } else {
-      setStatus('error')
-      setErrorMessage(t('auth.verify_error_generic'))
+      return { status: 'error' as const, errorMessage: msg };
     }
-  }, [error, token, t])
+    if (token) {
+      return { status: 'success' as const, errorMessage: '' };
+    }
+    return { status: 'error' as const, errorMessage: t('auth.verify_error_generic') };
+  })();
 
   const handleResend = async () => {
     if (!email) {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Crown, ArrowLeft, FlaskConical, Layers, Send, Download, Sparkles,
@@ -455,13 +455,12 @@ export default function ToolsPage() {
   const userPlan = (session?.user as User | undefined)?.plan as Plan || "FREE";
   const [view, setView] = useState<TabView>("canvas");
 
-  const [greeting, setGreeting] = useState("");
-  useEffect(() => {
+  const [greeting] = useState(() => {
     const h = new Date().getHours();
-    if (h < 12) setGreeting("Good morning");
-    else if (h < 18) setGreeting("Good afternoon");
-    else setGreeting("Good evening");
-  }, []);
+    if (h < 12) return "Good morning";
+    if (h < 18) return "Good afternoon";
+    return "Good evening";
+  });
 
   return (
     <div className="max-w-5xl mx-auto px-8 py-10">

@@ -1,7 +1,7 @@
 import { swarmGraph } from "./graph";
 import { createClient } from "@/lib/supabase/server";
 import { db } from "@/db/drizzle";
-import { swarmExecutions } from "@/db/schema";
+import { swarmExecutions, type SwarmExecutionInsert, type SwarmExecutionUpdate } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 /**
@@ -53,15 +53,15 @@ export async function resumeSwarmFromCopywriter(
         .values({
           userId,
           projectId: campaign.project_id ?? undefined,
-          agentsUsed: ["RESEARCHER", "STRATEGIST", "ANALYST"] as any,
+          agentsUsed: ["RESEARCHER", "STRATEGIST", "ANALYST"],
           inputPrompt: `${campaign.prospect_name} | ${campaign.prospect_url}`,
           outputResult: null,
           modelUsed: "gpt-4o-mini",
           tokensUsed: null,
           durationMs: null,
-          status: "pending",
+          status: "pending" as const,
           createdAt: new Date(),
-        } as any)
+        } as SwarmExecutionInsert)
         .returning({ id: swarmExecutions.id });
 
       if (inserted[0]) {
@@ -105,8 +105,8 @@ export async function resumeSwarmFromCopywriter(
           outputResult: finalState.email_draft ?? null,
           tokensUsed: null,
           durationMs,
-          status: finalState.email_draft ? "success" : "error",
-        } as any)
+          status: (finalState.email_draft ? "success" : "error") as const,
+        } as SwarmExecutionUpdate)
         .where(eq(swarmExecutions.id, executionId));
     } catch (dbError) {
       console.error("[resumeSwarm] Failed to update final execution:", dbError);

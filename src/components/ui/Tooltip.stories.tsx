@@ -2,7 +2,8 @@ import React from 'react';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './tooltip';
 import { Button } from './button';
 
-export default { title: 'UI/Tooltip', component: Tooltip };
+export default {}
+const meta = { title: 'UI/Tooltip', component: Tooltip };
 
 /* ── Basic Variants ───────────────────────────────────── */
 

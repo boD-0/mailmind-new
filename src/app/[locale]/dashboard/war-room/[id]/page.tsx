@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { SwarmCanvas } from "@/components/swarm/SwarmCanvas";
 import { useParams } from "next/navigation";
 import { subscribeToSwarm } from "@/lib/supabase/realtime";
@@ -25,7 +25,7 @@ import {
   Brain, GitCompare,
 } from "lucide-react";
 import { authClient } from "@/lib/auth/auth-client";
-import { Plan, PLAN_LIMITS } from "@/lib/auth/plans";
+import { Plan } from "@/lib/auth/plans";
 import { User } from "@/db/schema";
 import Link from "next/link";
 import { UploadZone } from "@/components/vault/UploadZone";
@@ -294,37 +294,40 @@ export default function WarRoomPage() {
   const userPlan = (session?.user as User | undefined)?.plan as Plan || "FREE";
 
   // Mock versions for demo — in production, fetched from API
-  const [versions, setVersions] = useState<VersionEntry[]>([
-    {
-      id: "v1",
-      shortHash: "a3f2b1c",
-      author: "Copywriter",
-      description: "Initial draft — cold outreach",
-      content: "<p>Hi {{first_name}},</p><p>I noticed your team at {{company}} is scaling operations. We built MailMind to automate exactly that — here's a quick case study.</p><p>Would you be open to a 15-minute call this week?</p><p>Best,<br>{{sender_name}}</p>",
-      timestamp: Date.now() - 3600000,
-      branch: "ai",
-    },
-    {
-      id: "v2",
-      shortHash: "d7e4a8f",
-      author: "Strategist",
-      description: "Added value prop + social proof",
-      content: "<p>Hi {{first_name}},</p><p>Congrats on the recent {{milestone}} — impressive growth! I noticed {{company}} is scaling operations and thought you'd find this relevant.</p><p>Teams like {{similar_company}} use MailMind to 3x their outreach response rates with AI-powered personalization. Here's how it works...</p><p>Open to exploring this further?</p><p>Best,<br>{{sender_name}}</p>",
-      timestamp: Date.now() - 2400000,
-      branch: "ai",
-      parentHash: "a3f2b1c",
-    },
-    {
-      id: "v3",
-      shortHash: "f9c2b5e",
-      author: "User Edit",
-      description: "Softened tone, added personal touch",
-      content: "<p>Hi {{first_name}},</p><p>Hope you're having a great week! I've been following {{company}}'s journey and the recent {{milestone}} is truly impressive.</p><p>We built MailMind to help teams like yours scale outreach without losing the human touch. Teams using it are seeing <strong>3x higher</strong> response rates through AI-powered personalization.</p><p>No rush — but if you're curious, I'd love to share how it works in a quick 15-minute call.</p><p>Warmly,<br>{{sender_name}}</p>",
-      timestamp: Date.now() - 1200000,
-      branch: "user",
-      parentHash: "d7e4a8f",
-    },
-  ]);
+  const [versions, setVersions] = useState<VersionEntry[]>(() => {
+    const now = Date.now();
+    return [
+      {
+        id: "v1",
+        shortHash: "a3f2b1c",
+        author: "Copywriter",
+        description: "Initial draft — cold outreach",
+        content: "<p>Hi {{first_name}},</p><p>I noticed your team at {{company}} is scaling operations. We built MailMind to automate exactly that — here's a quick case study.</p><p>Would you be open to a 15-minute call this week?</p><p>Best,<br>{{sender_name}}</p>",
+        timestamp: now - 3600000,
+        branch: "ai",
+      },
+      {
+        id: "v2",
+        shortHash: "d7e4a8f",
+        author: "Strategist",
+        description: "Added value prop + social proof",
+        content: "<p>Hi {{first_name}},</p><p>Congrats on the recent {{milestone}} — impressive growth! I noticed {{company}} is scaling operations and thought you'd find this relevant.</p><p>Teams like {{similar_company}} use MailMind to 3x their outreach response rates with AI-powered personalization. Here's how it works...</p><p>Open to exploring this further?</p><p>Best,<br>{{sender_name}}</p>",
+        timestamp: now - 2400000,
+        branch: "ai",
+        parentHash: "a3f2b1c",
+      },
+      {
+        id: "v3",
+        shortHash: "f9c2b5e",
+        author: "User Edit",
+        description: "Softened tone, added personal touch",
+        content: "<p>Hi {{first_name}},</p><p>Hope you're having a great week! I've been following {{company}}'s journey and the recent {{milestone}} is truly impressive.</p><p>We built MailMind to help teams like yours scale outreach without losing the human touch. Teams using it are seeing <strong>3x higher</strong> response rates through AI-powered personalization.</p><p>No rush — but if you're curious, I'd love to share how it works in a quick 15-minute call.</p><p>Warmly,<br>{{sender_name}}</p>",
+        timestamp: now - 1200000,
+        branch: "user",
+        parentHash: "d7e4a8f",
+      },
+    ];
+  });
 
   useEffect(() => {
     if (!campaignId) return;

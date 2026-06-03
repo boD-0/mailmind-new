@@ -57,15 +57,21 @@ function TimeUnit({ value, label }: { value: number; label: string }) {
 }
 
 export function CountdownBanner() {
-  const [time, setTime] = useState<{ hours: number; minutes: number; seconds: number } | null>(null)
-  const [mounted, setMounted] = useState(false)
+  const [time, setTime] = useState<{ hours: number; minutes: number; seconds: number } | null>(() => {
+    if (typeof window === "undefined") return null;
+    return getTimeLeft();
+  });
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-    setTime(getTimeLeft())
-    const interval = setInterval(() => setTime(getTimeLeft()), 1000)
-    return () => clearInterval(interval)
-  }, [])
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTime(getTimeLeft());
+    const interval = setInterval(() => setTime(getTimeLeft()), 1000);
+    return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!mounted) return null
 

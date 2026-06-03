@@ -1,7 +1,8 @@
 import React from 'react';
 import { Switch } from './switch';
 
-export default { title: 'UI/Switch', component: Switch };
+export default {}
+const meta = { title: 'UI/Switch', component: Switch };
 
 /* ── Basic Variants ───────────────────────────────────── */
 

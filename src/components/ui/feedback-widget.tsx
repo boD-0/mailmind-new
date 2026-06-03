@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, Star, X, Send, Loader2, Check } from "lucide-react";
+import { MessageSquare, X, Send, Loader2, Check } from "lucide-react";
 import { useTranslation } from "@/components/I18nProvider";
 
 const RATINGS = [

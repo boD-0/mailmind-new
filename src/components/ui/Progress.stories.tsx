@@ -1,7 +1,8 @@
 import React from 'react';
 import { Progress } from './progress';
 
-export default { title: 'UI/Progress', component: Progress };
+export default {}
+const meta = { title: 'UI/Progress', component: Progress };
 
 /* ── Basic Variants ───────────────────────────────────── */
 

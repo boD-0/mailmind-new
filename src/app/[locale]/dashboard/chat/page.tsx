@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Sparkles, ChevronDown, TrendingUp, Target, Users, MessageSquare, Clock } from "lucide-react";
+import { Send, Sparkles, TrendingUp, Target, Users, MessageSquare } from "lucide-react";
 
 /* ════════════════════════════════════════════════════════════
    TYPES

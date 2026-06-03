@@ -6,7 +6,7 @@
 
 import { db } from '@/db/drizzle'
 import { projects, swarmExecutions, vaultDocuments, emailEvents, prospects } from '@/db/schema'
-import { eq, desc, like, and, or, count, sql } from 'drizzle-orm'
+import { eq, desc, like, and, or, count } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
 /* ── Types ── */

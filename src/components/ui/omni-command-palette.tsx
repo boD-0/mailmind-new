@@ -220,13 +220,14 @@ export function OmniCommandPalette({
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   // Recents
-  const [recents, setRecents] = React.useState<RecentEntry[]>([]);
-  React.useEffect(() => {
+  const [recents, setRecents] = React.useState<RecentEntry[]>(() => {
+    if (typeof window === "undefined") return [];
     try {
       const raw = localStorage.getItem(storageKey);
-      if (raw) setRecents(JSON.parse(raw));
+      if (raw) return JSON.parse(raw) as RecentEntry[];
     } catch {}
-  }, [storageKey]);
+    return [];
+  });
 
   function setOpen(v: boolean) {
     if (controlledOpen === undefined) setUncontrolledOpen(v);
@@ -402,14 +403,17 @@ export function OmniCommandPalette({
   }
 
   // Focus input each time it opens; sync query with initialQuery
+  const prevOpenRef = React.useRef(open);
   React.useEffect(() => {
-    if (open) {
-      if (initialQuery) setQuery(initialQuery);
+    if (open && !prevOpenRef.current) {
+      setQuery(initialQuery ?? "");
       setTimeout(() => inputRef.current?.focus(), 10);
-    } else {
+    } else if (!open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuery("");
       setActiveId(null);
     }
+    prevOpenRef.current = open;
   }, [open, initialQuery]);
 
   return (

@@ -153,7 +153,7 @@ export default function ChangelogPage() {
           <div className="absolute left-0 top-0 bottom-0 w-px bg-border hidden md:block" />
 
           <div className="space-y-16">
-            {changelog.map((release, ri) => (
+            {changelog.map((release) => (
               <motion.div key={release.version}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}

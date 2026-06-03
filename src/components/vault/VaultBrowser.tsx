@@ -8,6 +8,7 @@ import {
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import { EmptyState } from "@/components/ui/empty-state";
 
 type VaultDocument = {
@@ -63,7 +64,8 @@ export function VaultBrowser() {
   }, []);
 
   useEffect(() => {
-    loadDocuments();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void loadDocuments();
   }, [loadDocuments]);
 
   const handleDownload = async (doc: VaultDocument) => {
@@ -253,9 +255,11 @@ export function VaultBrowser() {
               {/* Preview Content */}
               <div className="flex-1 overflow-auto p-4">
                 {previewDoc.mimeType?.startsWith("image/") ? (
-                  <img
+                  <Image
                     src={previewUrl}
                     alt={previewDoc.fileName}
+                    width={800}
+                    height={600}
                     className="max-w-full h-auto rounded-lg"
                   />
                 ) : previewDoc.mimeType?.includes("pdf") ? (

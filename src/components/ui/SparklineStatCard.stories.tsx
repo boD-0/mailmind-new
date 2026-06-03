@@ -1,7 +1,8 @@
 import React from 'react';
 import { SparklineStatCard } from '../dashboard/SparklineStatCard';
 
-export default { title: 'UI/SparklineStatCard', component: SparklineStatCard };
+export default {}
+const meta = { title: 'UI/SparklineStatCard', component: SparklineStatCard };
 
 /* ── Basic Variants ───────────────────────────────────── */
 

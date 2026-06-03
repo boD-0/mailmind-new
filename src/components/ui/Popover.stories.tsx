@@ -2,7 +2,8 @@ import React from 'react';
 import { Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverTitle, PopoverDescription, PopoverFooter, PopoverBody } from './popover';
 import { Button } from './button';
 
-export default { title: 'UI/Popover', component: Popover };
+export default {}
+const meta = { title: 'UI/Popover', component: Popover };
 
 /* ── Basic Variants ───────────────────────────────────── */
 

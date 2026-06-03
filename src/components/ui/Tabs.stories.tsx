@@ -1,7 +1,8 @@
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
 
-export default { title: 'UI/Tabs', component: Tabs };
+export default {}
+const meta = { title: 'UI/Tabs', component: Tabs };
 
 /* ── Basic Variants ───────────────────────────────────── */
 

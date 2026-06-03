@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { Star, TrendingUp, ArrowRight } from "lucide-react";
+import { Star, ArrowRight } from "lucide-react";
 import { useTranslation } from "@/components/I18nProvider";
 
 const fadeUp: Variants = {

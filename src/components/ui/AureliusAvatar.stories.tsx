@@ -1,7 +1,9 @@
 import React from 'react';
 import { AureliusAvatar } from './aurelius-avatar';
 
-export default { title: 'UI/AureliusAvatar', component: AureliusAvatar };
+const meta = { title: 'UI/AureliusAvatar', component: AureliusAvatar };
+
+export default meta;
 
 export const Default = () => <AureliusAvatar />;
 

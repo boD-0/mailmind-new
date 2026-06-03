@@ -5,9 +5,10 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
-import type { Plan, PlanLimits } from "./plans";
+import type { Plan } from "./plans";
 
-export type { Plan, PlanLimits } from "./plans";
+export type { Plan } from "./plans";
+export type { PlanLimits } from "./plans";
 export { PLAN_LIMITS, getPlanLimits, checkFeatureAccess, canAccess } from "./plans";
 
 /**
@@ -20,7 +21,7 @@ async function getSafeLocale(request?: Request): Promise<{ locale: string; pathn
       const locale = url.pathname.split('/')[1] || "ro";
       return { locale, pathname: url.pathname };
     }
-  } catch (e) {
+  } catch (_e) {
     // Dacă URL-ul a fost malformat, cădem pe fallback-ul de headers
   }
 

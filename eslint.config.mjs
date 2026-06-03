@@ -20,11 +20,3 @@ const eslintConfig = defineConfig([
 ]);
 
 export default eslintConfig;
-
-rules: {
-  "react-hooks/set-state-in-effect"; "off";
-  "react-hooks/purity"; "off";
-  "react-hooks/immutability"; "off";
-  "react-hooks/static-components"; "off";
-  "react-hooks/refs"; "off";
-}

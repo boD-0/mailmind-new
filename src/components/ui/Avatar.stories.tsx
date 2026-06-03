@@ -1,7 +1,9 @@
 import React from 'react';
 import { Avatar, AvatarFallback } from './avatar';
 
-export default { title: 'UI/Avatar', component: Avatar };
+const meta = { title: 'UI/Avatar', component: Avatar };
+
+export default meta;
 
 export const Small = () => (
   <Avatar className="h-7 w-7">

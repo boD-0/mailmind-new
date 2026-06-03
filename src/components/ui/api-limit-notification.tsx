@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { Zap, AlertTriangle, CheckCircle, X } from 'lucide-react'
+import { Zap, AlertTriangle, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export interface ApiLimitNotificationProps {
@@ -36,12 +36,6 @@ export function ApiLimitNotification({
 
   if (dismissed) return null
 
-  const getVariant = () => {
-    if (isExceeded || usagePercent >= 100) return 'destructive' as const
-    if (usagePercent >= 80) return 'warning' as const
-    return 'info' as const
-  }
-
   const getTitle = () => {
     if (isExceeded) return 'API limit exceeded'
     if (usagePercent >= 100) return 'Out of API credits'
@@ -56,13 +50,8 @@ export function ApiLimitNotification({
     return `You've used ${usagePercent}% of your API credits on the ${planName} plan. Upgrade for higher limits and priority access.`
   }
 
-  const getIcon = () => {
-    if (isExceeded || usagePercent >= 100) return AlertTriangle
-    return Zap
-  }
-
-  const Icon = getIcon()
-  const variant = getVariant()
+  const iconColor = isExceeded || usagePercent >= 100 ? 'text-red-500' : 'text-amber-500';
+  const IconComponent = isExceeded || usagePercent >= 100 ? AlertTriangle : Zap;
 
   return (
     <AnimatePresence>
@@ -80,10 +69,7 @@ export function ApiLimitNotification({
             !isExceeded && usagePercent < 100 && 'border-amber-200 bg-amber-50'
           )}
         >
-          <Icon className={cn(
-            'size-5',
-            isExceeded || usagePercent >= 100 ? 'text-red-500' : 'text-amber-500'
-          )} />
+          <IconComponent className={cn('size-5', iconColor)} />
           <div className="pl-7">
             <AlertTitle className="text-sm font-semibold">
               {getTitle()}

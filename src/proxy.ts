@@ -3,7 +3,6 @@ import { randomUUID } from "crypto";
 import { loginRateLimit, signupRateLimit, passwordResetRateLimit } from "@/lib/rate-limit";
 import { defaultLocale, locales } from "@/lib/i18n";
 import { auth } from "@/lib/auth/auth";
-import { getClientIp } from "@/lib/get-client-ip";
 
 const MAINTENANCE_KEY = "mailmind:maintenance";
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL;

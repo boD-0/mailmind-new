@@ -1,7 +1,8 @@
 import React from 'react';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup, SelectLabel, SelectSeparator } from './select';
 
-export default { title: 'UI/Select', component: Select };
+export default {}
+const meta = { title: 'UI/Select', component: Select };
 
 /* ── Basic Variants ───────────────────────────────────── */
 

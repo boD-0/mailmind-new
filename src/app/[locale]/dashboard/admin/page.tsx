@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
-  Shield, Settings, Users, Database, Zap, Loader2,
+  Shield, Users, Zap, Loader2,
   FileText, Coins, Activity,
 } from "lucide-react";
 import { useFounderStore } from "@/stores/founderStore";

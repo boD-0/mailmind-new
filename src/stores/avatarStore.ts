@@ -9,7 +9,7 @@ interface AvatarStore {
   setSelectedAvatar: (id: number) => Promise<void>
 }
 
-export const useAvatarStore = create<AvatarStore>((set, get) => ({
+export const useAvatarStore = create<AvatarStore>((set) => ({
   selectedAvatarId: 1,
   initialized: false,
   saving: false,

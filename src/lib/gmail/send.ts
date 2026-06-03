@@ -1,7 +1,7 @@
 import { db } from "@/db/drizzle";
 import { gmailConnections } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { getValidAccessToken, refreshGmailToken } from "./oauth";
+import { getValidAccessToken } from "./oauth";
 
 /**
  * Sends an email through the user's connected Gmail account.

@@ -2,7 +2,9 @@ import React from 'react';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './dialog';
 import { Button } from './button';
 
-export default { title: 'UI/Dialog', component: Dialog };
+const meta = { title: 'UI/Dialog', component: Dialog };
+
+export default meta;
 
 /* ── Basic Variants ───────────────────────────────────── */
 

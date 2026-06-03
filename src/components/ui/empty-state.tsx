@@ -3,6 +3,7 @@
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 /* ════════════════════════════════════════════════════════════
@@ -42,10 +43,10 @@ export function EmptyState({
   className,
 }: EmptyStateProps) {
   const prefersReducedMotion = useReducedMotion();
-  const CtaTag = ctaHref ? "a" : "button";
-  const ctaProps = ctaHref ? { href: ctaHref } : { onClick: onCtaClick };
-  const SecondaryTag = secondaryHref ? "a" : "button";
-  const secondaryProps = secondaryHref ? { href: secondaryHref } : { onClick: onSecondaryClick };
+  const CtaTag = ctaHref ? Link : "button";
+  const ctaProps: Record<string, unknown> = ctaHref ? { href: ctaHref } : { onClick: onCtaClick };
+  const SecondaryTag = secondaryHref ? Link : "button";
+  const secondaryProps: Record<string, unknown> = secondaryHref ? { href: secondaryHref } : { onClick: onSecondaryClick };
 
   return (
     <motion.div
@@ -74,7 +75,7 @@ export function EmptyState({
       {/* Primary CTA */}
       {ctaLabel && (
   <CtaTag
-    {...(ctaProps as any)}
+    {...ctaProps}
     className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-copper text-white text-xs font-bold hover:bg-copper/80 transition-all shadow-sm"
   >
     {ctaLabel}
@@ -85,7 +86,7 @@ export function EmptyState({
       {/* Secondary link */}
       {secondaryLabel && (
         <SecondaryTag
-          {...(secondaryProps as any)}
+          {...secondaryProps}
           className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors underline-offset-2 hover:underline"
         >
           {secondaryLabel}

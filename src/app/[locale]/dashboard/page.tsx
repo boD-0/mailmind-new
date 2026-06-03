@@ -98,9 +98,10 @@ export default function DashboardPage() {
 
   // Greeting & date
   const prefersReducedMotion = useReducedMotion();
-  const [now, setNow] = useState(new Date());
+  const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setNow(new Date());
     const timer = setInterval(() => setNow(new Date()), 60000);
     return () => clearInterval(timer);
@@ -129,7 +130,7 @@ export default function DashboardPage() {
       <NewProjectDialog
         open={newOpen}
         onClose={() => setNewOpen(false)}
-        onCreate={(data: NewProjectData) => {
+        onCreate={() => {
           // campaign created — data is handled by dialog
         }}
         userPlan={userPlan}

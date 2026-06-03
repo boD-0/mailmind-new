@@ -1,7 +1,9 @@
 import React from 'react';
 import { AuthPageShell } from './AuthPageShell';
 
-export default { title: 'UI/AuthPageShell', component: AuthPageShell };
+const meta = { title: 'UI/AuthPageShell', component: AuthPageShell };
+
+export default meta;
 
 /* ── Basic Variants ───────────────────────────────────── */
 

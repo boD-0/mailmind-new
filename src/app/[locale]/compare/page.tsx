@@ -3,27 +3,19 @@
 import { motion } from "framer-motion"
 import { useParams } from "next/navigation"
 import Link from "next/link"
-import { Sparkles, ArrowRight, Check, X, Minus, Zap, Brain, Search, Shield, BarChart3, Users, Globe } from "lucide-react"
+import { Sparkles, ArrowRight, Check, Minus, Zap, Brain, Search, Shield, BarChart3, Users, Globe } from "lucide-react"
 import { useTranslation } from "@/components/I18nProvider"
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (delay = 0) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94], delay },
-  }),
-}
-
-const competitors = [
-  { key: "lemlist", name: "Lemlist", color: "text-blue-500" },
-  { key: "apollo", name: "Apollo", color: "text-purple-500" },
-  { key: "clay", name: "Clay", color: "text-orange-500" },
-  { key: "instantly", name: "Instantly", color: "text-emerald-500" },
-]
 
 export default function ComparePage() {
   const { locale } = useParams()
   const { t } = useTranslation()
+
+  const competitors = [
+    { key: "lemlist", name: "Lemlist", color: "text-blue-500" },
+    { key: "apollo", name: "Apollo", color: "text-purple-500" },
+    { key: "clay", name: "Clay", color: "text-orange-500" },
+    { key: "instantly", name: "Instantly", color: "text-emerald-500" },
+  ];
 
   return (
     <main className="min-h-screen bg-background text-foreground font-sans antialiased">

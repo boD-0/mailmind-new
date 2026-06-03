@@ -18,21 +18,35 @@ interface DeadlinePickerProps {
 
 export function DeadlinePicker({ value, onChange, className }: DeadlinePickerProps) {
   const [open, setOpen] = React.useState(false);
-  const [hour, setHour] = React.useState("12");
-  const [minute, setMinute] = React.useState("00");
-  const [ampm, setAmpm] = React.useState("AM");
 
-  // Sync time selectors when value changes externally
-  React.useEffect(() => {
-    if (value) {
-      let h = value.getHours();
-      setAmpm(h >= 12 ? "PM" : "AM");
-      if (h === 0) h = 12;
-      else if (h > 12) h -= 12;
-      setHour(h.toString().padStart(2, "0"));
-      setMinute(value.getMinutes().toString().padStart(2, "0"));
-    }
+  // Derive time from value directly (no effect needed)
+  const derived = React.useMemo(() => {
+    if (!value) return { hour: "12", minute: "00", ampm: "AM" };
+    let h = value.getHours();
+    const ap = h >= 12 ? "PM" : "AM";
+    if (h === 0) h = 12;
+    else if (h > 12) h -= 12;
+    return {
+      hour: h.toString().padStart(2, "0"),
+      minute: value.getMinutes().toString().padStart(2, "0"),
+      ampm: ap,
+    };
   }, [value]);
+
+  const [hour, setHour] = React.useState(derived.hour);
+  const [minute, setMinute] = React.useState(derived.minute);
+  const [ampm, setAmpm] = React.useState(derived.ampm);
+
+  // Keep synced with external value changes while respecting local edits
+  const prevValueRef = React.useRef(value);
+  React.useEffect(() => {
+    if (value !== prevValueRef.current) {
+      prevValueRef.current = value;
+      setHour(derived.hour);
+      setMinute(derived.minute);
+      setAmpm(derived.ampm);
+    }
+  }, [value, derived]);
 
   const handleSelectDate = (date: Date | undefined) => {
     if (!date) {

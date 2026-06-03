@@ -96,8 +96,9 @@ export async function consensusAgent(state: SwarmState) {
     strategy,
     email_draft,
     trace_log,
-    brand_context,
   } = state;
+  const brand_context = state.brand_context;
+  void brand_context;
 
   await broadcastAgentUpdate(campaign_id, {
     agent: "consensus",

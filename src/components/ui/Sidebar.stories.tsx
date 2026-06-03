@@ -1,7 +1,8 @@
 import React from 'react';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarFooter, SidebarSeparator } from './sidebar';
 
-export default { title: 'UI/Sidebar', component: Sidebar };
+export default {}
+const meta = { title: 'UI/Sidebar', component: Sidebar };
 
 /* ── Basic Variants ───────────────────────────────────── */
 

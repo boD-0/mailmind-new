@@ -2,7 +2,8 @@ import React from 'react';
 import { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption } from './table';
 import { Badge } from './badge';
 
-export default { title: 'UI/Table', component: Table };
+export default {}
+const meta = { title: 'UI/Table', component: Table };
 
 /* ── Basic Variants ───────────────────────────────────── */
 

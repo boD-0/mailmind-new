@@ -51,7 +51,8 @@ export function SearchOverlay({
   // Debounced search
   React.useEffect(() => {
     if (query.trim().length < 2) {
-      setResults([]);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setResults((prev) => prev.length > 0 ? [] : prev);
       setLoading(false);
       return;
     }
@@ -72,13 +73,15 @@ export function SearchOverlay({
   }, [query]);
 
   // Reset on open — pre-fill with initialQuery if provided
+  const prevOpenRef = React.useRef(open);
   React.useEffect(() => {
-    if (open) {
+    if (open && !prevOpenRef.current) {
       setQuery(initialQuery ?? "");
       setResults([]);
       setFilter(null);
       setTimeout(() => inputRef.current?.focus(), 50);
     }
+    prevOpenRef.current = open;
   }, [open, initialQuery]);
 
   // Keyboard shortcut: ⌘K / Ctrl+K

@@ -1,7 +1,9 @@
 import React from 'react';
 import { ApiLimitNotification } from './api-limit-notification';
 
-export default { title: 'UI/ApiLimitNotification', component: ApiLimitNotification };
+const meta = { title: 'UI/ApiLimitNotification', component: ApiLimitNotification };
+
+export default meta;
 
 /* ── Basic Variants ───────────────────────────────────── */
 
