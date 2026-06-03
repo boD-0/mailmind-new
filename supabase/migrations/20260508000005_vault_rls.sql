@@ -1,22 +1,29 @@
--- VAULT_DOCUMENTS: RLS policies for secure file storage
--- Enable RLS if not already active
-alter table if exists vault_documents enable row level security;
+-- ── 1. CREARE TABEL VAULT_DOCUMENTS (Dacă lipsește) ───────────────
+CREATE TABLE IF NOT EXISTS vault_documents (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  storage_path text,
+  created_at timestamptz DEFAULT now()
+);
+
+-- ── 2. ACTIVARE ROW LEVEL SECURITY ─────────────────────────────────
+ALTER TABLE vault_documents ENABLE ROW LEVEL SECURITY;
+
+-- ── 3. POLITICI DE ACCES (RLS) ─────────────────────────────────────
 
 -- Users can SELECT only their own documents
-create policy "vault_documents_self_select" on vault_documents 
-  for select using (user_id = auth.uid());
+CREATE POLICY "vault_documents_self_select" ON vault_documents 
+  FOR SELECT USING (user_id = auth.uid());
 
 -- Users can INSERT only their own documents
-create policy "vault_documents_self_insert" on vault_documents 
-  for insert with check (user_id = auth.uid());
+CREATE POLICY "vault_documents_self_insert" ON vault_documents 
+  FOR INSERT WITH CHECK (user_id = auth.uid());
 
 -- Users can UPDATE only their own documents
-create policy "vault_documents_self_update" on vault_documents 
-  for update using (user_id = auth.uid());
+CREATE POLICY "vault_documents_self_update" ON vault_documents 
+  FOR UPDATE USING (user_id = auth.uid());
 
 -- Users can DELETE only their own documents
-create policy "vault_documents_self_delete" on vault_documents 
-  for delete using (user_id = auth.uid());
-
--- NOTE: api_usage and api_usage_daily RLS is handled in migration 20260508000004_api_usage_rls.sql
--- NOTE: This migration targets Supabase tables. The Drizzle/Neon schema uses Drizzle-managed tables.
+CREATE POLICY "vault_documents_self_delete" ON vault_documents 
+  FOR DELETE USING (user_id = auth.uid());

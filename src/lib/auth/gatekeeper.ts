@@ -4,23 +4,51 @@ import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 import type { Plan, PlanLimits } from "./plans";
 
-// Re-export shared plan types and constants from the auth-free module.
-// Client components should import directly from "@/lib/auth/plans" to
-// avoid pulling in the @better-auth/infra dependency chain.
 export type { Plan, PlanLimits } from "./plans";
 export { PLAN_LIMITS, getPlanLimits, checkFeatureAccess, canAccess } from "./plans";
 
-export async function getUserWithPlan(request: Request) {
+/**
+ * Extrage limba (locale) în siguranță, fie din request, fie din headerele Next.js
+ */
+async function getSafeLocale(request?: Request): Promise<{ locale: string; pathname: string }> {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    if (request && request.url && request.url !== "undefined") {
+      const url = new URL(request.url);
+      const locale = url.pathname.split('/')[1] || "ro";
+      return { locale, pathname: url.pathname };
+    }
+  } catch (e) {
+    // Dacă URL-ul a fost malformat, cădem pe fallback-ul de headers
+  }
+
+  // Fallback pentru Server Actions / Server Components unde request-ul e absent sau invalid
+  const headersList = await headers();
+  const nextUrl = headersList.get("next-url") || ""; // Header injectat automat de Next.js
+  const locale = nextUrl.split('/')[1] || "ro";
+  return { locale, pathname: nextUrl };
+}
+
+export async function getUserWithPlan(request?: Request) {
+  try {
+    // Construim headerele în siguranță
+    let requestHeaders: Headers;
+    if (request?.headers) {
+      requestHeaders = request.headers;
+    } else {
+      const nextHeaders = await headers();
+      requestHeaders = new Headers(nextHeaders);
+    }
+
+    const session = await auth.api.getSession({ headers: requestHeaders });
     if (!session) {
-      console.warn(`[Auth] No session found for request to ${new URL(request.url).pathname}`);
+      const { pathname } = await getSafeLocale(request);
+      console.warn(`[Auth] No session found for request to ${pathname || "unknown path"}`);
       return null;
     }
 
-    // Use db to get the user with plan to fix unused imports and avoid 'any'
     const result = await db.select().from(users).where(eq(users.id, session.user.id)).limit(1);
     let user = result[0];
 
@@ -30,9 +58,6 @@ export async function getUserWithPlan(request: Request) {
     }
 
     // ─── Trial expiry check ───────────────────────────────────────────────
-    // If the user is on PROFESSIONAL plan and the trial has ended, downgrade to FREE.
-    // This only applies to users who activated a trial (have trialEnd set) and haven't
-    // upgraded via paid subscription yet. Only runs the UPDATE once (when plan is still PROFESSIONAL).
     const now = new Date();
     let effectivePlan: Plan = (user.plan as Plan) || "FREE";
 
@@ -40,11 +65,8 @@ export async function getUserWithPlan(request: Request) {
       effectivePlan === "PROFESSIONAL" &&
       user.trialEnd &&
       user.trialEnd < now &&
-      !user.polarSubscriptionId  // Only downgrade if not a paying subscriber
+      !user.polarSubscriptionId
     ) {
-      // Auto-downgrade to FREE after trial expiry.
-      // The JS-level guard (effectivePlan check) means this UPDATE runs at most once
-      // per expired trial — duplicate updates from concurrent requests are harmless.
       await db
         .update(users)
         .set({ plan: "FREE", updatedAt: now })
@@ -68,32 +90,23 @@ export async function getUserWithPlan(request: Request) {
   }
 }
 
-/**
- * Returns how many days remain in the user's trial, or 0 if the trial has ended
- * or was never started. Negative after trial expiry is clamped to 0.
- */
 export function getTrialDaysRemaining(trialEnd: Date | null): number {
   if (!trialEnd) return 0;
   return Math.max(0, Math.ceil((trialEnd.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
 }
 
-export async function requireAuth(request: Request) {
+export async function requireAuth(request?: Request) {
   const user = await getUserWithPlan(request);
   if (!user) {
-    const url = new URL(request.url);
-    const locale = url.pathname.split('/')[1] || "ro";
+    const { locale } = await getSafeLocale(request);
     redirect(`/${locale}/login`);
   }
   return user;
 }
 
-/**
- * Require auth AND a minimum plan for page-level gating.
- * Redirects to pricing if the user's plan is insufficient.
- */
 export async function requirePlanPage(
-  request: Request,
-  minimumPlan: Plan
+  minimumPlan: Plan,
+  request?: Request
 ) {
   const user = await requireAuth(request);
   const planOrder: Record<Plan, number> = {
@@ -101,33 +114,23 @@ export async function requirePlanPage(
     STARTER: 1,
     PROFESSIONAL: 2,
   };
+  
   if ((planOrder[user.plan] ?? 0) < (planOrder[minimumPlan] ?? 0)) {
-    const url = new URL(request.url);
-    const locale = url.pathname.split('/')[1] || "ro";
+    const { locale } = await getSafeLocale(request);
     redirect(`/${locale}/pricing`);
   }
   return user;
 }
 
-export async function requireOnboarding(request: Request) {
+export async function requireOnboarding(request?: Request) {
   const user = await requireAuth(request);
   if (!user.onboardingComplete) {
-    const url = new URL(request.url);
-    const locale = url.pathname.split('/')[1] || "ro";
+    const { locale } = await getSafeLocale(request);
     redirect(`/${locale}/onboarding`);
   }
   return user;
 }
 
-
-
-/**
- * Require a minimum plan to access a feature.
- * Returns a 403 NextResponse if the user's plan is insufficient, or null if OK.
- * Usage:
- *   const err = requirePlan(user.plan, "PROFESSIONAL");
- *   if (err) return err;
- */
 export function requirePlan(
   userPlan: Plan,
   minimumPlan: Plan
@@ -147,16 +150,7 @@ export function requirePlan(
 }
 
 // ─── API Route Auth Helpers ─────────────────────────────────────────────────
-// These return NextResponse for use in API routes (instead of redirecting).
 
-/**
- * Require authentication for an API route.
- * Returns the authenticated user, or a 401 NextResponse.
- * Usage:
- *   const user = await apiRequireAuth(request);
- *   if (user instanceof NextResponse) return user;
- *   // user is now safely typed as NonNullable authenticated user
- */
 export async function apiRequireAuth(request: Request): Promise<
   | NonNullable<Awaited<ReturnType<typeof getUserWithPlan>>>
   | NextResponse
@@ -168,13 +162,6 @@ export async function apiRequireAuth(request: Request): Promise<
   return user;
 }
 
-/**
- * Verify that a resource belongs to the authenticated user.
- * Returns a 403 NextResponse if ownership check fails, or null if ok.
- * Usage:
- *   const err = verifyOwnership(resourceOwnerId, user.id);
- *   if (err) return err;
- */
 export function verifyOwnership(
   resourceOwnerId: string,
   userId: string,

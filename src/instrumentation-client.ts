@@ -5,13 +5,23 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: "https://764f3d9f03e682269e449f708cd71f6c@o4511473242734592.ingest.de.sentry.io/4511473251647568",
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN || "https://764f3d9f03e682269e449f708cd71f6c@o4511473242734592.ingest.de.sentry.io/4511473251647568",
+
+  // Route Sentry through a Next.js proxy to bypass ad-blockers.
+  // Handled by src/app/monitoring/route.ts (explicit file, not the
+  // virtual tunnelRoute from withSentryConfig which Turbopack ignores).
+  tunnel: "/monitoring",
 
   // Add optional integrations for additional features
-  integrations: [Sentry.replayIntegration()],
+  integrations: [
+    Sentry.replayIntegration({
+      maskAllText: true,
+      blockAllMedia: true,
+    }),
+  ],
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
+  tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1.0,
   // Enable logs to be sent to Sentry
   enableLogs: true,
 
