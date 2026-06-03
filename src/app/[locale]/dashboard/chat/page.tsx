@@ -239,24 +239,23 @@ export default function ChatPage() {
 
     // Simulate Aurelius response
     setTimeout(() => {
-      const aureliusResponses = [
-        "Great question! Let me analyze your campaigns. Based on the data, I recommend focusing on your SaaS Q4 campaign — it has strong open rates but could use a revised CTA to boost replies.",
-        "I've reviewed your prospect list and found 5 new potential leads that match your target profile. Would you like me to draft introductory emails for them?",
-        "Looking at your reply rates, email 2 in your sequence is outperforming email 1 by 23%. I suggest swapping the subject lines to test if that improves open rates.",
-        "I can write a follow-up sequence for your 'Agency Retainers' campaign. The tone should be consultative — focusing on the value they've seen so far and offering a case study.",
-      ];
-      const reply = aureliusResponses[Math.floor(Math.random() * aureliusResponses.length)];
+  const aureliusResponses = [
+    "Great question! Let me analyze your campaigns. Based on the data, I recommend focusing on your SaaS Q4 campaign — it has strong open rates but could use a revised CTA to boost replies.",
+    "I've reviewed your prospect list and found 5 new potential leads that match your target profile. Would you like me to draft introductory emails for them?",
+    "Looking at your reply rates, email 2 in your sequence is outperforming email 1 by 23%. I suggest swapping the subject lines to test if that improves open rates.",
+    "I can write a follow-up sequence for your 'Agency Retainers' campaign. The tone should be consultative — focusing on the value they've seen so far and offering a case study.",
+  ];
+  const reply = aureliusResponses[Math.floor(Math.random() * aureliusResponses.length)] ?? "Let me look into that for you.";
 
-      const aureliusMsg: ChatMessage = {
-        id: `au-${Date.now()}`,
-        role: "aurelius",
-        content: reply,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, aureliusMsg]);
-      setIsTyping(false);
-    }, 1500);
+  const aureliusMsg: ChatMessage = {
+    id: `au-${Date.now()}`,
+    role: "aurelius",
+    content: reply,
+    timestamp: new Date(),
   };
+  setMessages((prev) => [...prev, aureliusMsg]);
+  setIsTyping(false);
+}, 1500);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -337,4 +336,5 @@ export default function ChatPage() {
       <ContextPanel />
     </div>
   );
+}
 }

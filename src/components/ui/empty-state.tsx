@@ -15,7 +15,7 @@ interface EmptyStateProps {
   /** Aurelius message — must be specific to context */
   message: string;
   /** Primary CTA label */
-  ctaLabel: string;
+ ctaLabel?: string;
   /** Primary CTA action */
   onCtaClick?: () => void;
   /** Primary CTA href (alternative to onClick) */
@@ -72,13 +72,15 @@ export function EmptyState({
       </div>
 
       {/* Primary CTA */}
-      <CtaTag
-        {...(ctaProps as any)}
-        className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-copper text-white text-xs font-bold hover:bg-copper/80 transition-all shadow-sm"
-      >
-        {ctaLabel}
-        <ArrowRight size={14} />
-      </CtaTag>
+      {ctaLabel && (
+  <CtaTag
+    {...(ctaProps as any)}
+    className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-copper text-white text-xs font-bold hover:bg-copper/80 transition-all shadow-sm"
+  >
+    {ctaLabel}
+    <ArrowRight size={14} />
+  </CtaTag>
+)}
 
       {/* Secondary link */}
       {secondaryLabel && (

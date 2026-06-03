@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const envelope = await request.text();
-    const piece = envelope.split("\n")[0];
+    const piece = envelope.split("\n")[0] ?? "";
     const header = JSON.parse(piece);
 
     if (!header.dsn) {
@@ -17,7 +17,11 @@ export async function POST(request: NextRequest) {
     }
 
     const dsn = new URL(header.dsn);
-    const projectId = dsn.pathname.replace("/", "");
+    const projectId = dsn.pathname?.replace("/", "") ?? "";
+
+if (!projectId) {
+  return NextResponse.json({ error: "Invalid DSN" }, { status: 400 });
+}
     const sentryUrl = `https://${dsn.host}/api/${projectId}/envelope/`;
 
     const response = await fetch(sentryUrl, {
