@@ -6,7 +6,7 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 import {
   Menu, X, ArrowRight, Check, Mail, Sparkles, Globe, Heart, Shield,
-  ChevronDown, Crown, Rocket, Loader2,
+  ChevronDown, Crown, Rocket, Loader2, MessageSquare,
 } from "lucide-react"
 import { LanguageSwitcher } from "@/components/ui/language-switcher"
 import { usePostHog } from 'posthog-js/react'
@@ -1069,6 +1069,58 @@ function PricingCTA({ locale }: { locale: string }) {
 }
 
 /* ════════════════════════════════════════════════════════════
+   AURELIUS CLOSE SECTION
+   ════════════════════════════════════════════════════════════ */
+
+function AureliusClose({ locale }: { locale: string }) {
+  const { t } = useTranslation()
+
+  return (
+    <section className="relative py-24 px-6 bg-amber-50 dark:bg-[#2C1A00] overflow-hidden">
+      <div className="max-w-3xl mx-auto text-center relative z-10">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="w-11 h-11 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center mx-auto mb-4">
+            <span className="text-amber-700 dark:text-amber-300 text-sm font-bold">Au</span>
+          </div>
+          <p className="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-4">Aurelius</p>
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="text-xl md:text-2xl font-medium text-amber-900 dark:text-amber-100 leading-relaxed max-w-2xl mx-auto mb-10"
+        >
+          {t('pricing.aurelius_close.message')}
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+        >
+          <Link
+            href={`/${locale}/dashboard/chat?context=help-me-choose-a-plan`}
+            className="inline-flex items-center gap-2 px-8 py-3.5 bg-copper text-white text-sm font-bold rounded-xl hover:bg-copper/80 transition-all group"
+          >
+            <MessageSquare size={16} />
+            {t('pricing.aurelius_close.cta')}
+            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+/* ════════════════════════════════════════════════════════════
    FOOTER
    ════════════════════════════════════════════════════════════ */
 
@@ -1121,6 +1173,7 @@ export default function PricingPage() {
       <ComparisonTable locale={l} />
       <PricingFAQ />
       <PricingCTA locale={l} />
+      <AureliusClose locale={l} />
       <Footer locale={l} columns={FOOTER_COLUMNS} socialLinks={SOCIAL_LINKS} />
     </main>
   )

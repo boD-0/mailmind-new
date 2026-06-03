@@ -10,6 +10,7 @@ import { useTranslation } from '@/components/I18nProvider'
 
 export default function SignUpPage() {
   const [loading, setLoading] = useState(false)
+  const [authError, setAuthError] = useState<string | undefined>(undefined)
   const router = useRouter()
   const params = useParams()
   const posthog = usePostHog()
@@ -18,6 +19,7 @@ export default function SignUpPage() {
 
   const handleSignUp = async ({ name, email, password }: { name: string; email: string; password: string }) => {
     setLoading(true)
+    setAuthError(undefined)
     try {
       const res = await authClient.signUp.email({
         email,
@@ -27,8 +29,11 @@ export default function SignUpPage() {
       })
 
       if (res.error) {
-        toast.error(res.error.message || t('auth.toast_signup_error'))
+        const errorMessage = res.error.message || t('auth.toast_signup_error')
+        toast.error(errorMessage)
+        setAuthError(errorMessage)
       } else {
+        setAuthError(undefined)
         posthog.capture('signup_completed', { method: 'email' })
         posthog.capture('trial_started', { plan: 'PROFESSIONAL', source: 'signup' })
         toast.success(t('auth.toast_verify_email_sent'))
@@ -36,7 +41,9 @@ export default function SignUpPage() {
       }
     } catch (err) {
       console.error('Sign up unexpected error:', err)
-      toast.error(t('auth.toast_unexpected'))
+      const errorMessage = t('auth.toast_unexpected')
+      toast.error(errorMessage)
+      setAuthError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -62,6 +69,7 @@ export default function SignUpPage() {
         onSignUp={handleSignUp}
         onGoogleSignIn={handleGoogleSignIn}
         loading={loading}
+        authError={authError}
         signInContent={{
           quote: { text: t('auth.quote_sign_in'), author: t('auth.author') },
         }}

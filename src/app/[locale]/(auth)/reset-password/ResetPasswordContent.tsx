@@ -5,6 +5,9 @@ import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import { authClient } from '@/lib/auth/auth-client'
 import { toast } from 'sonner'
 import { useTranslation } from '@/components/I18nProvider'
+import { AuthPageShell } from '@/components/ui/AuthPageShell'
+import { EmptyState } from '@/components/ui/empty-state'
+import { ShieldAlert } from 'lucide-react'
 
 type StrengthLevel = 'weak' | 'fair' | 'good' | 'strong'
 
@@ -57,6 +60,7 @@ export default function ResetPasswordContent() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
+  const [authError, setAuthError] = useState<string | undefined>(undefined)
   const router = useRouter()
   const params = useParams()
   const searchParams = useSearchParams()
@@ -70,78 +74,85 @@ export default function ResetPasswordContent() {
     e.preventDefault()
 
     if (password !== confirmPassword) {
-      toast.error(t('auth.toast_reset_mismatch'))
+      const message = t('auth.toast_reset_mismatch')
+      toast.error(message)
+      setAuthError(message)
       return
     }
 
     if (password.length < 8) {
-      toast.error(t('auth.toast_reset_too_short'))
+      const message = t('auth.toast_reset_too_short')
+      toast.error(message)
+      setAuthError(message)
       return
     }
 
     if (!token) {
-      toast.error(t('auth.toast_reset_no_token'))
+      const message = t('auth.toast_reset_no_token')
+      toast.error(message)
+      setAuthError(message)
       return
     }
 
     setLoading(true)
+    setAuthError(undefined)
     try {
       const { error } = await authClient.resetPassword({
         newPassword: password,
         token,
       })
       if (error) {
-        toast.error(error.message || t('auth.toast_reset_error'))
+        const message = error.message || t('auth.toast_reset_error')
+        toast.error(message)
+        setAuthError(message)
       } else {
         toast.success(t('auth.toast_reset_success'))
         setDone(true)
       }
     } catch {
-      toast.error(t('auth.toast_reset_error'))
+      const message = t('auth.toast_reset_error')
+      toast.error(message)
+      setAuthError(message)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <main className="bg-background text-foreground min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-md w-full space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold">{t('auth.reset_title')}</h1>
-          {!done && (
-            <p className="text-sm text-muted-foreground">{t('auth.reset_desc')}</p>
-          )}
+    <AuthPageShell title={t('auth.reset_title')} description={t('auth.reset_desc')}>
+      {authError ? (
+        <div className="rounded-2xl border-l-4 border-destructive/80 bg-destructive/10 p-4 text-sm text-destructive-foreground">
+          {authError}
         </div>
-
-        {!token ? (
-          <div className="text-center space-y-4">
-            <p className="text-sm text-muted-foreground">{t('auth.toast_reset_no_token')}</p>
-            <button
-              onClick={() => router.push(`/${locale}/forgot-password`)}
-              className="inline-flex items-center justify-center rounded-full bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
-            >
-              {t('auth.forgot_submit')}
-            </button>
+      ) : null}
+      {!token ? (
+        <EmptyState
+          icon={<ShieldAlert size={48} />}
+          message={t('auth.toast_reset_no_token')}
+          ctaLabel={t('auth.forgot_submit')}
+          ctaHref={`/${locale}/forgot-password`}
+          className="py-8"
+        />
+      ) : done ? (
+        <div className="text-center space-y-4">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+            <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
           </div>
-        ) : done ? (
-          <div className="text-center space-y-4">
-            <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto">
-              <svg className="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <p className="text-sm text-muted-foreground">{t('auth.reset_done')}</p>
-            <button
-              onClick={() => router.push(`/${locale}/login`)}
-              className="inline-flex items-center justify-center rounded-full bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
-            >
-              {t('auth.sign_in_link')}
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <p className="text-sm text-muted-foreground">{t('auth.reset_done')}</p>
+          <button
+            onClick={() => router.push(`/${locale}/login`)}
+            className="inline-flex items-center justify-center rounded-full bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            {t('auth.sign_in_link')}
+          </button>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid gap-3">
             <div className="grid gap-2">
-              <label htmlFor="password" className="text-sm font-medium">{t('auth.password_label')}</label>
+              <label htmlFor="password" className="text-sm font-medium text-foreground">{t('auth.password_label')}</label>
               <input
                 id="password"
                 type="password"
@@ -150,42 +161,42 @@ export default function ResetPasswordContent() {
                 placeholder={t('auth.password_placeholder')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-3 text-sm text-foreground shadow-sm shadow-black/5 transition-shadow placeholder:text-muted-foreground/70 focus-visible:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-12 w-full rounded-xl border border-input bg-background px-4 text-sm text-foreground shadow-sm shadow-black/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-2"
               />
-              {password.length > 0 && (
-                <div className="space-y-2">
-                  <StrengthIndicator level={strength.level} score={strength.score} />
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-                    {([
-                      ['minLength', 'auth.strength_min_length'],
-                      ['hasUppercase', 'auth.strength_uppercase'],
-                      ['hasLowercase', 'auth.strength_lowercase'],
-                      ['hasNumber', 'auth.strength_number'],
-                      ['hasSpecial', 'auth.strength_special'],
-                    ] as const).map(([key, label]) => (
-                      <div key={key} className="flex items-center gap-1.5">
-                        <svg
-                          className={`h-3 w-3 shrink-0 transition-colors ${strength.checks[key] ? 'text-emerald-500' : 'text-muted-foreground/50'}`}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2.5}
-                        >
-                          {strength.checks[key] ? (
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                          ) : (
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                          )}
-                        </svg>
-                        <span className={`text-xs ${strength.checks[key] ? 'text-foreground' : 'text-muted-foreground'}`}>{t(label)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
+            {password.length > 0 ? (
+              <div className="space-y-4">
+                <StrengthIndicator level={strength.level} score={strength.score} />
+                <div className="grid grid-cols-2 gap-3 text-xs text-muted-foreground">
+                  {([
+                    ['minLength', 'auth.strength_min_length'],
+                    ['hasUppercase', 'auth.strength_uppercase'],
+                    ['hasLowercase', 'auth.strength_lowercase'],
+                    ['hasNumber', 'auth.strength_number'],
+                    ['hasSpecial', 'auth.strength_special'],
+                  ] as const).map(([key, label]) => (
+                    <div key={key} className="flex items-center gap-2">
+                      <svg
+                        className={`h-3 w-3 shrink-0 transition-colors ${strength.checks[key] ? 'text-emerald-500' : 'text-muted-foreground/50'}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
+                        {strength.checks[key] ? (
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        ) : (
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        )}
+                      </svg>
+                      <span>{t(label)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
             <div className="grid gap-2">
-              <label htmlFor="confirm-password" className="text-sm font-medium">{t('auth.reset_confirm_label')}</label>
+              <label htmlFor="confirm-password" className="text-sm font-medium text-foreground">{t('auth.reset_confirm_label')}</label>
               <input
                 id="confirm-password"
                 type="password"
@@ -194,20 +205,19 @@ export default function ResetPasswordContent() {
                 placeholder={t('auth.reset_confirm_placeholder')}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-3 text-sm text-foreground shadow-sm shadow-black/5 transition-shadow placeholder:text-muted-foreground/70 focus-visible:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-12 w-full rounded-xl border border-input bg-background px-4 text-sm text-foreground shadow-sm shadow-black/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-200 focus-visible:ring-offset-2"
               />
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium bg-foreground text-background h-10 px-4 py-2 w-full hover:bg-foreground/90 transition-colors disabled:pointer-events-none disabled:opacity-50"
-            >
-              {loading && <div className="h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />}
-              {t('auth.reset_submit')}
-            </button>
-          </form>
-        )}
-      </div>
-    </main>
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="inline-flex w-full items-center justify-center rounded-xl bg-amber-400 text-sm font-semibold text-white h-12 px-4 hover:bg-amber-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Resetting…' : t('auth.reset_submit')}
+          </button>
+        </form>
+      )}
+    </AuthPageShell>
   )
 }

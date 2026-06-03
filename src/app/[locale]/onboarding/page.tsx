@@ -16,7 +16,7 @@ import { authClient } from "@/lib/auth/auth-client";
 import {
   ArrowRight, Check, Building2, Users, PenLine, HeartHandshake,
   TrendingUpDown, Sparkles, Brain, Zap, Database,
-  Layout, Bot,
+  Layout, Bot, Crown,
 } from "lucide-react";
 import { RagOnboarding } from "@/components/rag/RagOnboarding";
 
@@ -153,7 +153,28 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
     </div>
   );
 }
-
+function StepIndicator({ current, total }: { current: number; total: number }) {
+  return (
+    <div className="flex items-center gap-2" aria-label="Onboarding progress">
+      {Array.from({ length: total }).map((_, index) => {
+        const isComplete = index < current;
+        const isCurrent = index === current;
+        return (
+          <span
+            key={index}
+            className={`h-2.5 w-2.5 rounded-full transition-colors ${
+              isComplete
+                ? 'bg-copper'
+                : isCurrent
+                ? 'border-2 border-copper bg-transparent'
+                : 'bg-muted'
+            }`}
+          />
+        );
+      })}
+    </div>
+  );
+}
 // ─── BRAND VALUES (translatable) ─────────────────────────────────────────────
 
 function getBrandValues(t: (key: string) => string): string[] {
@@ -289,6 +310,7 @@ export default function OnboardingPage() {
     { id: "pain-points", label: t('onboarding.step_pain_points'), icon: TrendingUpDown },
     { id: "tools", label: t('onboarding.step_tools'), icon: Zap },
     { id: "documents", label: t('onboarding.step_documents'), icon: Database },
+    { id: "subscription", label: t('onboarding.step_subscription'), icon: Crown },
     { id: "final", label: t('onboarding.step_final'), icon: Sparkles },
   ];
 
@@ -311,6 +333,7 @@ export default function OnboardingPage() {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const [selectedPainPoints, setSelectedPainPoints] = useState<string[]>([]);
   const [customPainPoint, setCustomPainPoint] = useState("");
+  const [selectedPlan, setSelectedPlan] = useState<"FREE" | "STARTER" | "PROFESSIONAL">("FREE");
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -340,6 +363,10 @@ export default function OnboardingPage() {
     if (step === 4 && selectedValues.length === 0) {
       toast.error(t('onboarding.toast_values'));
       return;
+    }
+    if (step === 8) {
+      // Subscription step - ensure a plan is selected (default is FREE, so always valid)
+      // User must explicitly choose, but we have a default
     }
     setStep((s) => Math.min(s + 1, STEPS.length - 1));
   };
@@ -377,6 +404,7 @@ export default function OnboardingPage() {
         ...formData,
         brandValues: selectedValues,
         painPoints: selectedPainPoints,
+        selectedPlan,
       });
 
       if (res.success) {
@@ -385,6 +413,7 @@ export default function OnboardingPage() {
           tone_of_voice: formData.toneOfVoice,
           brand_values_count: selectedValues.length,
           pain_points_count: selectedPainPoints.length,
+          selected_plan: selectedPlan,
         });
         toast.success(t('onboarding.toast_success'));
         router.push(`/${locale}/dashboard`);
@@ -406,25 +435,76 @@ export default function OnboardingPage() {
     );
   }
 
+  const AURELIUS_PANEL_MESSAGES = [
+    t('onboarding.aurelius_welcome_2'),
+    t('onboarding.aurelius_brand'),
+    t('onboarding.aurelius_audience'),
+    t('onboarding.aurelius_voice'),
+    t('onboarding.aurelius_values'),
+    t('onboarding.aurelius_pain'),
+    t('onboarding.aurelius_tools_1'),
+    t('onboarding.aurelius_documents'),
+    t('onboarding.aurelius_subscription'),
+    t('onboarding.aurelius_final_1'),
+  ];
+
+  const stepLabel = `Step ${step + 1} of ${STEPS.length}`;
+
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 py-12 relative overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-gradient-to-b from-copper/5 to-transparent blur-3xl pointer-events-none" />
-
-      <div className="w-full max-w-2xl mx-auto relative z-10">
-        {step > 0 && <ProgressBar current={step} total={STEPS.length} />}
-
-        <div className="bg-card rounded-xl border border-border shadow-xl overflow-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={step}
-              variants={slideUp}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="p-8 md:p-10"
-              ref={contentRef}
+      <div className="relative z-10">
+        <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="text-sm font-semibold tracking-tight">MailMind</div>
+            <div className="flex flex-col items-center gap-3 sm:flex-row sm:gap-6">
+              <div className="text-sm font-medium text-foreground/80">{stepLabel}</div>
+              <StepIndicator current={step} total={STEPS.length} />
+            </div>
+            <button
+              type="button"
+              onClick={() => router.push(`/${locale}/dashboard`)}
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
+              Skip for now
+            </button>
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
+          <div className="grid gap-6 lg:grid-cols-[0.4fr_0.6fr]">
+            <aside className="hidden rounded-[28px] border border-amber-200/70 bg-amber-50 p-6 shadow-sm lg:block">
+              <div className="flex items-center gap-4">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-100 text-amber-700 text-base font-semibold">Au</div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Aurelius</p>
+                  <p className="text-xs text-muted-foreground">Your agency strategist</p>
+                </div>
+              </div>
+              <div className="mt-6 space-y-5">
+                <p className="text-sm leading-7 text-foreground">{AURELIUS_PANEL_MESSAGES[step]}</p>
+                <div className="rounded-3xl border border-amber-200 bg-white/80 p-4">
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-amber-700 font-semibold">Aurelius says</p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    I help you shape the right campaign from the start and keep your voice consistent.
+                  </p>
+                </div>
+              </div>
+            </aside>
+
+            <main className="rounded-[28px] border border-border bg-card shadow-xl overflow-hidden">
+              {step > 0 && <ProgressBar current={step} total={STEPS.length} />}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={step}
+                  variants={slideUp}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  className="p-8 md:p-10"
+                  ref={contentRef}
+                >
               {/* ──────── STEP 0: WELCOME ──────── */}
               {step === 0 && (
                 <div className="space-y-6">
@@ -699,8 +779,144 @@ export default function OnboardingPage() {
                 </div>
               )}
 
-              {/* ──────── STEP 8: FINAL ──────── */}
+              {/* ──────── STEP 8: SUBSCRIPTION ──────── */}
               {step === 8 && (
+                <div className="space-y-6">
+                  <AureliusBubble text={t('onboarding.aurelius_subscription')} delay={0} />
+                  
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5, duration: 0.4 }}
+                    className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                  >
+                    {/* FREE PLAN */}
+                    <motion.button
+                      onClick={() => setSelectedPlan("FREE")}
+                      whileHover={{ y: -4 }}
+                      className={`relative rounded-2xl border-2 p-6 text-left transition-all ${
+                        selectedPlan === "FREE"
+                          ? "border-copper/50 bg-copper/5 shadow-lg shadow-copper/10"
+                          : "border-border hover:border-copper/30"
+                      }`}
+                    >
+                      <div className="space-y-4">
+                        <div>
+                          <h3 className="text-lg font-bold text-foreground">FREE</h3>
+                          <p className="text-sm text-muted-foreground mt-1">{t('onboarding.plan_free_desc')}</p>
+                        </div>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center gap-2">
+                            <Check size={16} className="text-copper" />
+                            <span className="text-foreground">1 agent per swarm</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Check size={16} className="text-copper" />
+                            <span className="text-foreground">3 swarms/month</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Check size={16} className="text-copper" />
+                            <span className="text-foreground">GPT-4o Mini</span>
+                          </div>
+                        </div>
+                        {selectedPlan === "FREE" && (
+                          <div className="absolute top-2 right-2 bg-copper text-white text-xs px-2 py-1 rounded-full font-bold">
+                            {t('onboarding.selected')}
+                          </div>
+                        )}
+                      </div>
+                    </motion.button>
+
+                    {/* STARTER PLAN */}
+                    <motion.button
+                      onClick={() => setSelectedPlan("STARTER")}
+                      whileHover={{ y: -4 }}
+                      className={`relative rounded-2xl border-2 p-6 text-left transition-all ${
+                        selectedPlan === "STARTER"
+                          ? "border-blue-500/50 bg-blue-500/5 shadow-lg shadow-blue-500/10"
+                          : "border-border hover:border-blue-500/30"
+                      }`}
+                    >
+                      <div className="space-y-4">
+                        <div>
+                          <h3 className="text-lg font-bold text-foreground">STARTER</h3>
+                          <p className="text-sm text-muted-foreground mt-1">{t('onboarding.plan_starter_desc')}</p>
+                        </div>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center gap-2">
+                            <Check size={16} className="text-blue-500" />
+                            <span className="text-foreground">2 agents per swarm</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Check size={16} className="text-blue-500" />
+                            <span className="text-foreground">30 swarms/month</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Check size={16} className="text-blue-500" />
+                            <span className="text-foreground">Vault access</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Check size={16} className="text-blue-500" />
+                            <span className="text-foreground">GPT-4o</span>
+                          </div>
+                        </div>
+                        {selectedPlan === "STARTER" && (
+                          <div className="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                            {t('onboarding.selected')}
+                          </div>
+                        )}
+                      </div>
+                    </motion.button>
+
+                    {/* PROFESSIONAL PLAN */}
+                    <motion.button
+                      onClick={() => setSelectedPlan("PROFESSIONAL")}
+                      whileHover={{ y: -4 }}
+                      className={`relative rounded-2xl border-2 p-6 text-left transition-all ${
+                        selectedPlan === "PROFESSIONAL"
+                          ? "border-yellow-500/50 bg-yellow-500/5 shadow-lg shadow-yellow-500/10"
+                          : "border-border hover:border-yellow-500/30"
+                      }`}
+                    >
+                      <div className="space-y-4">
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-foreground">PROFESSIONAL</h3>
+                            <Crown size={18} className="text-yellow-600" />
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">{t('onboarding.plan_pro_desc')}</p>
+                        </div>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex items-center gap-2">
+                            <Check size={16} className="text-yellow-600" />
+                            <span className="text-foreground">4 agents per swarm</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Check size={16} className="text-yellow-600" />
+                            <span className="text-foreground">Unlimited swarms</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Check size={16} className="text-yellow-600" />
+                            <span className="text-foreground">Vault + War Room + Digital Twin</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Check size={16} className="text-yellow-600" />
+                            <span className="text-foreground">14-day trial</span>
+                          </div>
+                        </div>
+                        {selectedPlan === "PROFESSIONAL" && (
+                          <div className="absolute top-2 right-2 bg-yellow-600 text-white text-xs px-2 py-1 rounded-full font-bold">
+                            {t('onboarding.selected')}
+                          </div>
+                        )}
+                      </div>
+                    </motion.button>
+                  </motion.div>
+                </div>
+              )}
+
+              {/* ──────── STEP 9: FINAL ──────── */}
+              {step === 9 && (
                 <div className="space-y-6">
                   <AureliusBubble text={t('onboarding.aurelius_final_1')} delay={0} />
                   <AureliusBubble text={t('onboarding.aurelius_final_2')} delay={0.3} />
@@ -822,6 +1038,7 @@ export default function OnboardingPage() {
               </Button>
             )}
           </div>
+        </main>
         </div>
 
         <motion.p
@@ -836,6 +1053,7 @@ export default function OnboardingPage() {
             </span>
           )}
         </motion.p>
+        </div>
       </div>
     </div>
   );

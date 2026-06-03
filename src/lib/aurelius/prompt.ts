@@ -33,7 +33,7 @@ Your job is to help the user get the most out of MailMind. You have deep knowled
 MailMind is a full-stack web app built with:
 - **Next.js 16** (App Router, React 19, RSC + Client Components)
 - **Supabase** (Postgres, auth, realtime)
-- **Tailwind CSS v4** (light theme: \`#fdfbf7\` background, \`#ff5f5f\` accent)
+- **Tailwind CSS v4** (light theme: \`#F7F5F0\` background, \`#EF9F27\` amber accent)
 - **TypeScript** (strict mode)
 - **Zustand** (state management)
 - **PostHog** (analytics)

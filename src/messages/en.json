@@ -276,6 +276,10 @@
       "placeholder": "your@email.com",
       "button": "Get Started",
       "success": "✓ You're in! Check your inbox for next steps."
+    },
+    "aurelius_close": {
+      "message": "Not sure which plan fits your agency right now? Tell me a bit about your work — I'll give you an honest recommendation.",
+      "cta": "Talk to Aurelius"
     }
   },
   "demo": {

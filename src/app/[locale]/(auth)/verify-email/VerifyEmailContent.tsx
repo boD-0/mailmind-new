@@ -1,8 +1,13 @@
 'use client'
 
-import { useSearchParams, useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useSearchParams, useRouter, useParams } from 'next/navigation'
+import { authClient } from '@/lib/auth/auth-client'
+import { toast } from 'sonner'
 import { useTranslation } from '@/components/I18nProvider'
+import { AuthPageShell } from '@/components/ui/AuthPageShell'
+import { EmptyState } from '@/components/ui/empty-state'
+import { ShieldAlert } from 'lucide-react'
 
 export default function VerifyEmailContent() {
   const searchParams = useSearchParams()
@@ -13,11 +18,14 @@ export default function VerifyEmailContent() {
 
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [errorMessage, setErrorMessage] = useState('')
+  const [resent, setResent] = useState(false)
+  const [resending, setResending] = useState(false)
+
+  const email = searchParams.get('email') || ''
+  const token = searchParams.get('token')
+  const error = searchParams.get('error')
 
   useEffect(() => {
-    const error = searchParams.get('error')
-    const token = searchParams.get('token')
-
     if (error) {
       setStatus('error')
       if (error === 'invalid_token') {
@@ -28,73 +36,101 @@ export default function VerifyEmailContent() {
         setErrorMessage(t('auth.verify_error_generic'))
       }
     } else if (token) {
-      // Has a token and no error — verification succeeded
       setStatus('success')
     } else {
-      // No token and no error — invalid link
       setStatus('error')
       setErrorMessage(t('auth.verify_error_generic'))
     }
-  }, [searchParams, t])
+  }, [error, token, t])
+
+  const handleResend = async () => {
+    if (!email) {
+      toast.error(t('auth.verify_resend_missing_email'))
+      return
+    }
+    setResending(true)
+    try {
+      const { error } = await authClient.sendVerificationEmail({
+        email,
+        callbackURL: `/${locale}/verify-email`,
+      })
+      if (error) {
+        toast.error(error.message || t('auth.toast_resend_error'))
+      } else {
+        setResent(true)
+        toast.success(t('auth.toast_resend_success'))
+      }
+    } catch {
+      toast.error(t('auth.toast_resend_error'))
+    } finally {
+      setResending(false)
+    }
+  }
 
   return (
-    <main className="bg-background text-foreground min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-md w-full text-center space-y-6">
-        {status === 'loading' && (
-          <>
-            <div className="animate-spin rounded-full h-12 w-12 border-2 border-muted-foreground border-t-transparent mx-auto" />
-            <p className="text-muted-foreground">{t('auth.verify_loading')}</p>
-          </>
+    <AuthPageShell title={status === 'success' ? t('auth.verify_success_title') : t('auth.verify_error_title')} showPreview={false}>
+      <div className="space-y-6 text-center">
+        {status !== 'error' && (
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+            <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              {status === 'success' ? (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              )}
+            </svg>
+          </div>
         )}
 
-        {status === 'success' && (
-          <>
-            <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto">
-              <svg className="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <div className="space-y-2">
-              <h1 className="text-2xl font-semibold">{t('auth.verify_success_title')}</h1>
-              <p className="text-muted-foreground">{t('auth.verify_success_desc')}</p>
+        {status === 'loading' ? (
+          <div className="space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-2 border-muted-foreground border-t-transparent mx-auto" />
+            <p className="text-sm text-muted-foreground">{t('auth.verify_loading')}</p>
+          </div>
+        ) : status === 'success' ? (
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              {email ? (
+                <>We sent a verification link to <span className="font-semibold text-foreground">{email}</span>. Click it to activate your account.</>
+              ) : (
+                t('auth.verify_success_desc')
+              )}
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <button
+                onClick={() => router.push(`/${locale}/dashboard`)}
+                className="inline-flex items-center justify-center rounded-xl bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
+              >
+                {t('auth.verify_go_dashboard')}
+              </button>
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resending || resent}
+                className="inline-flex items-center justify-center rounded-xl border border-amber-300 bg-amber-50 text-amber-700 px-6 py-3 text-sm font-medium hover:bg-amber-100 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {resent ? t('auth.verify_resend_sent') : t('auth.verify_resend')}
+              </button>
             </div>
             <button
-              onClick={() => router.push(`/${locale}/dashboard`)}
-              className="inline-flex items-center justify-center rounded-full bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
+              onClick={() => router.push(`/${locale}/login`)}
+              className="text-sm text-muted-foreground hover:text-foreground underline"
             >
-              {t('auth.verify_go_dashboard')}
+              {t('auth.verify_wrong_email')}
             </button>
-          </>
-        )}
-
-        {status === 'error' && (
-          <>
-            <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
-              <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </div>
-            <div className="space-y-2">
-              <h1 className="text-2xl font-semibold">{t('auth.verify_error_title')}</h1>
-              <p className="text-muted-foreground">{errorMessage}</p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button
-                onClick={() => router.push(`/${locale}/login`)}
-                className="inline-flex items-center justify-center rounded-full bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
-              >
-                {t('auth.sign_in_link')}
-              </button>
-              <button
-                onClick={() => router.push(`/${locale}/sign-up`)}
-                className="inline-flex items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium hover:bg-muted transition-colors"
-              >
-                {t('auth.sign_up_link')}
-              </button>
-            </div>
-          </>
+          </div>
+        ) : (
+          <EmptyState
+            icon={<ShieldAlert size={48} />}
+            message={errorMessage}
+            ctaLabel={t('auth.sign_in_link')}
+            ctaHref={`/${locale}/login`}
+            secondaryLabel={t('auth.sign_up_link')}
+            secondaryHref={`/${locale}/sign-up`}
+            className="py-8"
+          />
         )}
       </div>
-    </main>
+    </AuthPageShell>
   )
 }

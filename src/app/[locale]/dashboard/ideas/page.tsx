@@ -3,8 +3,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Lightbulb, Trash2, Tag, Search, Sparkles, Rocket, X } from "lucide-react";
+import { Plus, Lightbulb, Trash2, Tag, Search, Sparkles, Rocket, X, PenSquare } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { EmptyState } from "@/components/ui/empty-state";
+import { authClient } from "@/lib/auth/auth-client";
 
 type Idea = { id: string; title: string; body: string | null; tag: string | null; created_at: string };
 
@@ -22,6 +24,8 @@ export default function IdeasPage() {
   const supabase = createClient();
   const router = useRouter();
   const { locale } = useParams();
+  const { data: session } = authClient.useSession();
+  const userId = session?.user?.id;
 
   const load = useCallback(async () => {
     const { data } = await supabase.from("ideas").select("*").order("created_at", { ascending: false });
@@ -38,9 +42,8 @@ export default function IdeasPage() {
 
   const create = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    await supabase.from("ideas").insert({ title, body, tag, user_id: user.id });
+    if (!userId) return;
+    await supabase.from("ideas").insert({ title, body, tag, user_id: userId });
     setTitle(""); setBody(""); setTag(TAGS[0] || "Hook");
     setOpen(false);
     load();
@@ -54,15 +57,13 @@ export default function IdeasPage() {
   const handleLaunchSwarm = async (idea: Idea) => {
     setLaunchingId(idea.id);
     try {
-      // Create a campaign from the idea
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!userId) return;
 
       const prospectName = idea.title;
       const { data: campaign, error } = await supabase
         .from("campaigns")
         .insert({
-          user_id: user.id,
+          user_id: userId,
           title: idea.title,
           prospect_name: prospectName,
           status: "draft",
@@ -138,11 +139,13 @@ export default function IdeasPage() {
       {loading ? (
         <div className="mt-16 text-center text-muted-foreground text-sm">Loading…</div>
       ) : ideas.length === 0 ? (
-        <div className="mt-20 text-center">
-            <Lightbulb size={36} className="text-copper mx-auto opacity-60" />
-            <p className="font-display text-[22px] mt-4 text-foreground">Your first spark goes here.</p>
-            <p className="text-muted-foreground text-[13px] mt-2">Click &quot;New Idea&quot; to capture it.</p>
-          </div>
+        <EmptyState
+          icon={<PenSquare size={48} />}
+          message="No ideas captured yet. Jot down subject lines, hooks, angles — anything you want Aurelius and the swarm to work with later."
+          ctaLabel="New Idea"
+          onCtaClick={() => setOpen(true)}
+          className="py-16"
+        />
       ) : filteredIdeas.length === 0 ? (
         <div className="mt-20 text-center">
           <Search size={36} className="text-muted-foreground/40 mx-auto mb-4" />

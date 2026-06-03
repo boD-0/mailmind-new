@@ -1,16 +1,16 @@
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/MailMind-🧠✉️-ff5f5f?style=flat-square&labelColor=1a1a1a">
-    <img alt="MailMind" src="https://img.shields.io/badge/MailMind-🧠✉️-ff5f5f?style=flat-square&labelColor=fdfbf7" width="300">
+    <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/MailMind-🧠✉️-EF9F27?style=flat-square&labelColor=1a1a1a">
+    <img alt="MailMind" src="https://img.shields.io/badge/MailMind-🧠✉️-EF9F27?style=flat-square&labelColor=fdfbf7" width="300">
   </picture>
 
   <h3 align="center">AI-Powered Email Marketing Platform</h3>
   <p align="center">Four specialized AI agents collaborate to craft hyper-personalized email campaigns<br>based on each prospect's psychological profile.</p>
 
   <p align="center">
-    <a href="#-architecture"><img src="https://img.shields.io/badge/Architecture-🏗️-ff5f5f?style=flat-square&labelColor=fdfbf7" alt="Architecture"></a>
-    <a href="#-features"><img src="https://img.shields.io/badge/Features-✨-ff5f5f?style=flat-square&labelColor=fdfbf7" alt="Features"></a>
-    <a href="#-tech-stack"><img src="https://img.shields.io/badge/Tech_Stack-🚀-ff5f5f?style=flat-square&labelColor=fdfbf7" alt="Tech Stack"></a>
+    <a href="#-architecture"><img src="https://img.shields.io/badge/Architecture-🏗️-EF9F27?style=flat-square&labelColor=fdfbf7" alt="Architecture"></a>
+    <a href="#-features"><img src="https://img.shields.io/badge/Features-✨-EF9F27?style=flat-square&labelColor=fdfbf7" alt="Features"></a>
+    <a href="#-tech-stack"><img src="https://img.shields.io/badge/Tech_Stack-🚀-EF9F27?style=flat-square&labelColor=fdfbf7" alt="Tech Stack"></a>
   </p>
 
   <br>
@@ -33,7 +33,7 @@
     <img src="https://img.shields.io/badge/Redis-Upstash-FF4438?style=flat-square&logo=redis&logoColor=white" alt="Redis">
     <img src="https://img.shields.io/badge/Cloudflare-R2-F38020?style=flat-square&logo=cloudflare&logoColor=white" alt="Cloudflare R2">
     <img src="https://img.shields.io/badge/Better--Auth-1.6-7C3AED?style=flat-square" alt="Better-Auth">
-    <img src="https://img.shields.io/badge/License-Private-ff5f5f?style=flat-square" alt="License Private">
+    <img src="https://img.shields.io/badge/License-Private-EF9F27?style=flat-square" alt="License Private">
   </p>
 
   <!-- Badges Row 3 -->
@@ -320,6 +320,7 @@ MailMind uses a **LangGraph-based multi-agent system** — 4 specialized agents 
 | **Analytics** | PostHog + Sentry error tracking |
 | **Email** | Resend + Gmail API (direct send) |
 | **Styling** | Tailwind CSS v4 + Radix UI (~70 components) |
+| **Storybook** | Component library with 3 stories (Avatar, Button, Input) |
 | **Animations** | Framer Motion 12 + Motion + Vaul |
 | **Icons** | Lucide React |
 | **Forms** | React Hook Form + Zod 4 |
@@ -500,6 +501,24 @@ users ──── projects ──── vault_documents
 | `npm run build` | Production build |
 | `npm run start` | Start production server |
 | `npm run lint` | ESLint check |
+| `npm run storybook` | Launch Storybook UI (port 6006) — 3 component stories (Avatar, Button, Input) |
+| `npm run build-storybook` | Build static Storybook for deployment |
+
+### Storybook (Component Library)
+
+```bash
+npm run storybook
+# → Open http://localhost:6006
+```
+
+Storybook is configured for interactive component development. Current stories:
+- **Avatar** — `sm` (28px), `md` (36px), `lg` (44px) with amber `#FAEEDA` background
+- **Button** — `primary` (amber fill), `secondary` (outline), `ghost`, `link` variants
+- **Input** — default + error state with red banner
+
+Config: `.storybook/main.ts` (Storybook 7 + Next.js) + `.storybook/preview.tsx` (loads global CSS).
+
+> **Note:** If you get peer dependency errors, run `npm install --legacy-peer-deps`.
 | `npm run db:push` | Push schema to database |
 | `npm run db:generate` | Generate SQL migration files |
 | `npm run db:migrate` | Apply pending migrations |
@@ -585,10 +604,10 @@ Run the project locally and visit `/demo` to see MailMind in action — pick a s
   <p>Built with ❤️ by <strong>Bogdan Pieszczoch</strong></p>
   <p>
     <img src="https://img.shields.io/badge/TypeScript_Strict-✅-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript Strict">
-    <img src="https://img.shields.io/badge/PRs_Welcome-🙌-ff5f5f?style=flat-square" alt="PRs Welcome">
+    <img src="https://img.shields.io/badge/PRs_Welcome-🙌-EF9F27?style=flat-square" alt="PRs Welcome">
     <img src="https://img.shields.io/badge/Powered_by-LangGraph-FF6B35?style=flat-square" alt="Powered by LangGraph">
     <img src="https://img.shields.io/badge/AI-OpenAI_GPT--4o-412991?style=flat-square&logo=openai&logoColor=white" alt="OpenAI GPT-4o">
-    <img src="https://img.shields.io/badge/i18n-4_🌍-ff5f5f?style=flat-square" alt="4 Languages">
+    <img src="https://img.shields.io/badge/i18n-4_🌍-EF9F27?style=flat-square" alt="4 Languages">
     <img src="https://img.shields.io/badge/API-22_🚀-3178C6?style=flat-square" alt="22+ API Endpoints">
   </p>
 </div>

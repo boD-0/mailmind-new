@@ -1,85 +1,20 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { usePathname, useParams, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { LayoutDashboard, Lightbulb, MessageSquare, Shield, Settings, LogOut, User, Loader2, FolderKanban, FileText, Wrench, Rocket, UserPlus, ChevronRight, Sparkles } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { motion } from "framer-motion";
+import { LayoutDashboard, Lightbulb, MessageSquare, Shield, Settings, FolderKanban, FileText, Rocket, UserPlus } from "lucide-react";
 import { AureliusHelper } from "@/components/aurelius/AureliusHelper";
 import { ApiLimitNotification } from "@/components/ui/api-limit-notification";
-import { AvatarCircle } from "@/components/ui/avatar-picker";
-import { NotificationsPopover } from "@/components/ui/notifications-popover";
-import SearchComponent from "@/components/ui/animated-glowing-search-bar";
 import { OmniCommandPalette, type OmniSource, type OmniItem } from "@/components/ui/omni-command-palette";
 import { useSwarmNotifications } from "@/hooks/useSwarmNotifications";
-import { useAvatarStore } from "@/stores/avatarStore";
-import { getUserProfile } from "@/app/actions/profile";
+import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
+import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { searchAll } from "@/app/actions/search";
 import { authClient } from "@/lib/auth/auth-client";
+import { useAvatarStore } from "@/stores/avatarStore";
+import { getUserProfile } from "@/app/actions/profile";
 import { toast } from "sonner";
-
-const NAV_ITEMS = [
-  { label: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
-  { label: 'Ideas', icon: Lightbulb, href: '/dashboard/ideas' },
-  { label: 'Global Chat', icon: MessageSquare, href: '/dashboard/chat' },
-  { label: 'Tools', icon: Wrench, href: '/dashboard/tools' },
-  { label: 'Changelog', icon: Sparkles, href: '/changelog', badge: 'NEW' },
-];
-
-function Sidebar() {
-  const pathname = usePathname();
-  const { locale } = useParams();
-
-  return (
-    <aside className="w-64 border-r border-border bg-card flex flex-col h-screen sticky top-0">
-      <div className="h-20 flex items-center px-8 border-b border-border">
-        <Link href={`/${locale}/dashboard`} className="text-lg font-bold tracking-tight text-copper">
-          MAILMIND<span className="text-muted-foreground/40">.</span>
-        </Link>
-      </div>
-
-      <nav className="flex-1 p-4 space-y-1">
-        {NAV_ITEMS.map((item) => {
-          const localizedHref = `/${locale}${item.href}`;
-          const isActive = pathname === localizedHref;
-          return (
-            <Link 
-              key={item.href} 
-              href={localizedHref}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium tracking-wide transition-colors ${
-                isActive 
-                  ? 'bg-primary-muted text-primary border border-primary/15' 
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              }`}
-            >
-              <item.icon size={16} />
-              {item.label}
-              {'badge' in item && item.badge && (
-                <span className="ml-auto text-[9px] font-bold bg-copper/10 text-copper px-1.5 py-0.5 rounded-full uppercase tracking-wider leading-none">
-                  {item.badge}
-                </span>
-              )}
-            </Link>
-          );
-        })}
-      </nav>
-
-      <div className="p-4 border-t border-border">
-        <Link 
-          href={`/${locale}/dashboard/settings`}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium tracking-wide transition-colors ${
-            pathname === `/${locale}/dashboard/settings`
-              ? 'bg-primary-muted text-primary border border-primary/15'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-          }`}
-        >
-          <Settings size={16} />
-          Settings
-        </Link>
-      </div>
-    </aside>
-  );
-}
 
 // ── OmniCommandPalette sources ──
 
@@ -238,186 +173,38 @@ const COMMANDS_SOURCE: OmniSource = {
 
 const HEADER_SOURCES: OmniSource[] = [COMMANDS_SOURCE, PAGES_SOURCE, SEARCH_SOURCE];
 
-function AvatarMenu() {
-  const { locale } = useParams()
-  const router = useRouter()
-  const { data: session } = authClient.useSession()
-  const [open, setOpen] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-
-  const userName = (session?.user as { name?: string } | undefined)?.name || "Founder"
-  const userEmail = (session?.user as { email?: string } | undefined)?.email || ""
-
-  // Check admin status
-  useEffect(() => {
-    import("@/app/actions/admin").then((m) =>
-      m.isCurrentUserAdmin().then(setIsAdmin).catch(() => setIsAdmin(false))
-    )
-  }, [session])
-
-  // Close on outside click
-  useEffect(() => {
-    if (!open) return
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener("mousedown", handler)
-    return () => document.removeEventListener("mousedown", handler)
-  }, [open])
-
-  const handleSignOut = async () => {
-    await authClient.signOut()
-    router.push(`/${locale}/login`)
-  }
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-3 pl-6 border-l border-border hover:opacity-80 transition-opacity"
-      >
-        <div className="text-right hidden sm:block">
-          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-            {userName.split(" ")[0]}
-          </p>
-          <p className="text-xs font-bold text-foreground truncate max-w-[120px]">{userEmail}</p>
-        </div>
-        <AvatarCircle />
-      </button>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-56 bg-card rounded-xl border border-border shadow-lg overflow-hidden z-50"
-          >
-            {/* User info header */}
-            <div className="px-4 py-3 border-b border-border">
-              <p className="text-sm font-bold text-foreground truncate">{userName}</p>
-              <p className="text-[11px] text-muted-foreground truncate">{userEmail}</p>
-            </div>
-
-            <div className="py-1">
-              <button
-                onClick={() => { setOpen(false); router.push(`/${locale}/dashboard/settings`) }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/80 hover:bg-muted transition-colors"
-              >
-                <Settings size={15} className="text-muted-foreground" />
-                Settings
-              </button>
-              <button
-                onClick={() => { setOpen(false); router.push(`/${locale}/dashboard/settings`) }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground/80 hover:bg-muted transition-colors"
-              >
-                <User size={15} className="text-muted-foreground" />
-                Account
-              </button>
-
-              {/* Founder Mode — admin only */}
-              {isAdmin && (
-                <>
-                  <div className="my-1 border-t border-border" />
-                  <button
-                    onClick={() => { setOpen(false); router.push(`/${locale}/dashboard/admin`) }}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-copper hover:bg-primary-muted transition-colors"
-                  >
-                    <Shield size={15} />
-                    Founder Mode
-                  </button>
-                </>
-              )}
-
-              <div className="my-1 border-t border-border" />
-              <button
-                onClick={handleSignOut}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-destructive hover:bg-destructive/5 transition-colors"
-              >
-                <LogOut size={15} />
-                Sign Out
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  )
-}
-
-function Header() {
-  const { locale } = useParams()
-  const { data: session, isPending } = authClient.useSession()
-
-  // ALL hooks first — never conditionally call hooks
-  useEffect(() => {
-    // Onboarding guard — redirect to /onboarding if not completed
-    if (isPending) return
-    if (session && !(session.user as Record<string, unknown>).onboardingComplete) {
-      window.location.href = `/${locale}/onboarding`
-    }
-  }, [session, isPending, locale])
-
-  useSwarmNotifications()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [searchOpen, setSearchOpen] = useState(false)
-  const initAvatar = useAvatarStore((s) => s.initAvatar)
-  const avatarInitialized = useAvatarStore((s) => s.initialized)
-
-  // Load avatar ID from DB on mount
-  useEffect(() => {
-    if (avatarInitialized) return;
-    getUserProfile().then((data) => {
-      if (data.avatarId) initAvatar(data.avatarId);
-    }).catch(() => {});
-  }, [initAvatar, avatarInitialized]);
-
-  if (isPending) {
-    return (
-      <header className="h-20 border-b border-border bg-card flex items-center justify-center px-10 sticky top-0 z-40">
-        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground/50" />
-      </header>
-    )
-  }
-
-  return (
-    <header className="h-20 border-b border-border bg-card flex items-center justify-between px-10 sticky top-0 z-40">
-      <div className="relative max-w-md w-full">
-        <SearchComponent
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onFocus={() => setSearchOpen(true)}
-          placeholder="Search campaigns, prospects, or ideas..."
-        />
-      </div>
-      <OmniCommandPalette
-        open={searchOpen}
-        onOpenChange={setSearchOpen}
-        initialQuery={searchQuery}
-        sources={HEADER_SOURCES}
-        placeholder="Search campaigns, prospects, or ideas…"
-        storageKey="mailmind:omni:recents"
-        showRecents
-        showPinnedFirst
-        onItemExecuted={(item) => {
-          console.debug("Navigated to:", item.label);
-        }}
-      />
-
-      <div className="flex items-center gap-6">
-        <NotificationsPopover />
-        <AvatarMenu />
-      </div>
-    </header>
-  );
-}
-
 export function CommandSurface({ children }: { children: React.ReactNode }) {
+  const { locale } = useParams();
+  const { data: session, isPending } = authClient.useSession();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
   const [apiUsage, setApiUsage] = useState(0);
   const [isExceeded, setIsExceeded] = useState(false);
+  const initAvatar = useAvatarStore((s) => s.initAvatar);
+  const avatarInitialized = useAvatarStore((s) => s.initialized);
 
+  // Onboarding guard
+  useEffect(() => {
+    if (isPending) return;
+    if (session && !(session.user as Record<string, unknown>).onboardingComplete) {
+      window.location.href = `/${locale}/onboarding`;
+    }
+  }, [session, isPending, locale]);
+
+  // Load avatar once
+  useEffect(() => {
+    if (avatarInitialized) return;
+    getUserProfile()
+      .then((data) => {
+        if (data.avatarId) initAvatar(data.avatarId);
+      })
+      .catch(() => {});
+  }, [initAvatar, avatarInitialized]);
+
+  // Swarm notifications
+  useSwarmNotifications();
+
+  // API usage polling
   useEffect(() => {
     const checkUsage = async () => {
       try {
@@ -438,9 +225,26 @@ export function CommandSurface({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <Sidebar />
+      <DashboardSidebar />
       <div className="flex-1 flex flex-col min-w-0 relative">
-        <Header />
+        <DashboardHeader
+          searchQuery={searchQuery}
+          onSearchChange={(e) => setSearchQuery(e.target.value)}
+          onSearchFocus={() => setSearchOpen(true)}
+        />
+        <OmniCommandPalette
+          open={searchOpen}
+          onOpenChange={setSearchOpen}
+          initialQuery={searchQuery}
+          sources={HEADER_SOURCES}
+          placeholder="Search campaigns, prospects, or ideas…"
+          storageKey="mailmind:omni:recents"
+          showRecents
+          showPinnedFirst
+          onItemExecuted={(item) => {
+            console.debug("Navigated to:", item.label);
+          }}
+        />
         {apiUsage > 0 && (apiUsage >= 80 || isExceeded) && (
           <div className="px-4 pt-2">
             <ApiLimitNotification

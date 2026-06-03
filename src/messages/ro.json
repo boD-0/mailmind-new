@@ -276,6 +276,10 @@
       "placeholder": "emailul@tău.com",
       "button": "Începe Acum",
       "success": "✓ Ești înscris! Verifică inbox-ul pentru următorii pași."
+    },
+    "aurelius_close": {
+      "message": "Nu ești sigur ce plan se potrivește agenției tale acum? Spune-mi puțin despre munca ta — îți voi da o recomandare sinceră.",
+      "cta": "Vorbește cu Aurelius"
     }
   },
   "demo": {

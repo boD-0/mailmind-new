@@ -276,6 +276,10 @@
       "placeholder": "votre@email.com",
       "button": "Commencer",
       "success": "✓ Vous êtes inscrit! Vérifiez votre boîte mail."
+    },
+    "aurelius_close": {
+      "message": "Vous ne savez pas quel plan correspond à votre agence ? Parlez-moi un peu de votre travail — je vous donnerai une recommandation honnête.",
+      "cta": "Parler à Aurelius"
     }
   },
   "demo": {

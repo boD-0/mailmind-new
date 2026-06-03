@@ -6,7 +6,9 @@ export const authClient = createAuthClient({
     process.env.NEXT_PUBLIC_APP_URL ??
     "http://localhost:3000",
   plugins: [
-    sentinelClient(),
+    sentinelClient({
+      identifyUrl: process.env.NEXT_PUBLIC_BETTER_AUTH_SENTINEL_URL ?? undefined,
+    }),
   ],
 })
 

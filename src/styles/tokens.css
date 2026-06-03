@@ -17,81 +17,103 @@
 /* ── 1. Raw Palette ──────────────────────────────────────────────────────── */
 
 :root {
-  /* Brand accent — warm copper / coral red */
-  --palette-accent:        #c17b3f;
-  --palette-accent-light:  #d49455;
-  --palette-accent-dark:   #a86830;
+  /* Brand accent — warm amber (#EF9F27) */
+  --palette-amber:           #EF9F27;
+  --palette-amber-bg:        #FAEEDA;
+  --palette-amber-dark:      #BA7517;
+  --palette-amber-text:      #633806;
 
-  /* Neutral greys */
-  --palette-white:         #fdfbf7;
-  --palette-off-white:     #f5f4f0;
-  --palette-light-grey:    #e8e5de;
-  --palette-medium-grey:   #c4c0b8;
-  --palette-warm-grey:     #8a8680;
-  --palette-charcoal:      #3d3a36;
-  --palette-deep:          #1a1a16;
-  --palette-void:          #0c0c0a;
+  /* Neutral greys — warm tone */
+  --palette-bg:              #F7F5F0;
+  --palette-surface:         #FFFFFF;
+  --palette-surface2:        #F1EFE8;
+  --palette-border:          rgba(0,0,0,0.07);
+  --palette-border-md:       rgba(0,0,0,0.11);
+  --palette-text-1:          #1C1C1A;
+  --palette-text-2:          #5F5E5A;
+  --palette-text-3:          #888780;
+
+  /* Teal — success / active */
+  --palette-teal:            #1D9E75;
+  --palette-teal-bg:         #E1F5EE;
+  --palette-teal-text:       #085041;
 
   /* Semantic colors */
-  --palette-success:       #4caf50;
-  --palette-warning:       #f5c842;
-  --palette-error:         #e53935;
-  --palette-info:          #4b7be8;
-  --palette-purple:        #9b6fe8;
+  --palette-danger:          #E24B4A;
+  --palette-danger-bg:       #FCEBEB;
+  --palette-danger-text:     #791F1F;
+
+  /* Legacy — backward compat */
+  --palette-white:           #F7F5F0;
+  --palette-off-white:       #F1EFE8;
+  --palette-light-grey:      #e8e5de;
+  --palette-medium-grey:     #c4c0b8;
+  --palette-warm-grey:       #8a8680;
+  --palette-charcoal:        #3d3a36;
+  --palette-deep:            #1C1C1A;
+  --palette-void:            #111110;
+  --palette-accent:          var(--palette-amber);
+  --palette-accent-light:    #FAC775;
+  --palette-accent-dark:     var(--palette-amber-dark);
+  --palette-success:         var(--palette-teal);
+  --palette-warning:         #EF9F27;
+  --palette-error:           #E24B4A;
+  --palette-info:            #4b7be8;
+  --palette-purple:          #9b6fe8;
 }
 
 /* ── 2. Theme Primitives ─────────────────────────────────────────────────── */
 
 /* Dark theme (default) */
 :root {
-  --theme-bg:              var(--palette-void);
-  --theme-bg-elevated:     var(--palette-deep);
-  --theme-bg-surface:      hsl(30 8% 12%);
-  --theme-bg-hover:        hsl(30 8% 16%);
+  --theme-bg:              #111110;
+  --theme-bg-elevated:     #1C1C1A;
+  --theme-bg-surface:      #242422;
+  --theme-bg-hover:        #2C2C2A;
   
-  --theme-text-primary:    hsl(45 10% 92%);
-  --theme-text-secondary:  hsl(40 5% 65%);
-  --theme-text-tertiary:   hsl(40 5% 48%);
-  --theme-text-on-accent:  var(--palette-void);
+  --theme-text-primary:    #F1EFE8;
+  --theme-text-secondary:  #B4B2A9;
+  --theme-text-tertiary:   #888780;
+  --theme-text-on-accent:  #FFFFFF;
   
-  --theme-border:          hsl(30 8% 18%);
-  --theme-border-hover:    hsl(30 8% 28%);
-  --theme-border-accent:   hsl(28 45% 35% / 0.3);
+  --theme-border:          rgba(255,255,255,0.07);
+  --theme-border-hover:    rgba(255,255,255,0.12);
+  --theme-border-accent:   rgba(239,159,39,0.3);
   
-  --theme-accent:          var(--palette-accent);
-  --theme-accent-hover:    var(--palette-accent-light);
-  --theme-accent-muted:    hsl(28 45% 35% / 0.12);
+  --theme-accent:          #EF9F27;
+  --theme-accent-hover:    #FAC775;
+  --theme-accent-muted:    rgba(239,159,39,0.15);
   
-  --theme-success:         var(--palette-success);
-  --theme-warning:         var(--palette-warning);
-  --theme-error:           var(--palette-error);
-  --theme-info:            var(--palette-info);
+  --theme-success:         #5DCAA5;
+  --theme-warning:         #EF9F27;
+  --theme-error:           #F09595;
+  --theme-info:            #4b7be8;
 }
 
 /* Light theme */
-.light {
-  --theme-bg:              var(--palette-white);
-  --theme-bg-elevated:     #ffffff;
-  --theme-bg-surface:      var(--palette-off-white);
-  --theme-bg-hover:        hsl(45 10% 94%);
+.light, html:not([data-theme="dark"]) {
+  --theme-bg:              #F7F5F0;
+  --theme-bg-elevated:     #FFFFFF;
+  --theme-bg-surface:      #F1EFE8;
+  --theme-bg-hover:        #EBE9E4;
   
-  --theme-text-primary:    #1a1a1a;
-  --theme-text-secondary:  #6b6760;
-  --theme-text-tertiary:   #9a968e;
-  --theme-text-on-accent:  #ffffff;
+  --theme-text-primary:    #1C1C1A;
+  --theme-text-secondary:  #5F5E5A;
+  --theme-text-tertiary:   #888780;
+  --theme-text-on-accent:  #FFFFFF;
   
-  --theme-border:          #e0ddd5;
-  --theme-border-hover:    #c4c0b8;
-  --theme-border-accent:   hsl(4 88% 68% / 0.25);
+  --theme-border:          rgba(0,0,0,0.07);
+  --theme-border-hover:    rgba(0,0,0,0.12);
+  --theme-border-accent:   rgba(239,159,39,0.2);
   
-  --theme-accent:          #ff5f5f;
-  --theme-accent-hover:    #ff7777;
-  --theme-accent-muted:    hsl(4 88% 68% / 0.1);
+  --theme-accent:          #EF9F27;
+  --theme-accent-hover:    #BA7517;
+  --theme-accent-muted:    rgba(239,159,39,0.1);
   
-  --theme-success:         var(--palette-success);
-  --theme-warning:         var(--palette-warning);
-  --theme-error:           var(--palette-error);
-  --theme-info:            var(--palette-info);
+  --theme-success:         #1D9E75;
+  --theme-warning:         #EF9F27;
+  --theme-error:           #E24B4A;
+  --theme-info:            #4b7be8;
 }
 
 /* ── 3. Semantic Tokens ──────────────────────────────────────────────────── */

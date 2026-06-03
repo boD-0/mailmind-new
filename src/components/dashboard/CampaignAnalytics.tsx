@@ -152,7 +152,7 @@ export function CampaignAnalytics({ campaignId }: Props) {
                 contentStyle={{ borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 11 }}
                 formatter={(value: unknown) => [`${value}%`, ""]}
               />
-              <Bar dataKey="value" radius={[6, 6, 0, 0]} fill="#ff5f5f" />
+              <Bar dataKey="value" radius={[6, 6, 0, 0]} fill="#EF9F27" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -167,7 +167,7 @@ export function CampaignAnalytics({ campaignId }: Props) {
               <PolarGrid stroke="#e2e8f0" />
               <PolarAngleAxis dataKey="trait" tick={{ fontSize: 9, fill: "#94a3b8" }} />
               <PolarRadiusAxis tick={false} axisLine={false} />
-              <Radar dataKey="value" stroke="#ff5f5f" fill="#ff5f5f" fillOpacity={0.15} strokeWidth={1.5} />
+              <Radar dataKey="value" stroke="#EF9F27" fill="#EF9F27" fillOpacity={0.15} strokeWidth={1.5} />
             </RadarChart>
           </ResponsiveContainer>
         </div>
@@ -187,7 +187,7 @@ export function CampaignAnalytics({ campaignId }: Props) {
                 formatter={(value: unknown) => [`${value}%`, ""]}
               />              <Bar dataKey="score" radius={[0, 6, 6, 0]}>
                 {agentData.map((_, index) => {
-                  const colors = ["#ff5f5f", "#8b5cf6", "#3b82f6", "#10b981"];
+                  const colors = ["#EF9F27", "#8b5cf6", "#3b82f6", "#10b981"];
                   return <Cell key={index} fill={colors[index]} />;
                 })}</Bar>
             </BarChart>
@@ -208,7 +208,7 @@ export function CampaignAnalytics({ campaignId }: Props) {
                 contentStyle={{ borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 11 }}
                 formatter={(value: unknown) => [`${value}%`, "Confidence"]}
               />
-              <Line type="monotone" dataKey="score" stroke="#ff5f5f" strokeWidth={2} dot={{ r: 3, fill: "#ff5f5f" }} />
+              <Line type="monotone" dataKey="score" stroke="#EF9F27" strokeWidth={2} dot={{ r: 3, fill: "#EF9F27" }} />
             </LineChart>
           </ResponsiveContainer>
         </div>

@@ -1,0 +1,16 @@
+{
+  "components": [
+    { "name": "Button", "variants": ["primary","secondary","ghost","link"], "notes": "Use --color-accent for primary" },
+    { "name": "Input", "variants": ["text","email","password","search"], "notes": "Include label, help text, error state" },
+    { "name": "Avatar", "variants": ["small","medium","large"], "notes": "Aurelius avatar sizes and treatment" },
+    { "name": "Banner", "variants": ["error","info","success"], "notes": "Full-width banners for errors and notices" },
+    { "name": "Card", "variants": ["default","stat","plan"], "notes": "12px radius, padding tokens" },
+    { "name": "Table", "variants": ["default","compact"], "notes": "Fixed layout, responsive stack" },
+    { "name": "Toast", "variants": ["success","info"], "notes": "Bottom-right, auto-dismiss" },
+    { "name": "SwarmCanvas", "variants": ["editor","preview"], "notes": "Nodes, connectors, progress" },
+    { "name": "ChatBubble", "variants": ["aurelius","user"], "notes": "Avatar, timestamps, typing state" },
+    { "name": "Modal", "variants": ["center","sheet"], "notes": "Accessible focus trap" },
+    { "name": "Pill", "variants": ["selectable","readonly"], "notes": "Used for voice, industries, tools" },
+    { "name": "ProgressBar", "variants": ["linear","sparkline"], "notes": "Use for swarms and stats" }
+  ]
+}

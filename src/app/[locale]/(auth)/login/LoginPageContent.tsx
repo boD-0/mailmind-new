@@ -11,6 +11,7 @@ export default function LoginPageContent() {
   const [loading, setLoading] = useState(false)
   const [resending, setResending] = useState(false)
   const [showResend, setShowResend] = useState(false)
+  const [authError, setAuthError] = useState<string | undefined>(undefined)
   const [lastEmail, setLastEmail] = useState('')
   const router = useRouter()
   const params = useParams()
@@ -49,6 +50,7 @@ export default function LoginPageContent() {
 
   const handleSignIn = async ({ email, password }: { email: string; password: string }) => {
     setLoading(true)
+    setAuthError(undefined)
     setLastEmail(email)
     try {
       const { error } = await authClient.signIn.email({
@@ -60,17 +62,24 @@ export default function LoginPageContent() {
       if (error) {
         const msg = error.message?.toLowerCase() || ''
         if (msg.includes('not verified')) {
-          toast.error(t('auth.toast_email_not_verified'))
+          const errorMessage = t('auth.toast_email_not_verified')
+          toast.error(errorMessage)
           setShowResend(true)
+          setAuthError(errorMessage)
         } else {
-          toast.error(error.message || t('auth.toast_signin_error'))
+          const errorMessage = error.message || t('auth.toast_signin_error')
+          toast.error(errorMessage)
+          setAuthError(errorMessage)
         }
       } else {
+        setAuthError(undefined)
         toast.success(t('auth.toast_signin_success'))
         router.push(redirectPath)
       }
     } catch {
-      toast.error(t('auth.toast_unexpected'))
+      const errorMessage = t('auth.toast_unexpected')
+      toast.error(errorMessage)
+      setAuthError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -94,6 +103,7 @@ export default function LoginPageContent() {
         onGoogleSignIn={handleGoogleSignIn}
         onForgotPassword={() => router.push(`/${locale}/forgot-password`)}
         loading={loading}
+        authError={authError}
         signInContent={{
           quote: { text: t('auth.quote_sign_in'), author: t('auth.author') },
         }}

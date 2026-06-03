@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   Users, Search, Plus, ChevronDown, ExternalLink,
   Mail, Building2, Clock, Loader2, Trash2,
@@ -9,6 +9,7 @@ import {
 import { useTranslation } from "@/components/I18nProvider";
 import { listProspects, deleteProspect } from "@/app/actions/prospects";
 import type { ProspectData } from "@/app/actions/prospects";
+import { EmptyState } from "@/components/ui/empty-state";
 
 // ─── Module-level constants ─────────────────────────────────────────────────
 
@@ -45,6 +46,7 @@ export function ProspectsList({ onSelectProspect }: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { t } = useTranslation();
+  const prefersReducedMotion = useReducedMotion();
 
   const fetchProspects = useCallback(async (query?: string) => {
     setLoading(true);
@@ -123,23 +125,17 @@ export function ProspectsList({ onSelectProspect }: Props) {
 
       {/* Empty state */}
       {!loading && prospects.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-gradient-to-br from-gray-50 to-amber-50 rounded-xl border border-dashed border-gray-200 p-6 text-center"
-        >
-          <Users size={24} className="mx-auto mb-2 text-muted-foreground/40" />
-          <p className="text-xs font-medium text-muted-foreground">
-            {t("prospects.empty") || "No prospects yet"}
-          </p>
-          <p className="text-[11px] text-muted-foreground/60 mt-1">
-            {t("prospects.empty_hint") || "Prospects are saved automatically after each Swarm campaign"}
-          </p>
-        </motion.div>
+        <EmptyState
+          icon={<Users size={48} />}
+          message="No prospects yet. Prospects are saved automatically after each Swarm campaign — launch your first swarm to start building your database."
+          ctaLabel="Launch a Swarm"
+          ctaHref="/dashboard/tools"
+          className="py-12"
+        />
       )}
 
       {/* List */}
-      <AnimatePresence>
+      <AnimatePresence mode={prefersReducedMotion ? "sync" : "popLayout"}>
         {prospects.map((p, i) => {
           const isExpanded = expandedId === p.id;
           const hasOceano = p.oceanoScores && Object.values(p.oceanoScores).some((v) => v > 0);
@@ -147,9 +143,15 @@ export function ProspectsList({ onSelectProspect }: Props) {
           return (
             <motion.div
               key={p.id}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.04 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 12, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={prefersReducedMotion ? undefined : { opacity: 0, y: -8, scale: 0.97 }}
+              transition={prefersReducedMotion ? { duration: 0 } : {
+                duration: 0.3,
+                delay: i * 0.04,
+                ease: [0.25, 0.46, 0.45, 0.94],
+              }}
+              layout={!prefersReducedMotion}
               className="bg-white rounded-xl border border-border overflow-hidden"
             >
               {/* Summary row */}

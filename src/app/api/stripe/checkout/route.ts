@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-import { createClient } from '@/lib/supabase/server';
 import { getPostHogClient } from '@/lib/posthog-server';
 import { safeJsonParse } from '@/lib/utils';
+import { apiRequireAuth } from '@/lib/auth/gatekeeper';
 
 export async function POST(req: Request) {
   try {
@@ -14,12 +14,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing planId' }, { status: 400 });
     }
 
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const user = await apiRequireAuth(req);
+    if (user instanceof NextResponse) return user;
 
     // Mapăm ID-urile planurilor la Price ID-urile din Stripe
     // În realitate, acestea ar veni din config sau DB

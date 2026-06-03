@@ -1,0 +1,25 @@
+[14:19:55.962] [INFO] storybook v10.4.2
+[14:19:59.229] [DEBUG] Getting package.json info for C:/Users/user/Documents/mailmind-new-main/package.json...
+[14:20:02.982] [INFO] Starting...
+[14:20:03.826] [DEBUG] Starting preview..
+[14:20:03.933] [INFO] Addon-docs: using MDX3
+[14:20:04.066] [INFO] Using implicit CSS loaders
+[14:20:04.695] [INFO] Using SWC as compiler
+[14:20:05.342] [INFO] Using default Webpack5 setup
+[14:20:07.311] [DEBUG] Using tsconfig paths for react-docgen
+[14:20:16.759] [ERROR] Failed to build the preview
+[14:20:16.780] [WARN] Force closed preview build
+[14:20:16.790] [ERROR] [38;2;241;97;97mSB_BUILDER-WEBPACK5_0003 (WebpackCompilationError): There were problems when compiling your code with Webpack.
+Run Storybook with --debug-webpack for more information.[39m
+    at starter (file:///C:/Users/user/Documents/mailmind-new-main/node_modules/@storybook/builder-webpack5/dist/index.js:857:11)
+    at starter.next (<anonymous>)
+    at Module.start (file:///C:/Users/user/Documents/mailmind-new-main/node_modules/@storybook/builder-webpack5/dist/index.js:915:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async storybookDevServer (file:///C:/Users/user/Documents/mailmind-new-main/node_modules/storybook/dist/core-server/index.js:18917:158)
+    at async buildOrThrow (file:///C:/Users/user/Documents/mailmind-new-main/node_modules/storybook/dist/core-server/index.js:8205:12)
+    at async buildDevStandalone (file:///C:/Users/user/Documents/mailmind-new-main/node_modules/storybook/dist/core-server/index.js:19478:41)
+    at async withTelemetry (file:///C:/Users/user/Documents/mailmind-new-main/node_modules/storybook/dist/_node-chunks/chunk-PU4IASEN.js:655:12)
+    at async dev (file:///C:/Users/user/Documents/mailmind-new-main/node_modules/storybook/dist/bin/core.js:2735:3)
+    at async _Command.<anonymous> (file:///C:/Users/user/Documents/mailmind-new-main/node_modules/storybook/dist/bin/core.js:2805:92)
+[14:20:16.906] [WARN] Broken build, fix the error above.
+You may need to refresh the browser.

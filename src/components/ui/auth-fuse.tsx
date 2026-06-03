@@ -92,11 +92,11 @@ Label.displayName = LabelPrimitive.Root.displayName
 /* ── Button ── */
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        default: 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-sm active:shadow-none',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
@@ -196,6 +196,50 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
   }
 )
 PasswordInput.displayName = 'PasswordInput'
+
+function getPasswordStrength(password: string) {
+  if (password.length >= 12) return { label: 'Strong', percent: 100, color: 'bg-emerald-500' }
+  if (password.length >= 9) return { label: 'Good', percent: 70, color: 'bg-amber-400' }
+  if (password.length >= 6) return { label: 'Weak', percent: 40, color: 'bg-destructive' }
+  if (password.length > 0) return { label: 'Too short', percent: 20, color: 'bg-destructive' }
+  return { label: '', percent: 0, color: 'bg-muted-foreground/20' }
+}
+
+function PasswordStrengthBar({ password }: { password: string }) {
+  const { label, percent, color } = getPasswordStrength(password)
+  return (
+    <div className="space-y-2">
+      <div className="h-1.5 w-full rounded-full bg-muted-foreground/10 overflow-hidden">
+        <div className={`h-full rounded-full ${color}`} style={{ width: `${percent}%` }} />
+      </div>
+      {label ? <p className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">{label}</p> : null}
+    </div>
+  )
+}
+
+function ErrorBanner({ message, onDismiss }: { message?: string; onDismiss?: () => void }) {
+  if (!message) return null
+  return (
+    <div className="relative flex items-start gap-3 rounded-lg border-l-[3px] border-[#E24B4A] bg-[#FCEBEB] px-4 py-3 text-sm text-[#A32D2D]" role="alert">
+      <svg className="mt-0.5 h-4 w-4 shrink-0 text-[#A32D2D]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+      </svg>
+      <p className="flex-1 text-sm leading-relaxed">{message}</p>
+      {onDismiss && (
+        <button
+          type="button"
+          onClick={onDismiss}
+          className="shrink-0 text-[#A32D2D]/60 hover:text-[#A32D2D] transition-colors"
+          aria-label="Dismiss"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      )}
+    </div>
+  )
+}
 
 /* ── SignIn Form ── */
 
@@ -314,18 +358,24 @@ function SignUpForm({ onSignUp, loading }: SignUpFormProps) {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-        <PasswordInput
-          name="password"
-          label={t('auth.password_label')}
-          required
-          autoComplete="new-password"
-          placeholder={t('auth.password_placeholder')}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="grid gap-2">
+          <PasswordInput
+            name="password"
+            label={t('auth.password_label')}
+            required
+            autoComplete="new-password"
+            placeholder={t('auth.password_placeholder')}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <PasswordStrengthBar password={password} />
+        </div>
         <Button type="submit" className="mt-2 w-full" loading={loading}>
           {t('auth.sign_up_button')}
         </Button>
+        <p className="text-xs leading-5 text-muted-foreground">
+          By continuing you agree to our <a href="#" className="text-primary underline hover:text-primary/80">Terms</a> and <a href="#" className="text-primary underline hover:text-primary/80">Privacy Policy</a>.
+        </p>
       </div>
     </form>
   )
@@ -341,6 +391,7 @@ function AuthFormContainer({
   loading,
   onGoogleSignIn,
   onForgotPassword,
+  authError,
 }: {
   isSignIn: boolean
   onToggle: () => void
@@ -349,6 +400,7 @@ function AuthFormContainer({
   loading?: boolean
   onGoogleSignIn?: () => void
   onForgotPassword?: () => void
+  authError?: string
 }) {
   const { t } = useTranslation()
   const [direction, setDirection] = useState(0) // -1 = left (signin→signup), 1 = right (signup→signin)
@@ -359,23 +411,48 @@ function AuthFormContainer({
   }
 
   return (
-    <div className="mx-auto grid w-[350px] gap-2">
-      <div className="relative overflow-hidden" style={{ minHeight: 340 }}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={isSignIn ? 'signin' : 'signup'}
-            initial={{ opacity: 0, x: direction * 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: direction * -40 }}
-            transition={{ duration: 0.25, ease: [0.43, 0.13, 0.23, 0.96] }}
-          >
-            {isSignIn ? (
-              <SignInForm onSignIn={onSignIn} onForgotPassword={onForgotPassword} loading={loading} />
-            ) : (
-              <SignUpForm onSignUp={onSignUp} loading={loading} />
-            )}
-          </motion.div>
-        </AnimatePresence>
+    <div className="w-full max-w-md space-y-6">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-2xl font-semibold tracking-tight text-foreground">MailMind</p>
+          <p className="text-sm text-muted-foreground">Secure access for your agency.</p>
+        </div>
+        <span className="text-xs uppercase tracking-[0.28em] text-muted-foreground">{isSignIn ? 'Log in' : 'Sign up'}</span>
+      </div>
+      <div className="grid gap-3">
+        <Button variant="outline" type="button" onClick={onGoogleSignIn} className="w-full justify-center">
+          <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          {t('auth.google_button')}
+        </Button>
+        <div className="relative text-center text-xs uppercase tracking-[0.28em] text-muted-foreground">
+          <span className="relative z-10 bg-background px-3">{t('auth.or_continue')}</span>
+          <div className="absolute inset-0 top-1/2 border-t border-border" />
+        </div>
+      </div>
+      <div className="rounded-[32px] border border-border bg-background/95 p-6 shadow-[0_28px_60px_-30px_rgba(15,23,42,0.5)] backdrop-blur-xl">
+        <ErrorBanner message={authError} />
+        <div className="relative overflow-hidden" style={{ minHeight: 340 }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={isSignIn ? 'signin' : 'signup'}
+              initial={{ opacity: 0, x: direction * 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: direction * -40 }}
+              transition={{ duration: 0.25, ease: [0.43, 0.13, 0.23, 0.96] }}
+            >
+              {isSignIn ? (
+                <SignInForm onSignIn={onSignIn} onForgotPassword={onForgotPassword} loading={loading} />
+              ) : (
+                <SignUpForm onSignUp={onSignUp} loading={loading} />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
       <div className="text-center text-sm text-muted-foreground">
         {isSignIn ? t('auth.no_account') + ' ' : t('auth.has_account') + ' '}
@@ -383,18 +460,6 @@ function AuthFormContainer({
           {isSignIn ? t('auth.sign_up_link') : t('auth.sign_in_link')}
         </Button>
       </div>
-      <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-        <span className="relative z-10 bg-background px-2 text-muted-foreground">{t('auth.or_continue')}</span>
-      </div>
-      <Button variant="outline" type="button" onClick={onGoogleSignIn} className="w-full">
-        <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none">
-          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
-          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-        </svg>
-        {t('auth.google_button')}
-      </Button>
     </div>
   )
 }
@@ -557,6 +622,7 @@ interface AuthUIProps {
   onGoogleSignIn?: () => void
   onForgotPassword?: () => void
   loading?: boolean
+  authError?: string
 }
 
 const defaultSignInQuote = {
@@ -578,6 +644,7 @@ export function AuthUI({
   onGoogleSignIn,
   onForgotPassword,
   loading,
+  authError,
 }: AuthUIProps) {
   const [isSignIn, setIsSignIn] = useState(initialIsSignIn !== undefined ? initialIsSignIn : true)
   const toggleForm = () => setIsSignIn((prev) => !prev)
@@ -587,49 +654,49 @@ export function AuthUI({
     : { ...defaultSignUpQuote, ...signUpContent?.quote }
 
   return (
-    <div className="w-full min-h-screen md:grid md:grid-cols-2">
+    <div className="w-full min-h-screen md:grid md:grid-cols-[minmax(0,420px)_1fr]">
       <style>{`
         input[type="password"]::-ms-reveal,
         input[type="password"]::-ms-clear {
           display: none;
         }
       `}</style>
-      <div className="flex h-screen items-center justify-center p-6 md:h-auto md:p-0 md:py-12">
-        <AuthFormContainer
-          isSignIn={isSignIn}
-          onToggle={toggleForm}
-          onSignIn={onSignIn}
-          onSignUp={onSignUp}
-          loading={loading}
-          onGoogleSignIn={onGoogleSignIn}
-          onForgotPassword={onForgotPassword}
-        />
+      <div className="flex min-h-screen items-center justify-center bg-background px-6 py-12">
+        <div className="w-full max-w-md rounded-[32px] border border-border bg-background/95 p-6 shadow-[0_28px_60px_-30px_rgba(15,23,42,0.5)] backdrop-blur-xl">
+          <AuthFormContainer
+            isSignIn={isSignIn}
+            onToggle={toggleForm}
+            onSignIn={onSignIn}
+            onSignUp={onSignUp}
+            loading={loading}
+            onGoogleSignIn={onGoogleSignIn}
+            onForgotPassword={onForgotPassword}
+            authError={authError}
+          />
+        </div>
       </div>
 
-      <div
-        className="hidden md:block relative overflow-hidden bg-gradient-to-br from-[#1a1a1a] via-[#222] to-[#111] transition-all duration-500 ease-in-out"
-      >
-        {/* Brand panel with specialists */}
-        <MailMindBrandPanel />
-
-        {/* Gradient overlay at bottom for quote */}
-        <div className="absolute inset-x-0 bottom-0 h-[200px] bg-gradient-to-t from-[#1a1a1a] via-[#1a1a1a]/60 to-transparent" />
-
-        <div className="relative z-10 flex h-full flex-col items-center justify-end p-2 pb-8">
-          <blockquote className="space-y-2 text-center text-foreground max-w-md">
-            <p className="text-lg font-medium text-white drop-shadow-lg">
-              &ldquo;
-              <Typewriter
-                key={finalQuote.text}
-                text={finalQuote.text}
-                speed={50}
-              />
-              &rdquo;
-            </p>
-            <cite className="block text-sm font-light text-white/70 not-italic drop-shadow">
-              — {finalQuote.author}
-            </cite>
-          </blockquote>
+      <div className="hidden md:block relative overflow-hidden bg-[#111111] text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(239,159,39,0.18),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.08),transparent_30%)]" />
+        <div className="relative flex h-full flex-col justify-center p-10">
+          <div className="max-w-lg rounded-[32px] border border-white/10 bg-[#111111]/95 p-8 shadow-[0_24px_80px_-40px_rgba(0,0,0,0.5)]">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="grid h-12 w-12 place-items-center rounded-full bg-amber-100 text-amber-700 font-semibold">Au</div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.28em] text-amber-300">Aurelius</p>
+                <p className="text-sm text-white/70">Your agency mentor</p>
+              </div>
+            </div>
+            <div className="rounded-[28px] border border-white/10 bg-[#111111] p-6 text-lg leading-8 text-white shadow-sm shadow-black/20">
+              Welcome. Let&apos;s build something that actually works for your agency.
+            </div>
+          </div>
+          <div className="mt-10 max-w-sm text-sm text-white/70">
+            <p className="mb-4">MailMind helps agencies keep the stack they already use, while adding a smarter orchestration layer for outreach, campaigns, and client-ready workflows.</p>
+            <blockquote className="rounded-3xl border-l-4 border-amber-400 bg-white/5 p-4 text-sm text-white/80">
+              &ldquo;We cut campaign setup time in half and still kept full control over every message.&rdquo;
+            </blockquote>
+          </div>
         </div>
       </div>
     </div>

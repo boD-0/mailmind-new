@@ -276,6 +276,10 @@
       "placeholder": "ihre@email.com",
       "button": "Loslegen",
       "success": "✓ Sie sind dabei! Überprüfen Sie Ihren Posteingang."
+    },
+    "aurelius_close": {
+      "message": "Sie sind sich nicht sicher, welcher Plan am besten zu Ihrer Agentur passt? Erzählen Sie mir etwas über Ihre Arbeit — ich gebe Ihnen eine ehrliche Empfehlung.",
+      "cta": "Mit Aurelius sprechen"
     }
   },
   "demo": {

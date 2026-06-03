@@ -719,9 +719,9 @@ function DifferentiationSection() {
               {/* Data fill */}
               <motion.polygon
                 points="120,35 195,100 185,175 120,195 55,175 45,100"
-                fill="#c17b3f"
+                fill="#EF9F27"
                 fillOpacity="0.12"
-                stroke="#c17b3f"
+                stroke="#EF9F27"
                 strokeWidth="2"
                 initial={{ scale: 0, transformOrigin: "120px 120px" }}
                 whileInView={{ scale: 1 }}
@@ -750,7 +750,7 @@ function DifferentiationSection() {
                   cx={pt.cx}
                   cy={pt.cy}
                   r="3"
-                  fill="#c17b3f"
+                  fill="#EF9F27"
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   viewport={{ once: true }}

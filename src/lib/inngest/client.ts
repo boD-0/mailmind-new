@@ -1,6 +1,23 @@
 import { Inngest } from "inngest";
 
 /**
+ * Type map of all Inngest events used in the application.
+ */
+export type SwarmEvents = {
+  "swarm/execute": {
+    data: {
+      campaignId: string;
+      prospectName: string;
+      prospectUrl: string;
+      brandContext: Record<string, unknown>;
+      swarmMode: "fast" | "deep";
+      userId: string;
+      plan: string;
+    };
+  };
+};
+
+/**
  * Inngest client for asynchronous swarm execution queues.
  *
  * Gracefully degrades to a no-op mock when INNGEST_EVENT_KEY is not set,
@@ -8,7 +25,7 @@ import { Inngest } from "inngest";
  * is missing.
  */
 
-function createInngestClient(): Inngest {
+function createInngestClient(): Inngest<SwarmEvents> {
   const eventKey = process.env.INNGEST_EVENT_KEY;
 
   if (!eventKey) {
@@ -18,7 +35,7 @@ function createInngestClient(): Inngest {
     );
   }
 
-  return new Inngest({
+  return new Inngest<SwarmEvents>({
     id: "mailmind",
     eventKey: eventKey || "dev-fallback",
   });

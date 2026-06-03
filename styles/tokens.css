@@ -1,0 +1,99 @@
+/* MailMind design tokens
+   Generated from ui.ux.md
+*/
+:root {
+  /* Colors */
+  --color-accent: #EF9F27;
+  --color-accent-dark: #BA7517;
+  --color-accent-light: #FAEEDA;
+  --color-free: #B4B2A9;
+  --color-starter: #378ADD;
+  --color-professional: #EF9F27;
+  --color-success: #1D9E75;
+  --color-danger: #E24B4A;
+  --color-warning: #EF9F27;
+
+  --color-dark-bg: #111110;
+  --color-dark-surface: #1C1C1A;
+  --color-dark-border: rgba(255,255,255,0.08);
+
+  /* Text */
+  --color-text-primary: #111111;
+  --color-text-secondary: #6B6A66;
+  --color-text-tertiary: #9A978E;
+
+  /* Backgrounds */
+  --color-background: #FFFFFF;
+  --color-background-secondary: #F6F5F2;
+
+  /* Typography */
+  --font-display: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+  --scale-xxs: 12px;
+  --scale-xs: 13px;
+  --scale-sm: 14px;
+  --scale-md: 16px;
+  --scale-lg: 18px;
+  --scale-xl: 22px;
+  --scale-2xl: 28px;
+  --scale-3xl: 36px;
+  --scale-4xl: 48px;
+
+  /* Spacing */
+  --space-unit: 4px;
+  --space-3: calc(var(--space-unit) * 3); /* 12px */
+  --space-4: calc(var(--space-unit) * 4); /* 16px */
+  --space-5: calc(var(--space-unit) * 5); /* 20px */
+  --space-6: calc(var(--space-unit) * 6); /* 24px */
+
+  /* Radii */
+  --radius-card: 12px;
+  --radius-button: 8px;
+  --radius-input: 8px;
+
+  /* Elevation / border */
+  --border-1: 0.5px solid rgba(0,0,0,0.06);
+
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 1024px;
+  --breakpoint-lg: 1280px;
+
+  /* Motion */
+  --motion-instant: 0ms;
+  --motion-short: 120ms;
+  --motion-medium: 240ms;
+  --motion-long: 420ms;
+  --motion-ease: cubic-bezier(.2,.9,.3,1);
+  --motion-ease-in: cubic-bezier(.4,0,.2,1);
+  --motion-ease-out: cubic-bezier(.0,.0,.2,1);
+  --motion-scale: 1; /* scale factor for motion tuning */
+  --motion-drag: 0.92; /* physics-ish damping for gestures */
+
+  /* Focus */
+  --focus-ring: 3px solid rgba(239,159,39,0.38); /* amber 0.38 */
+}
+
+/* Dark theme overrides */
+[data-theme="dark"] {
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #D6D6D4;
+  --color-text-tertiary: #B9B9B8;
+  --color-background: var(--color-dark-bg);
+  --color-background-secondary: var(--color-dark-surface);
+  --border-1: 0.5px solid var(--color-dark-border);
+}
+
+/* Accessibility helpers */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-short: 0ms;
+    --motion-medium: 0ms;
+  }
+}
+
+/* Usage notes:
+ - Add tokens here used across components (buttons, inputs, cards).
+ - Ensure font-display: swap is applied where fonts are loaded in HTML.
+ - Maintain WCAG contrast targets in design review (4.5:1 body, 3:1 large text).
+*/

@@ -15,13 +15,21 @@ export async function submitOnboarding(formData: {
   context?: string;
   brandValues: string[];
   painPoints: string[];
+  selectedPlan: "FREE" | "STARTER" | "PROFESSIONAL";
 }) {
   const head = await headers();
   const mockReq = { headers: head } as unknown as Request;
   const user = await requireAuth(mockReq);
 
   try {
-    // 1. Creează proiectul inițial
+    // 1. Determine trial end date if PROFESSIONAL plan selected
+    let trialEnd: Date | null = null;
+    if (formData.selectedPlan === "PROFESSIONAL") {
+      // 14-day trial from signup
+      trialEnd = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+    }
+
+    // 2. Creează proiectul inițial
     await db.insert(projects).values({
       userId: user.id,
       name: formData.name,
@@ -33,9 +41,13 @@ export async function submitOnboarding(formData: {
       painPoints: formData.painPoints,
     });
 
-    // 2. Marchez onboarding-ul ca fiind complet
+    // 3. Update user plan and trial
     await db.update(users)
-      .set({ onboardingComplete: true })
+      .set({
+        onboardingComplete: true,
+        plan: formData.selectedPlan,
+        trialEnd: trialEnd || null,
+      })
       .where(eq(users.id, user.id));
 
     return { success: true };

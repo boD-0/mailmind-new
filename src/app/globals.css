@@ -6,21 +6,24 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── Fonts ───────────────────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css');
 
 /* ── Third-party imports ─────────────────────────────────────────────────── */
 @import "tailwindcss";
-@import "tw-animate-css";
 
 /* ── Design tokens (single source of truth) ──────────────────────────────── */
 @import "../styles/tokens.css";
+
+/* ── Animation utilities (local copy of tw-animate-css) ──────────────────── */
+@import "../styles/tw-animate.css";
 
 /* ── Base Styles ─────────────────────────────────────────────────────────── */
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: 'DM Sans', var(--font-sans), system-ui, sans-serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

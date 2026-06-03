@@ -29,7 +29,7 @@ export async function getCampaignAnalytics(
 
   let campaignQuery = supabase
     .from("campaigns")
-    .select("id, name, confidence_score")
+    .select("id, title, confidence_score")
     .eq("user_id", userId)
     .order("created_at", { ascending: true })
     .limit(10);
@@ -66,7 +66,7 @@ export async function getCampaignAnalytics(
 
   // ── Build analytics objects ──────────────────────────────────────────
 
-  return userCampaigns.map((c: { id: string; name: string | null; confidence_score: number | null }) => {
+  return userCampaigns.map((c: { id: string; title: string | null; confidence_score: number | null }) => {
     const evts = eventMap[c.id] || {};
     const totalSent = (evts.open || 0) + (evts.click || 0) + (evts.bounce || 0) || 1;
     const openCount = evts.open || 0;
@@ -81,7 +81,7 @@ export async function getCampaignAnalytics(
 
     return {
       campaignId: c.id,
-      campaignName: c.name || "Campaign",
+      campaignName: c.title || "Campaign",
       replyRate,
       openRate,
       clickRate,

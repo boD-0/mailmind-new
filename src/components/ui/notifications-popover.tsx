@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { useNotificationStore, Notification, NotificationType } from '@/stores/notificationStore'
+import { EmptyState } from '@/components/ui/empty-state'
 
 /* ── Agent icon map ── */
 
@@ -107,22 +108,6 @@ function getTimeAgo(ts: number): string {
   return `${Math.floor(days / 7)}w ago`
 }
 
-/* ── Empty state ── */
-
-function EmptyState() {
-  return (
-    <div className="flex flex-col items-center py-10 px-4 text-center">
-      <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center mb-3">
-        <Bell className="w-5 h-5 text-muted-foreground" />
-      </div>
-      <p className="text-sm font-semibold text-foreground/80 mb-1">All clear</p>
-      <p className="text-[10px] text-muted-foreground max-w-[180px]">
-        Notifications about swarm completions, deadlines, and tasks will appear here.
-      </p>
-    </div>
-  )
-}
-
 /* ── Main component ── */
 
 export function NotificationsPopover() {
@@ -185,7 +170,13 @@ export function NotificationsPopover() {
         {/* Body */}
         <div className="max-h-[360px] overflow-y-auto custom-scrollbar p-1">
           {grouped.length === 0 ? (
-            <EmptyState />
+            <EmptyState
+              icon={<Bell size={48} />}
+              message="Notifications about swarm completions, deadlines, and tasks will appear here."
+              ctaLabel="Get Started"
+              ctaHref="/dashboard"
+              className="py-10"
+            />
           ) : (
             <AnimatePresence initial={false}>
               {grouped.map((notif) => (

@@ -8,7 +8,7 @@ export const executeSwarm = inngest.createFunction(
     id: "swarm-execute",
     name: "Execute AI Swarm",
     retries: 3,
-    triggers: [{ event: "swarm/execute" }],
+    triggers: { event: "swarm/execute" },
     throttle: {
       key: "event.data.userId",
       limit: 3,
@@ -27,15 +27,7 @@ export const executeSwarm = inngest.createFunction(
       swarmMode,
       userId,
       plan,
-    } = event.data as {
-      campaignId: string;
-      prospectName: string;
-      prospectUrl: string;
-      brandContext: Record<string, unknown>;
-      swarmMode: "fast" | "deep";
-      userId: string;
-      plan: string;
-    };
+    } = event.data;
 
     const initialState = {
       campaign_id: campaignId,

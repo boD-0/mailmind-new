@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Mail, Eye, MousePointerClick, TrendingUp, Loader2 } from "lucide-react";
+import { Mail, Eye, MousePointerClick, TrendingUp, Loader2, Inbox } from "lucide-react";
 import { getEmailTrackingStats, type EmailTrackingStats } from "@/app/actions/email-tracking";
 import { useTranslation } from "@/components/I18nProvider";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface Props {
   campaignId?: string;
@@ -99,7 +100,7 @@ export function EmailTrackingPanel({ campaignId }: Props) {
       </div>
 
       {/* Recent Events */}
-      {stats.recentEvents.length > 0 && (
+      {stats.recentEvents.length > 0 ? (
         <div className="bg-white rounded-xl border border-border p-4">
           <h4 className="text-xs font-bold tracking-wider uppercase text-muted-foreground mb-3">
             {t("email_tracking.recent")}
@@ -132,6 +133,14 @@ export function EmailTrackingPanel({ campaignId }: Props) {
             ))}
           </div>
         </div>
+      ) : (
+        <EmptyState
+          icon={<Inbox size={48} />}
+          message="No recent email activity yet. Events like opens, clicks, and replies will show up here once you launch a campaign."
+          ctaLabel="Go to Dashboard"
+          ctaHref="/dashboard"
+          className="py-6"
+        />
       )}
     </div>
   );

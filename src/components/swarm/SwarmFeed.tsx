@@ -3,6 +3,8 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AgentMessage } from "@/types/swarm";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Radio } from "lucide-react";
 
 interface SwarmFeedProps {
   logs: AgentMessage[];
@@ -13,9 +15,11 @@ export function SwarmFeed({ logs }: SwarmFeedProps) {
     <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
       <AnimatePresence initial={false}>
         {logs.length === 0 ? (
-          <div className="text-[10px] text-muted-foreground/50 italic text-center mt-10">
-            Awaiting agent broadcast...
-          </div>
+          <EmptyState
+            icon={<Radio size={48} />}
+            message="Awaiting agent broadcast — messages from researcher, psychologist, strategist, and other agents will appear here in real time."
+            className="py-6"
+          />
         ) : (
           logs.map((log, i) => (
             <motion.div 

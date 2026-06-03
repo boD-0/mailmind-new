@@ -121,18 +121,17 @@ export const auth = betterAuth({
     ...(process.env.ALLOWED_DEV_ORIGINS?.split(',').map(s => s.trim()) ?? []),
   ].filter(Boolean),
 
-  // ─── Trial: 14-day PROFESSIONAL trial on signup ───────────────────────
+  // ─── User starts with FREE plan, plan selection happens during onboarding ───────────────────────
   databaseHooks: {
     user: {
       create: {
         before: async (user) => {
-          // Set a 14-day trial from now — user starts on PROFESSIONAL plan
-          const trialEnd = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+          // User starts with FREE plan — subscription chosen during onboarding
           return {
             data: {
               ...user,
-              plan: "PROFESSIONAL",
-              trialEnd: trialEnd.toISOString(),
+              plan: "FREE",
+              trialEnd: null,
             },
           };
         },

@@ -5,9 +5,10 @@ import {
   FileText, File, Download, Trash2, Eye, Loader2,
   Database, Image as ImageIcon, ExternalLink,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { EmptyState } from "@/components/ui/empty-state";
 
 type VaultDocument = {
   id: string;
@@ -45,6 +46,7 @@ export function VaultBrowser() {
   const [loading, setLoading] = useState(true);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewDoc, setPreviewDoc] = useState<VaultDocument | null>(null);
+  const prefersReducedMotion = useReducedMotion();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const loadDocuments = useCallback(async () => {
@@ -118,26 +120,30 @@ export function VaultBrowser() {
     <div className="space-y-6">
       {/* Empty state */}
       {documents.length === 0 && (
-        <div className="text-center py-16">
-          <Database size={40} className="text-muted-foreground/40 mx-auto mb-4" />
-          <p className="text-foreground font-display text-xl mb-1">Vault is empty</p>
-          <p className="text-muted-foreground text-sm">
-            Upload documents to build context for your swarm.
-          </p>
-        </div>
+        <EmptyState
+          icon={<Database size={48} />}
+          message="Your Vault is empty. Upload brand guidelines, case studies, or reference docs — the swarm uses them as context for every campaign."
+          ctaLabel="Upload Document"
+          className="py-16"
+        />
       )}
 
       {/* Document list */}
       {documents.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <AnimatePresence>
+          <AnimatePresence mode={prefersReducedMotion ? "sync" : "popLayout"}>
             {documents.map((doc, i) => (
               <motion.div
                 key={doc.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ delay: i * 0.05, duration: 0.25 }}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 12, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={prefersReducedMotion ? undefined : { opacity: 0, y: -8, scale: 0.95 }}
+                transition={prefersReducedMotion ? { duration: 0 } : {
+                  duration: 0.3,
+                  delay: i * 0.05,
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                }}
+                layout={!prefersReducedMotion}
                 className={cn(
                   "group relative rounded-xl border border-border bg-card p-4 hover:border-copper/20 hover:shadow-sm transition-all",
                   previewDoc?.id === doc.id && "ring-1 ring-copper/30",

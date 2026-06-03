@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { safeJsonParse } from '@/lib/utils';
+import { apiRequireAuth } from '@/lib/auth/gatekeeper';
 
 export async function POST(req: Request) {
   try {
@@ -12,13 +13,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing campaignId' }, { status: 400 });
     }
 
-    const supabase = await createClient();
+    const user = await apiRequireAuth(req);
+    if (user instanceof NextResponse) return user;
 
-    // 1. Obținem utilizatorul curent
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const supabase = await createClient();
 
     // 2. Verificăm că există aprobare explicită în DB pentru acest utilizator și campanie
     const { data: approval, error: approvalError } = await supabase
