@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1778515725695,
-      "tag": "0000_spooky_agent_zero",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1779292900000,
-      "tag": "0001_pain_points",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1779293290000,
-      "tag": "0002_deadline",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1780317000000,
-      "tag": "0010_verify_existing_users",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "7",
-      "when": 1780504464150,
-      "tag": "0011_warm_scalphunter",
+      "when": 1780504881757,
+      "tag": "0000_init_all",
       "breakpoints": true
     }
   ]
