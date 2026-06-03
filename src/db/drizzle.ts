@@ -1,8 +1,9 @@
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import * as schema from "./schema";
 
 let _db: ReturnType<typeof drizzle> | null = null;
+let _client: ReturnType<typeof postgres> | null = null;
 
 function getDb() {
   if (!_db) {
@@ -12,7 +13,9 @@ function getDb() {
     if (!process.env.DATABASE_URL) {
       throw new Error("DATABASE_URL must be set");
     }
-    _db = drizzle(neon(process.env.DATABASE_URL), { schema });
+    // Disable prefetch — not supported in Supabase Transaction pooler mode
+    _client = postgres(process.env.DATABASE_URL, { prepare: false });
+    _db = drizzle(_client, { schema });
   }
   return _db;
 }

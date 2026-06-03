@@ -258,6 +258,67 @@ export const auditLog = pgTable("audit_log", {
   index("idx_audit_log_created_at").on(table.createdAt),
 ]);
 
+// ─── CAMPAIGNS ────────────────────────────────────────────────────────────────
+export const campaigns = pgTable("campaigns", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  prospectName: text("prospect_name"),
+  prospectUrl: text("prospect_url"),
+  status: text("status").notNull().default("draft"),
+  swarmParams: jsonb("swarm_params").default({}),
+  researchData: jsonb("research_data").default({}),
+  twinProfile: jsonb("twin_profile").default({}),
+  strategy: jsonb("strategy").default({}),
+  emailDraft: text("email_draft"),
+  confidenceScore: integer("confidence_score").default(0),
+  brandContext: jsonb("brand_context").default({}),
+  swarmMode: text("swarm_mode").default("deep"),
+  projectId: uuid("project_id").references(() => projects.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+}, (table) => [
+  index("idx_campaigns_user_id").on(table.userId),
+  index("idx_campaigns_status").on(table.status),
+  index("idx_campaigns_created_at").on(table.createdAt),
+]);
+
+// ─── SWARM TRACES ──────────────────────────────────────────────────────────────
+export const swarmTraces = pgTable("swarm_traces", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  campaignId: uuid("campaign_id").references(() => campaigns.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  runIndex: integer("run_index").notNull().default(1),
+  traceLog: jsonb("trace_log").notNull().default([]),
+  finalScores: jsonb("final_scores").notNull().default({}),
+  twinSnapshot: jsonb("twin_snapshot").default({}),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => [
+  index("idx_swarm_traces_user_id").on(table.userId),
+  index("idx_swarm_traces_campaign_id").on(table.campaignId),
+  index("idx_swarm_traces_created_at").on(table.createdAt),
+]);
+
+// ─── IDEAS ──────────────────────────────────────────────────────────────────────
+export const ideas = pgTable("ideas", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  body: text("body"),
+  tag: text("tag"),
+  campaignId: uuid("campaign_id").references(() => campaigns.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (table) => [
+  index("idx_ideas_user_id").on(table.userId),
+  index("idx_ideas_created_at").on(table.createdAt),
+]);
+
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 export type User = typeof users.$inferSelect;
 export type AuditLogEntry = typeof auditLog.$inferSelect;
@@ -269,3 +330,6 @@ export type ApiUsageDaily = typeof apiUsageDaily.$inferSelect;
 export type EmailEvent = typeof emailEvents.$inferSelect;
 export type GmailConnection = typeof gmailConnections.$inferSelect;
 export type Prospect = typeof prospects.$inferSelect;
+export type Campaign = typeof campaigns.$inferSelect;
+export type SwarmTrace = typeof swarmTraces.$inferSelect;
+export type Idea = typeof ideas.$inferSelect;

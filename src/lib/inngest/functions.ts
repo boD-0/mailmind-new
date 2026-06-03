@@ -3,12 +3,21 @@ import { swarmGraph } from "@/lib/swarm/graph";
 import { createClient as createSupabaseAdmin } from "@supabase/supabase-js";
 import { getPostHogClient } from "@/lib/posthog-server";
 
+async ({ event, step }) => {
+    console.log("🚀 Swarm function started", event.data);
+    try {
+      // ... restul codului
+    } catch (err) {
+      console.error("❌ Top-level error:", err);
+      throw new Error(String(err));
+    }
+  }   
 export const executeSwarm = inngest.createFunction(
   {
     id: "swarm-execute",
     name: "Execute AI Swarm",
     retries: 3,
-    triggers: { event: "swarm/execute" },
+    triggers: [{ event: "swarm/execute" }],
     throttle: {
       key: "event.data.userId",
       limit: 3,
@@ -27,7 +36,15 @@ export const executeSwarm = inngest.createFunction(
       swarmMode,
       userId,
       plan,
-    } = event.data;
+    } = event.data as {
+      campaignId: string;
+      prospectName: string;
+      prospectUrl: string;
+      brandContext: Record<string, unknown>;
+      swarmMode: "fast" | "deep";
+      userId: string;
+      plan: string;
+    };
 
     const initialState = {
       campaign_id: campaignId,
